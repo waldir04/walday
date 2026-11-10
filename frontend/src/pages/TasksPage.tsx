@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Task } from '../features/tasks/model/task'
 import { createTask } from '../features/tasks/model/task'
 import { loadTasks, saveTasks } from '../features/tasks/lib/storage'
@@ -6,13 +7,20 @@ import { TaskForm } from '../features/tasks/ui/TaskForm'
 import { TaskList } from '../features/tasks/ui/TaskList'
 
 export function TasksPage() {
+  const { t } = useTranslation()
   const [tasks, setTasks] = useState<Task[]>(() => loadTasks())
 
   useEffect(() => {
     saveTasks(tasks)
   }, [tasks])
 
-  function addTask(input: { title: string; description?: string; priority: Task['priority']; dueDate?: string; estimatedDuration?: string }) {
+  function addTask(input: {
+    title: string
+    description?: string
+    priority: Task['priority']
+    dueDate?: string
+    estimatedDuration?: string
+  }) {
     setTasks((prev) => [createTask(input), ...prev])
   }
 
@@ -30,10 +38,8 @@ export function TasksPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Tasks</h1>
-      <p className="text-sm text-gray-500">
-        Guest data is stored locally and may be lost if browser storage is cleared or you change devices.
-      </p>
+      <h1 className="text-2xl font-semibold">{t('tasks.title')}</h1>
+      <p className="text-sm text-gray-500">{t('tasks.guestNotice')}</p>
       <TaskForm onAdd={addTask} />
       <TaskList tasks={tasks} onToggle={toggleTask} onEdit={editTask} onDelete={deleteTask} />
     </div>

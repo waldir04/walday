@@ -1,0 +1,26 @@
+{
+  "title": "Configuración",
+  "preferences": {
+    "heading": "Preferencias",
+    "language": "Idioma",
+    "dateTimePresentation": "Formato de fecha y hora",
+    "weatherUnits": "Unidades del clima",
+    "weatherLocation": "Ubicación del clima",
+    "weatherLocationPlaceholder": "Ciudad o lugar",
+    "saveFeedback": "Preferencias guardadas",
+    "options": {
+      "language": { "en": "Inglés", "es": "Español" },
+      "dateTimePresentation": {
+        "locale-short": "Corto",
+        "locale-medium": "Medio",
+        "locale-long": "Largo"
+      },
+      "weatherUnits": { "metric": "Métrico (°C)", "imperial": "Imperial (°F)" }
+    }
+  },
+  "tasks": {
+    "title": "Tareas",
+    "guestNotice": "Los datos de invitado se almacenan localmente y pueden perderse si se borra el almacenamiento del navegador o cambias de dispositivo."
+  },
+  "notFound": { "title": "No encontrado" }
+}

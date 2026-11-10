@@ -1,3 +1,6 @@
+import { useTranslation } from 'react-i18next'
+
 export function HomePage() {
-  return <h1 className="text-2xl font-semibold">Walday</h1>
+  const { t } = useTranslation()
+  return <h1 className="text-2xl font-semibold">{t('app.name')}</h1>
 }

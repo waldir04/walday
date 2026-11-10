@@ -1,5 +1,1 @@
-import { AppRouter } from './app/router'
-
-export default function App() {
-  return <AppRouter />
-}
+export { App as default } from './app/App'
