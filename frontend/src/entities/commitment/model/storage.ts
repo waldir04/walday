@@ -1,6 +1,6 @@
-import { COMMITMENTS_STORAGE_KEY } from '../config/commitments'
-import type { Commitment } from '../../entities/commitment/model/types'
-import { sanitizeCommitments } from '../../entities/commitment/model/sanitize'
+import { COMMITMENTS_STORAGE_KEY } from '@/shared/config/commitments'
+import type { Commitment } from './types'
+import { sanitizeCommitments } from './sanitize'
 
 export function loadCommitments(): Commitment[] {
   try {

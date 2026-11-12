@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateTitle } from '../src/features/tasks/model/task'
+import { validateTitle } from '../src/features/tasks'
 
 describe('validateTitle', () => {
   it('rejects short titles', () => {

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SettingsPage } from '../src/pages/SettingsPage'
-import { PreferencesProvider } from '../src/features/user-preferences/model/preferencesContext'
+import { PreferencesProvider } from '../src/features/user-preferences'
 import '../src/shared/i18n'
 import { PREFERENCES_STORAGE_KEY } from '../src/shared/config/preferences'
 
@@ -23,10 +23,14 @@ describe('Preferences UI (US1)', () => {
     renderWithProviders()
     expect(screen.getByLabelText(/Language|Idioma/i)).toBeInTheDocument()
 
-    const language = screen.getByLabelText(/Language|Idioma/i) as HTMLSelectElement
+    const language = screen.getByLabelText(
+      /Language|Idioma/i,
+    ) as HTMLSelectElement
     fireEvent.change(language, { target: { value: 'es' } })
 
-    const submit = screen.getByRole('button', { name: /Preferences|Preferencias/i })
+    const submit = screen.getByRole('button', {
+      name: /Preferences|Preferencias/i,
+    })
     fireEvent.click(submit)
 
     await waitFor(() => {
@@ -47,9 +51,13 @@ describe('Preferences UI (US1)', () => {
       }),
     )
     renderWithProviders()
-    const units = screen.getByLabelText(/Weather units|Unidades del clima/i) as HTMLSelectElement
+    const units = screen.getByLabelText(
+      /Weather units|Unidades del clima/i,
+    ) as HTMLSelectElement
     expect(units.value).toBe('imperial')
-    const loc = screen.getByLabelText(/Weather location|Ubicación del clima/i) as HTMLInputElement
+    const loc = screen.getByLabelText(
+      /Weather location|Ubicación del clima/i,
+    ) as HTMLInputElement
     expect(loc.value).toBe('Lima')
   })
 })

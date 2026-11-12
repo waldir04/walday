@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
-import type { Commitment } from '../../../entities/commitment/model/types'
-import { loadCommitments, saveCommitments } from '../../../shared/lib/commitmentsStorage'
-import { validateCommitment } from '../../../entities/commitment/model/validation'
-import { findOverlaps } from '../../../entities/commitment/model/overlap'
-import { sanitizeCommitments } from '../../../entities/commitment/model/sanitize'
+import type { Commitment } from '@/entities/commitment'
+import {
+  findOverlaps,
+  loadCommitments,
+  sanitizeCommitments,
+  saveCommitments,
+  validateCommitment,
+} from '@/entities/commitment'
 
 export interface CommitmentFormDraft {
   title: string
@@ -25,7 +28,9 @@ export interface CommitmentErrors {
 }
 
 export function useCommitments() {
-  const [commitments, setCommitments] = useState<Commitment[]>(() => loadCommitments())
+  const [commitments, setCommitments] = useState<Commitment[]>(() =>
+    loadCommitments(),
+  )
 
   useEffect(() => {
     saveCommitments(commitments)
@@ -50,7 +55,9 @@ export function useCommitments() {
     const candidate: Commitment = {
       id: crypto.randomUUID(),
       title: draft.title.trim(),
-      ...(draft.description.trim() ? { description: draft.description.trim() } : {}),
+      ...(draft.description.trim()
+        ? { description: draft.description.trim() }
+        : {}),
       date: draft.date,
       startTime: draft.startTime,
       endTime: draft.endTime,
@@ -77,7 +84,9 @@ export function useCommitments() {
     const candidate: Commitment = {
       id,
       title: draft.title.trim(),
-      ...(draft.description.trim() ? { description: draft.description.trim() } : {}),
+      ...(draft.description.trim()
+        ? { description: draft.description.trim() }
+        : {}),
       date: draft.date,
       startTime: draft.startTime,
       endTime: draft.endTime,
@@ -90,9 +99,7 @@ export function useCommitments() {
     const overlap = findOverlaps(candidate, commitments)
     if (overlap.overlaps) return null
 
-    setCommitments((prev) =>
-      prev.map((c) => (c.id === id ? candidate : c)),
-    )
+    setCommitments((prev) => prev.map((c) => (c.id === id ? candidate : c)))
     return candidate
   }
 

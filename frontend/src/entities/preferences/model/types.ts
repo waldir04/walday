@@ -1,4 +1,8 @@
-import type { DateTimePresentation, SupportedLanguage, WeatherUnit } from '../../../shared/config/preferences'
+import type {
+  DateTimePresentation,
+  SupportedLanguage,
+  WeatherUnit,
+} from '@/shared/config/preferences'
 
 export interface WeatherLocation {
   name: string

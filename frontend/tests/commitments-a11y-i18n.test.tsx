@@ -22,10 +22,16 @@ describe('Commitment accessibility and i18n (US3)', () => {
     renderWithRouter(createElement(CommitmentsPage, null))
     expect(screen.getByLabelText(/Title|Título/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/Date|Fecha/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Start time|Hora de inicio/i)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(/Start time|Hora de inicio/i),
+    ).toBeInTheDocument()
     expect(screen.getByLabelText(/End time|Hora de fin/i)).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Fixed|Fijo/i })).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Flexible|Flexible/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /Fixed|Fijo/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /Flexible|Flexible/i }),
+    ).toBeInTheDocument()
   })
 
   it('renders user-facing content in Spanish when language is Spanish', async () => {
@@ -36,12 +42,18 @@ describe('Commitment accessibility and i18n (US3)', () => {
     })
     expect(screen.getByLabelText(/Fecha/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Guardar/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /Compromisos/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: /Compromisos/i }),
+    ).toBeInTheDocument()
   })
 
   it('distinguishes fixed and flexible by text labels, not color alone', async () => {
     renderWithRouter(createElement(CommitmentsPage, null))
-    expect(screen.getByRole('radio', { name: /Fixed|Fijo/i })).toBeInTheDocument()
-    expect(screen.getByRole('radio', { name: /Flexible|Flexible/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /Fixed|Fijo/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /Flexible|Flexible/i }),
+    ).toBeInTheDocument()
   })
 })

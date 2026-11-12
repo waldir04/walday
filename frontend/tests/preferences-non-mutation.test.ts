@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { loadTasks, saveTasks } from '../src/features/tasks/lib/storage'
-import { savePreferences } from '../src/shared/lib/preferencesStorage'
+import { loadTasks, saveTasks } from '../src/features/tasks'
+import { savePreferences } from '../src/entities/preferences'
 
 describe('Preferences non-mutation (US3)', () => {
   beforeEach(() => {
@@ -44,6 +44,8 @@ describe('Preferences non-mutation (US3)', () => {
       weatherLocation: { name: 'Quito' },
     })
 
-    expect(localStorage.getItem(weatherKey)).toEqual(JSON.stringify(weatherData))
+    expect(localStorage.getItem(weatherKey)).toEqual(
+      JSON.stringify(weatherData),
+    )
   })
 })

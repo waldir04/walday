@@ -1,7 +1,7 @@
-import { PREFERENCES_STORAGE_KEY } from '../config/preferences'
-import type { UserPreferences } from '../../entities/preferences/model/types'
-import { getDefaultPreferences } from '../../entities/preferences/model/defaults'
-import { sanitizePreferences } from '../../entities/preferences/model/validation'
+import { PREFERENCES_STORAGE_KEY } from '@/shared/config/preferences'
+import type { UserPreferences } from './types'
+import { getDefaultPreferences } from './defaults'
+import { userPreferencesSchema } from './schema'
 
 export function loadPreferences(): UserPreferences {
   try {
@@ -11,7 +11,8 @@ export function loadPreferences(): UserPreferences {
     const raw = localStorage.getItem(PREFERENCES_STORAGE_KEY)
     if (!raw) return getDefaultPreferences()
     const parsed: unknown = JSON.parse(raw)
-    return sanitizePreferences(parsed)
+    const result = userPreferencesSchema.safeParse(parsed)
+    return result.success ? result.data : getDefaultPreferences()
   } catch {
     return getDefaultPreferences()
   }

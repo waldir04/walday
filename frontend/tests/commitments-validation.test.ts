@@ -18,10 +18,18 @@ describe('Commitment validation (US3)', () => {
 
   it('rejects end time before start time with accessible feedback', async () => {
     renderWithRouter(createElement(CommitmentsPage, null))
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'Bad range' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '10:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '09:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'Bad range' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '10:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '09:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
 
     await waitFor(() => {
@@ -32,9 +40,15 @@ describe('Commitment validation (US3)', () => {
 
   it('rejects missing required title with accessible feedback', async () => {
     renderWithRouter(createElement(CommitmentsPage, null))
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
 
     await waitFor(() => {

@@ -1,0 +1,34 @@
+{
+  "title": "Tareas",
+  "guestNotice": "Los datos de invitado se almacenan localmente y pueden perderse si se borra el almacenamiento del navegador o cambias de dispositivo.",
+  "empty": "Aún no hay tareas. Agrega una arriba.",
+  "form": {
+    "title": "Título",
+    "description": "Descripción (opcional)",
+    "priority": "Prioridad",
+    "dueDate": "Fecha límite (opcional)",
+    "duration": "Duración (opcional)",
+    "durationPlaceholder": "30 min",
+    "submit": "Agregar tarea",
+    "priorityOptions": {
+      "low": "Baja",
+      "medium": "Media",
+      "high": "Alta"
+    }
+  },
+  "validation": {
+    "titleMinLength": "El título debe tener al menos 3 caracteres"
+  },
+  "item": {
+    "markPending": "Marcar {{title}} como pendiente",
+    "markComplete": "Marcar {{title}} como completada",
+    "priority": "Prioridad: {{priority}}",
+    "due": "Fecha límite: {{date}}",
+    "duration": "Duración: {{duration}}",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "confirmDelete": "¿Confirmar eliminación?",
+    "yes": "Sí",
+    "no": "Cancelar"
+  }
+}

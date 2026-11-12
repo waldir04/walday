@@ -1,11 +1,14 @@
 import { type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { CommitmentFormDraft, CommitmentErrors } from '../model/useCommitments'
+import type {
+  CommitmentFormDraft,
+  CommitmentErrors,
+} from '../model/useCommitments'
 
 interface Props {
   draft: CommitmentFormDraft
   errors: CommitmentErrors
-  overlap?: { message: string; details: string }
+  overlap?: { message: string; details: string } | null
   onChange: (_draft: CommitmentFormDraft) => void
   onSave: (_draft: CommitmentFormDraft) => void
   isLoading?: boolean
@@ -19,7 +22,7 @@ export function CommitmentForm({
   onSave,
   isLoading = false,
 }: Props) {
-  const { t } = useTranslation()
+  const { t } = useTranslation('commitments')
 
   function handleChange(field: keyof CommitmentFormDraft, value: string) {
     onChange({ ...draft, [field]: value })
@@ -31,7 +34,11 @@ export function CommitmentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 max-w-xl space-y-4" aria-label={t('commitments.heading')}>
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 max-w-xl space-y-4"
+      aria-label={t('commitments.heading')}
+    >
       <div>
         <label htmlFor="commit-title" className="block text-sm font-medium">
           {t('commitments.title')}
@@ -47,14 +54,21 @@ export function CommitmentForm({
           aria-describedby={errors.title ? 'commit-title-error' : undefined}
         />
         {errors.title ? (
-          <p id="commit-title-error" className="mt-1 text-sm text-red-700" role="alert">
+          <p
+            id="commit-title-error"
+            className="mt-1 text-sm text-red-700"
+            role="alert"
+          >
             {t(errors.title)}
           </p>
         ) : null}
       </div>
 
       <div>
-        <label htmlFor="commit-description" className="block text-sm font-medium">
+        <label
+          htmlFor="commit-description"
+          className="block text-sm font-medium"
+        >
           {t('commitments.description')}
         </label>
         <textarea
@@ -81,14 +95,21 @@ export function CommitmentForm({
             aria-describedby={errors.date ? 'commit-date-error' : undefined}
           />
           {errors.date ? (
-            <p id="commit-date-error" className="mt-1 text-sm text-red-700" role="alert">
+            <p
+              id="commit-date-error"
+              className="mt-1 text-sm text-red-700"
+              role="alert"
+            >
               {t(errors.date)}
             </p>
           ) : null}
         </div>
 
         <div>
-          <label htmlFor="commit-start-time" className="block text-sm font-medium">
+          <label
+            htmlFor="commit-start-time"
+            className="block text-sm font-medium"
+          >
             {t('commitments.startTime')}
           </label>
           <input
@@ -98,17 +119,26 @@ export function CommitmentForm({
             value={draft.startTime}
             onChange={(e) => handleChange('startTime', e.target.value)}
             aria-invalid={!!errors.startTime}
-            aria-describedby={errors.startTime ? 'commit-start-error' : undefined}
+            aria-describedby={
+              errors.startTime ? 'commit-start-error' : undefined
+            }
           />
           {errors.startTime ? (
-            <p id="commit-start-error" className="mt-1 text-sm text-red-700" role="alert">
+            <p
+              id="commit-start-error"
+              className="mt-1 text-sm text-red-700"
+              role="alert"
+            >
               {t(errors.startTime)}
             </p>
           ) : null}
         </div>
 
         <div>
-          <label htmlFor="commit-end-time" className="block text-sm font-medium">
+          <label
+            htmlFor="commit-end-time"
+            className="block text-sm font-medium"
+          >
             {t('commitments.endTime')}
           </label>
           <input
@@ -121,7 +151,11 @@ export function CommitmentForm({
             aria-describedby={errors.endTime ? 'commit-end-error' : undefined}
           />
           {errors.endTime ? (
-            <p id="commit-end-error" className="mt-1 text-sm text-red-700" role="alert">
+            <p
+              id="commit-end-error"
+              className="mt-1 text-sm text-red-700"
+              role="alert"
+            >
               {t(errors.endTime)}
             </p>
           ) : null}
@@ -142,7 +176,10 @@ export function CommitmentForm({
                 aria-invalid={!!errors.type}
               />
               <span>
-                {t('commitments.typeFixed')} <span className="text-xs text-gray-500">{t('commitments.typeFixedDesc')}</span>
+                {t('commitments.typeFixed')}{' '}
+                <span className="text-xs text-gray-500">
+                  {t('commitments.typeFixedDesc')}
+                </span>
               </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -155,7 +192,10 @@ export function CommitmentForm({
                 aria-invalid={!!errors.type}
               />
               <span>
-                {t('commitments.typeFlexible')} <span className="text-xs text-gray-500">{t('commitments.typeFlexibleDesc')}</span>
+                {t('commitments.typeFlexible')}{' '}
+                <span className="text-xs text-gray-500">
+                  {t('commitments.typeFlexibleDesc')}
+                </span>
               </span>
             </label>
           </div>
@@ -176,8 +216,13 @@ export function CommitmentForm({
       </div>
 
       {overlap ? (
-        <div className="mt-2 rounded bg-amber-50 p-3 border border-amber-200" role="alert">
-          <p className="text-sm font-medium text-amber-800">{t(overlap.message)}</p>
+        <div
+          className="mt-2 rounded bg-amber-50 p-3 border border-amber-200"
+          role="alert"
+        >
+          <p className="text-sm font-medium text-amber-800">
+            {t(overlap.message)}
+          </p>
           <p className="mt-1 text-sm text-amber-700">{t(overlap.details)}</p>
         </div>
       ) : null}

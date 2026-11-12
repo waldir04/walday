@@ -1,0 +1,34 @@
+{
+  "title": "Tasks",
+  "guestNotice": "Guest data is stored locally and may be lost if browser storage is cleared or you change devices.",
+  "empty": "No tasks yet. Add one above.",
+  "form": {
+    "title": "Title",
+    "description": "Description (optional)",
+    "priority": "Priority",
+    "dueDate": "Due date (optional)",
+    "duration": "Duration (optional)",
+    "durationPlaceholder": "30 min",
+    "submit": "Add task",
+    "priorityOptions": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    }
+  },
+  "validation": {
+    "titleMinLength": "Title must be at least 3 characters"
+  },
+  "item": {
+    "markPending": "Mark {{title}} pending",
+    "markComplete": "Mark {{title}} complete",
+    "priority": "Priority: {{priority}}",
+    "due": "Due: {{date}}",
+    "duration": "Duration: {{duration}}",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Confirm delete?",
+    "yes": "Yes",
+    "no": "Cancel"
+  }
+}

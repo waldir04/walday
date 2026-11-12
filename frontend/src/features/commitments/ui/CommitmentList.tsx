@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import type { Commitment } from '../../../entities/commitment/model/types'
+import type { Commitment } from '@/entities/commitment'
 import { CommitmentItem } from './CommitmentItem'
 
 interface Props {
@@ -8,12 +8,8 @@ interface Props {
   onDelete: (_id: string) => void
 }
 
-export function CommitmentList({
-  commitments,
-  onEdit,
-  onDelete,
-}: Props) {
-  const { t } = useTranslation()
+export function CommitmentList({ commitments, onEdit, onDelete }: Props) {
+  const { t } = useTranslation('commitments')
 
   if (commitments.length === 0) {
     return (

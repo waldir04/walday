@@ -13,7 +13,12 @@ describe('date/time formatting (US2)', () => {
 
   it('formats date-time with timezone context', () => {
     const utc = formatDateTime(date, 'en-US', 'locale-medium', 'UTC')
-    const ny = formatDateTime(date, 'en-US', 'locale-medium', 'America/New_York')
+    const ny = formatDateTime(
+      date,
+      'en-US',
+      'locale-medium',
+      'America/New_York',
+    )
     expect(utc).not.toEqual(ny)
   })
 

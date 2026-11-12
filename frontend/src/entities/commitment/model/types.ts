@@ -1,4 +1,4 @@
-import type { CommitmentType } from '../../../shared/config/commitments'
+import type { CommitmentType } from '@/shared/config/commitments'
 export type { CommitmentType }
 
 export interface Commitment {

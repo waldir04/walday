@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import type { Commitment } from '../../../entities/commitment/model/types'
+import type { Commitment } from '@/entities/commitment'
 
 interface Props {
   commitment: Commitment
@@ -8,18 +8,17 @@ interface Props {
   onDelete: (_id: string) => void
 }
 
-export function CommitmentItem({
-  commitment,
-  onEdit,
-  onDelete,
-}: Props) {
-  const { t } = useTranslation()
+export function CommitmentItem({ commitment, onEdit, onDelete }: Props) {
+  const { t } = useTranslation('commitments')
   const isFixed = commitment.type === 'fixed'
 
   return (
     <article className="rounded border border-gray-200 p-4 bg-white shadow-sm">
       <div className="flex items-center justify-between gap-3 mb-2">
-        <Link to={`/commitments/${commitment.id}/edit`} className="text-sm font-semibold text-gray-900 hover:underline">
+        <Link
+          to={`/commitments/${commitment.id}/edit`}
+          className="text-sm font-semibold text-gray-900 hover:underline"
+        >
           {commitment.title}
         </Link>
         <span
@@ -36,13 +35,19 @@ export function CommitmentItem({
       <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm text-gray-600">
         <dt className="font-medium text-gray-900">{t('commitments.date')}</dt>
         <dd>{commitment.date}</dd>
-        <dt className="font-medium text-gray-900">{t('commitments.startTime')}</dt>
+        <dt className="font-medium text-gray-900">
+          {t('commitments.startTime')}
+        </dt>
         <dd>{commitment.startTime}</dd>
-        <dt className="font-medium text-gray-900">{t('commitments.endTime')}</dt>
+        <dt className="font-medium text-gray-900">
+          {t('commitments.endTime')}
+        </dt>
         <dd>{commitment.endTime}</dd>
         {commitment.description ? (
           <>
-            <dt className="font-medium text-gray-900">{t('commitments.description')}</dt>
+            <dt className="font-medium text-gray-900">
+              {t('commitments.description')}
+            </dt>
             <dd className="col-span-2">{commitment.description}</dd>
           </>
         ) : null}

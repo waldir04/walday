@@ -1,6 +1,9 @@
 import { describe, expect, it, vi, afterEach } from 'vitest'
-import { getDefaultPreferences, resolveLanguage } from '../src/entities/preferences/model/defaults'
-import { sanitizePreferences } from '../src/entities/preferences/model/validation'
+import {
+  getDefaultPreferences,
+  resolveLanguage,
+  sanitizePreferences,
+} from '../src/entities/preferences'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -12,9 +15,9 @@ describe('preferences defaults and resolution', () => {
     expect(resolveLanguage('en')).toBe('en')
   })
 
-  it('falls back to supported browser locale when no user preference', () => {
+  it('defaults to English when no explicit preference exists', () => {
     vi.stubGlobal('navigator', { language: 'es-MX' })
-    expect(resolveLanguage(undefined)).toBe('es')
+    expect(resolveLanguage(undefined)).toBe('en')
   })
 
   it('falls back to English for unsupported browser locale', () => {

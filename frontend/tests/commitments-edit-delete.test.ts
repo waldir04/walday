@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { createElement } from 'react'
 import type { ReactElement } from 'react'
@@ -22,17 +28,29 @@ describe('Commitments edit/delete (US2)', () => {
     renderWithRouter(createElement(CommitmentsPage, null))
 
     // Create
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'Original' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'Original' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
-    await waitFor(() => expect(screen.getByText('Original')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('Original')).toBeInTheDocument(),
+    )
 
     // Edit
     const item = screen.getByText('Original').closest('article')
     fireEvent.click(within(item!).getByRole('button', { name: /Edit|Editar/i }))
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'Updated' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'Updated' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
 
     await waitFor(() => {
@@ -48,15 +66,27 @@ describe('Commitments edit/delete (US2)', () => {
     vi.spyOn(window, 'confirm').mockImplementation(() => true)
     renderWithRouter(createElement(CommitmentsPage, null))
 
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'To delete' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'To delete' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
-    await waitFor(() => expect(screen.getByText('To delete')).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText('To delete')).toBeInTheDocument(),
+    )
 
     const item = screen.getByText('To delete').closest('article')
-    fireEvent.click(within(item!).getByRole('button', { name: /Delete|Eliminar/i }))
+    fireEvent.click(
+      within(item!).getByRole('button', { name: /Delete|Eliminar/i }),
+    )
 
     await waitFor(() => {
       expect(screen.queryByText('To delete')).not.toBeInTheDocument()
@@ -69,15 +99,25 @@ describe('Commitments edit/delete (US2)', () => {
     vi.spyOn(window, 'confirm').mockImplementation(() => false)
     renderWithRouter(createElement(CommitmentsPage, null))
 
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'Keep me' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'Keep me' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
     await waitFor(() => expect(screen.getByText('Keep me')).toBeInTheDocument())
 
     const item = screen.getByText('Keep me').closest('article')
-    fireEvent.click(within(item!).getByRole('button', { name: /Delete|Eliminar/i }))
+    fireEvent.click(
+      within(item!).getByRole('button', { name: /Delete|Eliminar/i }),
+    )
 
     expect(screen.getByText('Keep me')).toBeInTheDocument()
   })

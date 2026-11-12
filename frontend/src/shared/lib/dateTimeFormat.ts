@@ -1,12 +1,18 @@
 import type { DateTimePresentation } from '../config/preferences'
 
-const DATE_STYLE: Record<DateTimePresentation, Intl.DateTimeFormatOptions['dateStyle']> = {
+const DATE_STYLE: Record<
+  DateTimePresentation,
+  Intl.DateTimeFormatOptions['dateStyle']
+> = {
   'locale-short': 'short',
   'locale-medium': 'medium',
   'locale-long': 'long',
 }
 
-const TIME_STYLE: Record<DateTimePresentation, Intl.DateTimeFormatOptions['timeStyle']> = {
+const TIME_STYLE: Record<
+  DateTimePresentation,
+  Intl.DateTimeFormatOptions['timeStyle']
+> = {
   'locale-short': 'short',
   'locale-medium': 'short',
   'locale-long': 'medium',

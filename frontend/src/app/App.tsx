@@ -1,10 +1,13 @@
-import { AppRouter } from './router'
-import { PreferencesProvider } from '../features/user-preferences/model/preferencesContext'
+import { useState } from 'react'
+import { RouterProvider } from 'react-router-dom'
+import { AppProviders } from './providers'
+import { createAppRouter } from './router'
 
 export function App() {
+  const [router] = useState(createAppRouter)
   return (
-    <PreferencesProvider>
-      <AppRouter />
-    </PreferencesProvider>
+    <AppProviders>
+      <RouterProvider router={router} />
+    </AppProviders>
   )
 }

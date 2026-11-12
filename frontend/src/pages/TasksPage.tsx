@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Task } from '../features/tasks/model/task'
-import { createTask } from '../features/tasks/model/task'
-import { loadTasks, saveTasks } from '../features/tasks/lib/storage'
-import { TaskForm } from '../features/tasks/ui/TaskForm'
-import { TaskList } from '../features/tasks/ui/TaskList'
+import type { Task } from '@/features/tasks'
+import {
+  createTask,
+  loadTasks,
+  saveTasks,
+  TaskForm,
+  TaskList,
+} from '@/features/tasks'
 
 export function TasksPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('tasks')
   const [tasks, setTasks] = useState<Task[]>(() => loadTasks())
 
   useEffect(() => {
@@ -25,7 +28,9 @@ export function TasksPage() {
   }
 
   function toggleTask(id: string) {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)))
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    )
   }
 
   function editTask(id: string, patch: Partial<Task>) {
@@ -38,10 +43,17 @@ export function TasksPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">{t('tasks.title')}</h1>
-      <p className="text-sm text-gray-500">{t('tasks.guestNotice')}</p>
+      <h1 tabIndex={-1} className="text-2xl font-semibold">
+        {t('title')}
+      </h1>
+      <p className="text-sm text-gray-500">{t('guestNotice')}</p>
       <TaskForm onAdd={addTask} />
-      <TaskList tasks={tasks} onToggle={toggleTask} onEdit={editTask} onDelete={deleteTask} />
+      <TaskList
+        tasks={tasks}
+        onToggle={toggleTask}
+        onEdit={editTask}
+        onDelete={deleteTask}
+      />
     </div>
   )
 }

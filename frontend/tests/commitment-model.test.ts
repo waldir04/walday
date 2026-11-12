@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { validateCommitment, hasInvalidRange, isValidType } from '../src/entities/commitment/model/validation'
-import { findOverlaps } from '../src/entities/commitment/model/overlap'
-import { sanitizeCommitment, sanitizeCommitments } from '../src/entities/commitment/model/sanitize'
+import {
+  findOverlaps,
+  hasInvalidRange,
+  isValidType,
+  sanitizeCommitment,
+  sanitizeCommitments,
+  validateCommitment,
+} from '../src/entities/commitment'
 
 describe('commitment validation', () => {
   const base: Record<string, unknown> = {
@@ -56,13 +61,28 @@ describe('commitment validation', () => {
 
 describe('commitment overlap', () => {
   const c1 = {
-    id: '1', title: 'A', date: '2026-11-10', startTime: '09:00', endTime: '10:00', type: 'fixed' as const,
+    id: '1',
+    title: 'A',
+    date: '2026-11-10',
+    startTime: '09:00',
+    endTime: '10:00',
+    type: 'fixed' as const,
   }
   const c2 = {
-    id: '2', title: 'B', date: '2026-11-10', startTime: '09:30', endTime: '10:30', type: 'fixed' as const,
+    id: '2',
+    title: 'B',
+    date: '2026-11-10',
+    startTime: '09:30',
+    endTime: '10:30',
+    type: 'fixed' as const,
   }
   const c3 = {
-    id: '3', title: 'C', date: '2026-11-11', startTime: '09:00', endTime: '10:00', type: 'fixed' as const,
+    id: '3',
+    title: 'C',
+    date: '2026-11-11',
+    startTime: '09:00',
+    endTime: '10:00',
+    type: 'fixed' as const,
   }
 
   it('detects overlapping periods on same date', () => {
@@ -90,7 +110,12 @@ describe('commitment overlap', () => {
 
 describe('commitment sanitization', () => {
   const valid: Record<string, unknown> = {
-    id: 'abc', title: 'Meeting', date: '2026-11-10', startTime: '09:00', endTime: '10:00', type: 'fixed',
+    id: 'abc',
+    title: 'Meeting',
+    date: '2026-11-10',
+    startTime: '09:00',
+    endTime: '10:00',
+    type: 'fixed',
   }
 
   it('sanitizes a valid commitment', () => {
@@ -108,7 +133,11 @@ describe('commitment sanitization', () => {
   })
 
   it('trims fields and omits empty optional description', () => {
-    const result = sanitizeCommitment({ ...valid, title: '  Meeting  ', description: '' })
+    const result = sanitizeCommitment({
+      ...valid,
+      title: '  Meeting  ',
+      description: '',
+    })
     expect(result?.title).toBe('Meeting')
     expect(result?.description).toBeUndefined()
   })
@@ -116,6 +145,8 @@ describe('commitment sanitization', () => {
   it('sanitizes an array, dropping invalid entries', () => {
     const result = sanitizeCommitments([valid, { ...valid, title: '' }, 'junk'])
     expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('Meeting')
+    const first = result[0]
+    if (!first) throw new Error('expected a sanitized commitment')
+    expect(first.title).toBe('Meeting')
   })
 })

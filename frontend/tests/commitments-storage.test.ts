@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
-import { loadCommitments, saveCommitments } from '../src/shared/lib/commitmentsStorage'
+import { loadCommitments, saveCommitments } from '../src/entities/commitment'
+import type { Commitment } from '../src/entities/commitment'
 import { COMMITMENTS_STORAGE_KEY } from '../src/shared/config/commitments'
-import type { Commitment } from '../src/entities/commitment/model/types'
 
 describe('commitments storage', () => {
   beforeEach(() => {
@@ -16,11 +16,21 @@ describe('commitments storage', () => {
   it('saves and restores commitments', () => {
     const commitments: Commitment[] = [
       {
-        id: '1', title: 'Meeting', description: 'Team sync', date: '2026-11-10',
-        startTime: '09:00', endTime: '10:00', type: 'fixed',
+        id: '1',
+        title: 'Meeting',
+        description: 'Team sync',
+        date: '2026-11-10',
+        startTime: '09:00',
+        endTime: '10:00',
+        type: 'fixed',
       },
       {
-        id: '2', title: 'Exercise', date: '2026-11-10', startTime: '17:00', endTime: '18:00', type: 'flexible',
+        id: '2',
+        title: 'Exercise',
+        date: '2026-11-10',
+        startTime: '17:00',
+        endTime: '18:00',
+        type: 'flexible',
       },
     ]
     saveCommitments(commitments)
@@ -36,13 +46,27 @@ describe('commitments storage', () => {
     localStorage.setItem(
       COMMITMENTS_STORAGE_KEY,
       JSON.stringify([
-        { id: '1', title: 'Valid', date: '2026-11-10', startTime: '09:00', endTime: '10:00', type: 'fixed' },
-        { id: '2', title: '', date: '2026-11-10', startTime: '09:00', endTime: '10:00', type: 'fixed' },
+        {
+          id: '1',
+          title: 'Valid',
+          date: '2026-11-10',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'fixed',
+        },
+        {
+          id: '2',
+          title: '',
+          date: '2026-11-10',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'fixed',
+        },
       ]),
     )
     const loaded = loadCommitments()
     expect(loaded).toHaveLength(1)
-    expect(loaded[0].id).toBe('1')
+    expect(loaded[0]?.id).toBe('1')
   })
 
   it('gracefully handles unavailable storage', () => {
@@ -51,7 +75,12 @@ describe('commitments storage', () => {
     expect(() =>
       saveCommitments([
         {
-          id: '1', title: 'Meeting', date: '2026-11-10', startTime: '09:00', endTime: '10:00', type: 'fixed',
+          id: '1',
+          title: 'Meeting',
+          date: '2026-11-10',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'fixed',
         },
       ]),
     ).not.toThrow()

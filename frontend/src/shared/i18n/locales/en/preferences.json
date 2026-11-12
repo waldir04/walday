@@ -9,18 +9,19 @@
     "weatherLocationPlaceholder": "City or place",
     "saveFeedback": "Preferences saved",
     "options": {
-      "language": { "en": "English", "es": "Spanish" },
+      "language": {
+        "en": "English",
+        "es": "Spanish"
+      },
       "dateTimePresentation": {
         "locale-short": "Short",
         "locale-medium": "Medium",
         "locale-long": "Long"
       },
-      "weatherUnits": { "metric": "Metric (°C)", "imperial": "Imperial (°F)" }
+      "weatherUnits": {
+        "metric": "Metric (°C)",
+        "imperial": "Imperial (°F)"
+      }
     }
-  },
-  "tasks": {
-    "title": "Tasks",
-    "guestNotice": "Guest data is stored locally and may be lost if browser storage is cleared or you change devices."
-  },
-  "notFound": { "title": "Not found" }
+  }
 }

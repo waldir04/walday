@@ -1,12 +1,16 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Commitment } from '../entities/commitment/model/types'
-import { useCommitments, type CommitmentFormDraft, type CommitmentErrors } from '../features/commitments/model/useCommitments'
-import { CommitmentForm } from '../features/commitments/ui/CommitmentForm'
-import { CommitmentList } from '../features/commitments/ui/CommitmentList'
+import type { Commitment } from '@/entities/commitment'
+import {
+  type CommitmentErrors,
+  type CommitmentFormDraft,
+  CommitmentForm,
+  CommitmentList,
+  useCommitments,
+} from '@/features/commitments'
 
 export function CommitmentsPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('commitments')
   const {
     commitments,
     createCommitment,
@@ -24,7 +28,10 @@ export function CommitmentsPage() {
     type: 'fixed',
   })
   const [errors, setErrors] = useState<CommitmentErrors>({})
-  const [overlap, setOverlap] = useState<{ message: string; details: string } | null>(null)
+  const [overlap, setOverlap] = useState<{
+    message: string
+    details: string
+  } | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const isEditing = editingId !== null
@@ -78,7 +85,15 @@ export function CommitmentsPage() {
         type: 'fixed',
       })
     }
-  }, [draft, isEditing, editingId, createCommitment, updateCommitment, validateDraft, t])
+  }, [
+    draft,
+    isEditing,
+    editingId,
+    createCommitment,
+    updateCommitment,
+    validateDraft,
+    t,
+  ])
 
   const handleEdit = useCallback((commitment: Commitment) => {
     setDraft({
@@ -94,16 +109,21 @@ export function CommitmentsPage() {
     setOverlap(null)
   }, [])
 
-  const handleDelete = useCallback((id: string) => {
-    if (window.confirm(t('commitments.confirmDelete'))) {
-      deleteCommitment(id)
-      if (editingId === id) setEditingId(null)
-    }
-  }, [deleteCommitment, t, editingId])
+  const handleDelete = useCallback(
+    (id: string) => {
+      if (window.confirm(t('commitments.confirmDelete'))) {
+        deleteCommitment(id)
+        if (editingId === id) setEditingId(null)
+      }
+    },
+    [deleteCommitment, t, editingId],
+  )
 
   return (
     <section>
-      <h1 className="text-2xl font-semibold">{t('commitments.heading')}</h1>
+      <h1 tabIndex={-1} className="text-2xl font-semibold">
+        {t('commitments.heading')}
+      </h1>
       <div className="mt-4 space-y-6">
         <CommitmentForm
           draft={draft}

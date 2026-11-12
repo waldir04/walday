@@ -1,14 +1,18 @@
 import { useTranslation } from 'react-i18next'
-import { PreferencesForm } from '../features/user-preferences/ui/PreferencesForm'
-import { usePreferencesContext } from '../features/user-preferences/model/preferencesContext'
+import {
+  PreferencesForm,
+  usePreferencesContext,
+} from '@/features/user-preferences'
 
 export function SettingsPage() {
-  const { t } = useTranslation()
+  const { t } = useTranslation('preferences')
   const { preferences, updatePreferences } = usePreferencesContext()
 
   return (
     <section>
-      <h1 className="text-2xl font-semibold">{t('title')}</h1>
+      <h1 tabIndex={-1} className="text-2xl font-semibold">
+        {t('title')}
+      </h1>
       <PreferencesForm preferences={preferences} onSave={updatePreferences} />
     </section>
   )

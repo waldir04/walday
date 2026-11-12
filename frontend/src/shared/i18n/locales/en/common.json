@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "Walday",
+    "title": "Walday"
+  },
+  "nav": {
+    "ariaLabel": "Main navigation",
+    "home": "Home",
+    "foundation": "Foundation",
+    "tasks": "Tasks",
+    "settings": "Settings",
+    "commitments": "Commitments"
+  },
+  "foundation": {
+    "title": "Foundation",
+    "heading": "Application foundation",
+    "description": "This placeholder confirms the shell, navigation, and routing foundation are working. Business features remain available from the navigation."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "heading": "We could not find that page",
+    "description": "The page you requested does not exist or has moved.",
+    "home": "Go to the home page"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "heading": "Something went wrong",
+    "description": "The application could not display this content. Try again or return to the home page.",
+    "routeHeading": "This page could not be loaded",
+    "routeDescription": "An unexpected error occurred while loading this page.",
+    "retry": "Try again",
+    "reload": "Reload the page",
+    "home": "Go to the home page",
+    "chunkHeading": "This page failed to load",
+    "chunkDescription": "Check your connection and try loading the page again."
+  },
+  "loading": {
+    "label": "Loading content",
+    "announcement": "Content loaded"
+  },
+  "empty": {
+    "heading": "Nothing here yet",
+    "description": "There is no content to show."
+  },
+  "success": {
+    "default": "Saved successfully"
+  },
+  "actions": {
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "yes": "Yes",
+    "back": "Back"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "routeChanged": "Navigated to {{page}}",
+    "languageChanged": "Language changed to {{language}}"
+  },
+  "configError": {
+    "heading": "Walday could not start",
+    "description": "The application configuration is invalid. Check the documented VITE_* environment variables and try again."
+  }
+}

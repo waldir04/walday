@@ -13,14 +13,13 @@ No backend, Express server, PostgreSQL database, Prisma schema, or API client is
 
 ## 1. Install
 
-After the Phase 1 tooling work is applied:
-
 ```bash
 npm ci
 npm ci --prefix frontend
 ```
 
-Until the root development package exists, run frontend commands from `frontend/` using the scripts in `frontend/package.json`.
+The root package installs development tooling (Husky, lint-staged) and delegates the canonical
+scripts to `frontend`; each script also runs from `frontend/` directly.
 
 No environment variables are required. Copy `frontend/.env.example` only when you want to exercise the optional `VITE_API_BASE_URL` validation.
 
@@ -79,10 +78,13 @@ Expected: no full-page reload during client navigation; every defined route reso
 2. Confirm the skip link appears first and moves focus to the main region.
 3. Traverse navigation, route content, error actions, and not-found recovery with the keyboard only.
 4. Confirm focus is always visible, order is logical, and no keyboard trap occurs.
-5. Enable VoiceOver (`Cmd+F5`) with Safari; verify the banner, navigation name, main landmark, headings, and route-change announcements.
-6. Trigger the error boundary and confirm the fallback heading is focused and announced.
+5. Enable VoiceOver (`Cmd+F5`) with Safari and use `VO+Right`/`VO+Left` through the banner, named navigation, main landmark, and page `h1`.
+6. Navigate with `VO+Space` on each navigation item; confirm `aria-current="page"` is announced for the active route.
+7. Navigate to `/foundation`, an unknown path, and a forced error; confirm the title, focused heading, not-found recovery, and polite route-change announcement.
+8. Trigger the error boundary and confirm the fallback heading is focused and announced; confirm no stack trace is exposed.
+9. At 200% text resizing and 400% zoom, repeat the keyboard traversal and confirm reflow without loss of content or focus visibility.
 
-Expected: keyboard-only and VoiceOver + Safari critical journeys pass; automated axe checks report no critical or serious violations.
+Expected: keyboard-only and VoiceOver + Safari critical journeys pass; automated axe checks report no critical or serious violations. Automated keyboard/focus and axe checks are in `frontend/tests/keyboard.test.tsx` and `frontend/tests/a11y.test.tsx`; the VoiceOver pass requires a human reviewer on macOS Safari.
 
 ### 4.4 English and Spanish
 
@@ -154,14 +156,47 @@ Expected: a documented baseline exists for future regression comparison.
 
 Expected: the foundation introduces no security regression and documents deferred hosting controls.
 
-## 5. Reference Documents
+## 5. Verification record (2026-11-12)
+
+Automated gates were executed from the repository root:
+
+| Command | Result |
+|---|---|
+| `npm run lint` | Pass, zero errors/warnings |
+| `npm run format:check` | Pass |
+| `npm run typecheck` | Pass, including tests |
+| `npm run test` | Pass, 38 files / 133 tests |
+| `npm run test:coverage` | Pass, 90.46% statements / 82.35% branches / 89.01% functions / 92.12% lines; per-area thresholds pass |
+| `npm run build` | Pass |
+
+Hook gate (T100): `.husky/pre-commit` runs `npx lint-staged` then `npm run format:check`;
+`.husky/pre-push` runs `npm run typecheck && npm run test:coverage && npm run build`. The commands
+are the same canonical scripts used by CI, and `frontend/tests/scripts.test.ts` asserts the contract.
+Hook installation is verified by the root `prepare` script (`husky`) after `npm ci`. A staged
+`@typescript-eslint/no-explicit-any` violation was verified to make `lint-staged` exit non-zero and
+revert the staged change.
+
+Performance baseline (T101): initial load is approximately 520 kB raw / 160 kB gzip; `TasksPage`,
+`SettingsPage`, and `CommitmentsPage` are separate lazy chunks. The font strategy is the system font
+stack, so no render-blocking third-party font is requested. Full asset sizes are recorded in
+`frontend/README.md`.
+
+Security baseline (T102): no secrets, `dangerouslySetInnerHTML`, raw `innerHTML`, `eval`, or tokens in
+storage; external-link rules and deferred CSP/headers are documented in `frontend/README.md` and
+asserted by `frontend/tests/security.test.ts`.
+
+Manual-only verification still required before accessibility sign-off: the VoiceOver + Safari pass
+in 4.3 and visual inspection at the four viewport widths, 200% text resizing, and 400% zoom. These
+cannot be executed by the automated test runner.
+
+## 6. Reference Documents
 
 - [Data model](./data-model.md): entities, storage contracts, state transitions, and validation mapping.
 - [Contracts](./contracts/README.md): route, environment, i18n, UI, server-state, error/loading, storage, quality-gate, and future-backend boundaries.
 - [Implementation plan](./plan.md): phases and acceptance criteria.
 - [Specification](./spec.md): functional requirements, success criteria, and readiness gate.
 
-## 6. Scope Notes
+## 7. Scope Notes
 
 - Existing features 002–004 remain in place and must keep passing their tests.
 - The task model remains in `features/tasks` for this plan; its move to `entities/task` is follow-up debt.

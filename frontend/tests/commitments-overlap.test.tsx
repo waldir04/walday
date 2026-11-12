@@ -20,18 +20,30 @@ describe('Commitment overlap (US3)', () => {
     renderWithRouter(createElement(CommitmentsPage, null))
 
     // First commitment
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'First' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'First' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
     await waitFor(() => expect(screen.getByText('First')).toBeInTheDocument())
 
     // Overlapping second commitment
     const titleInput = screen.getByLabelText(/Title|Título/i)
     fireEvent.change(titleInput, { target: { value: 'Second' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:30' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:30' } })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:30' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:30' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
 
     await waitFor(() => {
@@ -48,17 +60,33 @@ describe('Commitment overlap (US3)', () => {
   it('does not flag back-to-back commitments as overlapping', async () => {
     renderWithRouter(createElement(CommitmentsPage, null))
 
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'First' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '09:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '10:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'First' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '09:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '10:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
     await waitFor(() => expect(screen.getByText('First')).toBeInTheDocument())
 
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), { target: { value: 'Second' } })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), { target: { value: '2026-11-10' } })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), { target: { value: '10:00' } })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), { target: { value: '11:00' } })
+    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
+      target: { value: 'Second' },
+    })
+    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
+      target: { value: '2026-11-10' },
+    })
+    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
+      target: { value: '10:00' },
+    })
+    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
+      target: { value: '11:00' },
+    })
     fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
 
     await waitFor(() => expect(screen.getByText('Second')).toBeInTheDocument())

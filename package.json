@@ -1,0 +1,32 @@
+{
+  "name": "walday",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "lint": "npm --prefix frontend run lint",
+    "format:check": "npm --prefix frontend run format:check",
+    "typecheck": "npm --prefix frontend run typecheck",
+    "test": "npm --prefix frontend run test",
+    "test:coverage": "npm --prefix frontend run test:coverage",
+    "build": "npm --prefix frontend run build",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.0"
+  },
+  "lint-staged": {
+    "frontend/**/*.{ts,tsx,js,json,md,css}": [
+      "npm --prefix frontend exec -- prettier --write"
+    ],
+    "frontend/**/*.{ts,tsx}": [
+      "npm --prefix frontend exec -- eslint --fix"
+    ]
+  }
+}

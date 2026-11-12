@@ -12,7 +12,28 @@ Existing features 002–004 are consumers of the foundation, not new scope. No n
 
 ## Implementation Status
 
-This plan is approved for documentation alignment. The companion artifacts (`data-model.md`, `research.md`, `quickstart.md`, and `contracts/README.md`) and the 102-task `tasks.md` are updated to match this plan and `spec.md`. No `.ts` or `.tsx` source code is changed by this documentation pass.
+**Implemented 2026-11-12.** Tasks T001–T073, T076–T078, and T080–T102 are complete. The companion
+artifacts (`data-model.md`, `research.md`, `quickstart.md`, and `contracts/README.md`) and the
+102-task `tasks.md` informed the implementation. Automated gates (`lint`, `format:check`,
+`typecheck`, `test`, `test:coverage`, `build`) pass after a clean install.
+
+Only manual-only verification remains: T074 (visual inspection at 360/768/1024/1440 widths, 200%
+text resizing, 400% zoom), T075 (VoiceOver + Safari journeys), and T079 (complete end-to-end manual
+quickstart run). The automated structural, contrast, keyboard, and axe checks that support those
+scenarios pass; a human reviewer must complete the visual and screen-reader sign-off.
+
+### Implementation Outcome
+
+- Strict TypeScript, test typechecking, aliases, lint boundaries, and the root script contract are in place.
+- The shell, routing factory, route announcer, not-found recovery, and route error surface are implemented.
+- Tokens are consolidated in `@theme`; shared primitives and error/loading/empty/success states exist.
+- English/Spanish resources have parity; all user-facing copy is externalized; English is the startup default with explicit preference override.
+- A single `QueryClient`/provider and query-key factory are configured without business queries.
+- Environment configuration is Zod-validated at bootstrap; invalid values fail fast before render.
+- Storage moved to entity slices and is validated with Zod schemas.
+- Coverage: 90.46% statements, 82.35% branches, 89.01% functions, 92.12% lines; per-area thresholds pass.
+- Production build: initial load approximately 520 kB raw / 160 kB gzip; non-initial routes are lazy chunks.
+- `frontend/README.md`, five ADRs, and the quickstart verification record document setup, architecture, and gates.
 
 ## Code Inspection Findings (2026-11-12)
 
@@ -334,7 +355,7 @@ package.json                     # root development tooling + delegating scripts
 | `contracts/README.md` | Created | Route, environment, i18n, UI primitive, server-state, error/loading/empty/success, storage validation, quality-gate, and future-backend-boundary contracts. |
 | `tasks.md` | Updated | 102 tasks across six user stories, Phase 10 companion alignment, and Phase 11 analysis remediation. |
 
-**Alignment result**: all companion artifacts now align with `spec.md`, `constitution.md`, and the production stack. No document is stale. No `.ts` or `.tsx` source code was changed by this documentation pass.
+**Alignment result**: all companion artifacts align with `spec.md`, `constitution.md`, and the production stack. Implementation status is recorded above; only manual visual/screen-reader checks remain.
 
 ## Risks and Mitigations
 

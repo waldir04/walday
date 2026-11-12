@@ -1,4 +1,5 @@
-export type Priority = 'low' | 'medium' | 'high'
+import type { Priority } from './schema'
+export type { Priority }
 
 export interface Task {
   id: string
@@ -11,7 +12,9 @@ export interface Task {
   createdAt: number
 }
 
-export function createTask(input: Omit<Task, 'id' | 'createdAt' | 'completed'>): Task {
+export function createTask(
+  input: Omit<Task, 'id' | 'createdAt' | 'completed'>,
+): Task {
   return {
     id: crypto.randomUUID(),
     title: input.title.trim(),
@@ -26,6 +29,6 @@ export function createTask(input: Omit<Task, 'id' | 'createdAt' | 'completed'>):
 
 export function validateTitle(title: string): string | null {
   const trimmed = title.trim()
-  if (trimmed.length < 3) return 'Title must be at least 3 characters'
+  if (trimmed.length < 3) return 'validation.titleMinLength'
   return null
 }

@@ -1,7 +1,10 @@
 import { describe, expect, it, beforeEach, vi } from 'vitest'
-import { loadPreferences, savePreferences } from '../src/shared/lib/preferencesStorage'
+import {
+  getDefaultPreferences,
+  loadPreferences,
+  savePreferences,
+} from '../src/entities/preferences'
 import { PREFERENCES_STORAGE_KEY } from '../src/shared/config/preferences'
-import { getDefaultPreferences } from '../src/entities/preferences/model/defaults'
 
 describe('preferences storage', () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react'
-import type { UserPreferences } from '../../../entities/preferences/model/types'
-import { getTimeZone } from '../../../shared/lib/dateTimeFormat'
+import type { UserPreferences } from '@/entities/preferences'
+import { getTimeZone } from '@/shared/lib/dateTimeFormat'
 import { usePreferences } from './usePreferences'
 
 export interface LocaleContextValue {
@@ -34,14 +34,20 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
     [preferences, updatePreferences, locale],
   )
 
-  return <PreferencesContext.Provider value={value}>{children}</PreferencesContext.Provider>
+  return (
+    <PreferencesContext.Provider value={value}>
+      {children}
+    </PreferencesContext.Provider>
+  )
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
 export function usePreferencesContext(): PreferencesContextValue {
   const ctx = useContext(PreferencesContext)
   if (!ctx) {
-    throw new Error('usePreferencesContext must be used within PreferencesProvider')
+    throw new Error(
+      'usePreferencesContext must be used within PreferencesProvider',
+    )
   }
   return ctx
 }

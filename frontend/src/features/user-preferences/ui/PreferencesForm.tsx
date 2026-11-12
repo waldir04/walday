@@ -1,22 +1,26 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { UserPreferences } from '../../../entities/preferences/model/types'
+import { SuccessState } from '@/shared/ui/SuccessState'
+import type { UserPreferences } from '@/entities/preferences'
 import {
   DATE_TIME_PRESENTATIONS,
   SUPPORTED_LANGUAGES,
   WEATHER_UNITS,
-  type DateTimePresentation,
-  type SupportedLanguage,
-  type WeatherUnit,
-} from '../../../shared/config/preferences'
+  isDateTimePresentation,
+  isSupportedLanguage,
+  isWeatherUnit,
+} from '@/shared/config/preferences'
 
 interface Props {
   preferences: UserPreferences
   onSave: (_preferences: UserPreferences) => void
 }
 
-export function PreferencesForm({ preferences: initialPreferences, onSave }: Props) {
-  const { t } = useTranslation()
+export function PreferencesForm({
+  preferences: initialPreferences,
+  onSave,
+}: Props) {
+  const { t } = useTranslation('preferences')
   const [draft, setDraft] = useState<UserPreferences>(initialPreferences)
   const [feedback, setFeedback] = useState('')
 
@@ -32,7 +36,11 @@ export function PreferencesForm({ preferences: initialPreferences, onSave }: Pro
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-4 max-w-xl space-y-4" aria-label={t('preferences.heading')}>
+    <form
+      onSubmit={handleSubmit}
+      className="mt-4 max-w-xl space-y-4"
+      aria-label={t('preferences.heading')}
+    >
       <div>
         <label htmlFor="pref-language" className="block text-sm font-medium">
           {t('preferences.language')}
@@ -41,9 +49,12 @@ export function PreferencesForm({ preferences: initialPreferences, onSave }: Pro
           id="pref-language"
           className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
           value={draft.language}
-          onChange={(e) =>
-            updateDraft({ ...draft, language: e.target.value as SupportedLanguage })
-          }
+          onChange={(e) => {
+            const value = e.target.value
+            if (isSupportedLanguage(value)) {
+              updateDraft({ ...draft, language: value })
+            }
+          }}
         >
           {SUPPORTED_LANGUAGES.map((lang) => (
             <option key={lang} value={lang}>
@@ -61,12 +72,12 @@ export function PreferencesForm({ preferences: initialPreferences, onSave }: Pro
           id="pref-datetime"
           className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
           value={draft.dateTimePresentation}
-          onChange={(e) =>
-            updateDraft({
-              ...draft,
-              dateTimePresentation: e.target.value as DateTimePresentation,
-            })
-          }
+          onChange={(e) => {
+            const value = e.target.value
+            if (isDateTimePresentation(value)) {
+              updateDraft({ ...draft, dateTimePresentation: value })
+            }
+          }}
         >
           {DATE_TIME_PRESENTATIONS.map((opt) => (
             <option key={opt} value={opt}>
@@ -84,7 +95,12 @@ export function PreferencesForm({ preferences: initialPreferences, onSave }: Pro
           id="pref-units"
           className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
           value={draft.weatherUnits}
-          onChange={(e) => updateDraft({ ...draft, weatherUnits: e.target.value as WeatherUnit })}
+          onChange={(e) => {
+            const value = e.target.value
+            if (isWeatherUnit(value)) {
+              updateDraft({ ...draft, weatherUnits: value })
+            }
+          }}
         >
           {WEATHER_UNITS.map((unit) => (
             <option key={unit} value={unit}>
@@ -115,14 +131,13 @@ export function PreferencesForm({ preferences: initialPreferences, onSave }: Pro
       </div>
 
       <div className="flex items-center gap-3">
-        <button type="submit" className="rounded bg-gray-900 px-4 py-2 text-white">
+        <button
+          type="submit"
+          className="rounded bg-gray-900 px-4 py-2 text-white"
+        >
           {t('preferences.heading')}
         </button>
-        {feedback ? (
-          <p role="status" aria-live="polite" className="text-sm text-green-700">
-            {feedback}
-          </p>
-        ) : null}
+        {feedback ? <SuccessState message={feedback} /> : null}
       </div>
     </form>
   )

@@ -1,0 +1,66 @@
+{
+  "app": {
+    "name": "Walday",
+    "title": "Walday"
+  },
+  "nav": {
+    "ariaLabel": "Navegación principal",
+    "home": "Inicio",
+    "foundation": "Base",
+    "tasks": "Tareas",
+    "settings": "Configuración",
+    "commitments": "Compromisos"
+  },
+  "foundation": {
+    "title": "Base",
+    "heading": "Base de la aplicación",
+    "description": "Este marcador confirma que la estructura, la navegación y el enrutamiento funcionan. Las funciones de negocio siguen disponibles desde la navegación."
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "heading": "No pudimos encontrar esa página",
+    "description": "La página solicitada no existe o se ha movido.",
+    "home": "Ir a la página de inicio"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "heading": "Algo salió mal",
+    "description": "La aplicación no pudo mostrar este contenido. Inténtalo de nuevo o vuelve al inicio.",
+    "routeHeading": "No se pudo cargar esta página",
+    "routeDescription": "Ocurrió un error inesperado al cargar esta página.",
+    "retry": "Intentar de nuevo",
+    "reload": "Recargar la página",
+    "home": "Ir a la página de inicio",
+    "chunkHeading": "No se pudo cargar esta página",
+    "chunkDescription": "Comprueba tu conexión e intenta cargar la página de nuevo."
+  },
+  "loading": {
+    "label": "Cargando contenido",
+    "announcement": "Contenido cargado"
+  },
+  "empty": {
+    "heading": "Aún no hay nada aquí",
+    "description": "No hay contenido para mostrar."
+  },
+  "success": {
+    "default": "Guardado correctamente"
+  },
+  "actions": {
+    "add": "Agregar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "yes": "Sí",
+    "back": "Volver"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido principal",
+    "routeChanged": "Navegaste a {{page}}",
+    "languageChanged": "Idioma cambiado a {{language}}"
+  },
+  "configError": {
+    "heading": "Walday no pudo iniciarse",
+    "description": "La configuración de la aplicación no es válida. Revisa las variables de entorno VITE_* documentadas e inténtalo de nuevo."
+  }
+}

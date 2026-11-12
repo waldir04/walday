@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import type { ReactElement } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -87,8 +93,12 @@ describe('Commitments UI (US1)', () => {
       'walday:commitments',
       JSON.stringify([
         {
-          id: '1', title: 'Restored meeting', date: '2026-11-10',
-          startTime: '09:00', endTime: '10:00', type: 'fixed',
+          id: '1',
+          title: 'Restored meeting',
+          date: '2026-11-10',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'fixed',
         },
       ]),
     )

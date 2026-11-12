@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
-import { useCommitments } from '../src/features/commitments/model/useCommitments'
+import { useCommitments } from '../src/features/commitments'
 
 describe('Commitment explicit control (US2)', () => {
   beforeEach(() => {
@@ -22,6 +22,7 @@ describe('Commitment explicit control (US2)', () => {
       result.current.createCommitment(baseDraft)
     })
     const before = result.current.commitments[0]
+    if (!before) throw new Error('expected a created commitment')
 
     // Merely re-reading/persisting does not alter the stored time.
     expect(before.startTime).toBe('09:00')
@@ -46,6 +47,7 @@ describe('Commitment explicit control (US2)', () => {
       result.current.createCommitment({ ...baseDraft, type: 'flexible' })
     })
     const before = result.current.commitments[0]
+    if (!before) throw new Error('expected a created commitment')
     expect(before.type).toBe('flexible')
     expect(before.startTime).toBe('09:00')
     expect(before.endTime).toBe('10:00')
@@ -66,14 +68,21 @@ describe('Commitment explicit control (US2)', () => {
     const { result } = renderHook(() => useCommitments())
     act(() => {
       result.current.createCommitment(baseDraft)
-      result.current.createCommitment({ ...baseDraft, id: 'manual-2', title: 'Second', startTime: '11:00', endTime: '12:00' })
+      result.current.createCommitment({
+        ...baseDraft,
+        title: 'Second',
+        startTime: '11:00',
+        endTime: '12:00',
+      })
     })
     expect(result.current.commitments).toHaveLength(2)
 
     act(() => {
-      result.current.deleteCommitment(result.current.commitments[0].id)
+      const first = result.current.commitments[0]
+      if (!first) throw new Error('expected a commitment to delete')
+      result.current.deleteCommitment(first.id)
     })
     expect(result.current.commitments).toHaveLength(1)
-    expect(result.current.commitments[0].title).toBe('Second')
+    expect(result.current.commitments[0]?.title).toBe('Second')
   })
 })
