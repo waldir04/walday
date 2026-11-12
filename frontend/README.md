@@ -100,6 +100,33 @@ page heading and announce through a polite live region.
 The `/foundation` placeholder can be removed once the first business feature provides a replacement
 surface.
 
+## User preferences (feature 003)
+
+`/settings` is the guest preference surface: interface language (English, Spanish, or "Use browser
+language"), date and time presentation (`compact`, `standard`, `full`), weather units (`metric` or
+`imperial`), and an optional weather location.
+
+- **Storage**: `localStorage` key `walday:preferences`, version `1` inside a versioned envelope
+  `{ version, revision, updatedAt, preferences }`. Reads validate each field independently, migrate
+  the v0 bare record, preserve unsupported newer versions, and never write until an explicit save
+  (with replacement confirmation when the stored payload could not be fully restored).
+- **Language resolution**: explicit saved language, else the first supported `navigator.languages`
+  entry by base subtag (case-insensitive), else English. `language: null` means the browser-derived
+  choice and is never rewritten as explicit by unrelated saves. Formatting locale keeps the
+  browser's regional variant, or falls back to `en-US` / `es-ES`.
+- **Consumer contract**: features read applied preferences, effective language, language source,
+  formatting locale, device timezone, and persistence status through
+  `entities/preferences` (`usePreferences`). There is no setter and consumers never read storage.
+- **Location dependency**: location search uses the frontend `LocationResolver` port. Production
+  calls the backend weather proxy at `VITE_API_BASE_URL/api/weather/locations`; it never calls a
+  weather provider directly. Until that proxy is deployed, search reports unavailable while saved
+  locations remain displayable and clearable. See
+  [ADR 0007](../docs/adr/0007-browser-language-resolution.md) and
+  [ADR 0008](../docs/adr/0008-weather-location-proxy.md).
+
+Preference tests live in `frontend/tests/preferences-*.test.*`, with deterministic storage, clock,
+lock, and location-resolver fakes.
+
 ## Architecture (FSD)
 
 Layers flow downward only: `app → pages → widgets → features → entities → shared`.

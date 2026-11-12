@@ -3,7 +3,11 @@ import { createRoot } from 'react-dom/client'
 import '../index.css'
 import '@/shared/i18n'
 import i18n, { applyLanguage } from '@/shared/i18n'
-import { loadPreferences } from '@/entities/preferences'
+import {
+  getDefaultPreferences,
+  loadPreferences,
+  resolveLanguage,
+} from '@/entities/preferences'
 import { initEnv } from '@/shared/config/env'
 import { App } from './App'
 
@@ -55,7 +59,12 @@ export function bootstrap({
     return false
   }
 
-  applyLanguage(loadPreferences().language)
+  const loaded = loadPreferences()
+  const preferences =
+    loaded.kind === 'restored' || loaded.kind === 'partial'
+      ? loaded.preferences
+      : getDefaultPreferences()
+  applyLanguage(resolveLanguage(preferences.language).language)
   installGlobalErrorHandlers()
 
   createRoot(root).render(

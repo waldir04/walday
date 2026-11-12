@@ -13,6 +13,8 @@ import { NotFoundPage } from '@/pages/NotFoundPage'
 import { Loading } from '@/shared/ui/Loading'
 // eslint-disable-next-line no-restricted-imports -- tasks/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
 import { TasksPageSkeleton } from '@/features/tasks/skeleton'
+// eslint-disable-next-line no-restricted-imports -- preferences/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
+import { PreferencesPageSkeleton } from '@/features/user-preferences/skeleton'
 import { RouteError } from './RouteError'
 
 const TasksPage = lazy(() =>
@@ -40,6 +42,10 @@ function LazyRoute({ children }: { children: ReactNode }) {
 
 function TasksLazyRoute({ children }: { children: ReactNode }) {
   return <Suspense fallback={<TasksPageSkeleton />}>{children}</Suspense>
+}
+
+function SettingsLazyRoute({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<PreferencesPageSkeleton />}>{children}</Suspense>
 }
 
 export const routes: RouteObject[] = [
@@ -76,9 +82,9 @@ export const routes: RouteObject[] = [
       {
         path: 'settings',
         element: (
-          <LazyRoute>
+          <SettingsLazyRoute>
             <SettingsPage />
-          </LazyRoute>
+          </SettingsLazyRoute>
         ),
         handle: {
           titleKey: 'title',

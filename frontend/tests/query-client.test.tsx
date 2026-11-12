@@ -7,20 +7,20 @@ import {
 import { describe, expect, it } from 'vitest'
 import { queryClient, QUERY_DEFAULTS } from '../src/app/queryClient'
 import { queryKeys } from '../src/app/queryKeys'
-import { usePreferencesContext } from '../src/features/user-preferences'
+import { usePreferences } from '../src/entities/preferences'
 import { AppProviders } from '../src/app/providers'
 
 function QueryClientProbe() {
   const client = useQueryClient()
-  const preferences = usePreferencesContext()
+  const preferences = usePreferences()
   return (
     <output data-testid="probe">
-      {String(client === queryClient)}:{preferences.locale.effectiveLanguage}
+      {String(client === queryClient)}:{preferences.effectiveLanguage}
     </output>
   )
 }
 
-describe('server-state foundation (US6)', () => {
+describe('server-state foundation', () => {
   it('configures one QueryClient with deliberate defaults', () => {
     expect(queryClient).toBeInstanceOf(QueryClient)
     expect(queryClient.getDefaultOptions().queries?.staleTime).toBe(

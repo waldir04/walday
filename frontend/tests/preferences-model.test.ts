@@ -1,69 +1,69 @@
-import { describe, expect, it, vi, afterEach } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import {
   getDefaultPreferences,
+  resolveDateTimePresentation,
   resolveLanguage,
-  sanitizePreferences,
+  resolveWeatherUnits,
 } from '../src/entities/preferences'
 
-afterEach(() => {
-  vi.unstubAllGlobals()
+describe('language resolution', () => {
+  it('prefers an explicit language over the browser languages', () => {
+    const resolution = resolveLanguage('en', ['es-ES', 'en-US'])
+    expect(resolution).toEqual({
+      language: 'en',
+      source: 'explicit',
+      formattingLocale: 'en-US',
+    })
+  })
+
+  it('uses the first supported browser language in preference order', () => {
+    const resolution = resolveLanguage(null, ['fr-FR', 'es-MX', 'en-US'])
+    expect(resolution.language).toBe('es')
+    expect(resolution.source).toBe('browser')
+    expect(resolution.formattingLocale).toBe('es-MX')
+  })
+
+  it('skips unsupported entries and falls back to English', () => {
+    const resolution = resolveLanguage(undefined, ['fr-FR', 'de-DE'])
+    expect(resolution).toEqual({
+      language: 'en',
+      source: 'browser',
+      formattingLocale: 'en-US',
+    })
+  })
+
+  it('matches regional variants by base subtag case-insensitively', () => {
+    expect(resolveLanguage(null, ['ES-mx']).language).toBe('es')
+    expect(resolveLanguage(null, ['en-GB']).language).toBe('en')
+    expect(resolveLanguage(null, ['es-419']).language).toBe('es')
+  })
+
+  it('treats an invalid stored language as absent', () => {
+    const resolution = resolveLanguage('fr', ['es-ES'])
+    expect(resolution.language).toBe('es')
+    expect(resolution.source).toBe('browser')
+  })
+
+  it('derives the documented formatting locale when the browser has no variant', () => {
+    expect(resolveLanguage('es', ['en-US']).formattingLocale).toBe('es-ES')
+    expect(resolveLanguage('en', []).formattingLocale).toBe('en-US')
+  })
 })
 
-describe('preferences defaults and resolution', () => {
-  it('resolves user language over browser locale', () => {
-    vi.stubGlobal('navigator', { language: 'es-ES' })
-    expect(resolveLanguage('en')).toBe('en')
-  })
-
-  it('defaults to English when no explicit preference exists', () => {
-    vi.stubGlobal('navigator', { language: 'es-MX' })
-    expect(resolveLanguage(undefined)).toBe('en')
-  })
-
-  it('falls back to English for unsupported browser locale', () => {
-    vi.stubGlobal('navigator', { language: 'fr-FR' })
-    expect(resolveLanguage(undefined)).toBe('en')
-  })
-
-  it('returns sensible defaults', () => {
-    vi.stubGlobal('navigator', { language: 'fr-FR' })
-    const prefs = getDefaultPreferences()
-    expect(prefs.language).toBe('en')
-    expect(prefs.weatherUnits).toBe('metric')
-    expect(prefs.weatherLocation).toBeNull()
-    expect(prefs.dateTimePresentation).toBe('locale-medium')
-  })
-})
-
-describe('sanitizePreferences', () => {
-  it('falls back to defaults for invalid input', () => {
-    vi.stubGlobal('navigator', { language: 'fr-FR' })
-    expect(sanitizePreferences(null)).toEqual(getDefaultPreferences())
-  })
-
-  it('normalizes unsupported values and sanitizes location', () => {
-    vi.stubGlobal('navigator', { language: 'en-US' })
-    const result = sanitizePreferences({
-      language: 'de',
-      dateTimePresentation: 'unknown',
-      weatherUnits: 'kelvin',
-      weatherLocation: { name: '  Madrid  ' },
+describe('defaults and value resolution', () => {
+  it('uses implicit language and standard presentation by default', () => {
+    expect(getDefaultPreferences()).toEqual({
+      language: null,
+      dateTimePresentation: 'standard',
+      weatherUnits: 'metric',
+      weatherLocation: null,
     })
-    expect(result.language).toBe('en')
-    expect(result.dateTimePresentation).toBe('locale-medium')
-    expect(result.weatherUnits).toBe('metric')
-    expect(result.weatherLocation).toEqual({ name: 'Madrid' })
   })
 
-  it('drops invalid weather location', () => {
-    const result = sanitizePreferences({
-      language: 'es',
-      dateTimePresentation: 'locale-short',
-      weatherUnits: 'imperial',
-      weatherLocation: { name: '   ' },
-    })
-    expect(result.language).toBe('es')
-    expect(result.weatherUnits).toBe('imperial')
-    expect(result.weatherLocation).toBeNull()
+  it('falls back per field for invalid values', () => {
+    expect(resolveDateTimePresentation('unknown')).toBe('standard')
+    expect(resolveWeatherUnits('kelvin')).toBe('metric')
+    expect(resolveDateTimePresentation('full')).toBe('full')
+    expect(resolveWeatherUnits('imperial')).toBe('imperial')
   })
 })

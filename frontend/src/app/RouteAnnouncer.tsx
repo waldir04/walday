@@ -15,9 +15,10 @@ function isRouteHandle(value: unknown): value is RouteHandle {
 export function RouteAnnouncer() {
   const location = useLocation()
   const matches = useMatches()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [announcement, setAnnouncement] = useState('')
-  const isFirstRender = useRef(true)
+  const previousPath = useRef(location.pathname)
+  const previousLanguage = useRef(i18n.language)
 
   const handle = [...matches]
     .reverse()
@@ -31,10 +32,21 @@ export function RouteAnnouncer() {
   useEffect(() => {
     document.title = title
 
-    if (isFirstRender.current) {
-      isFirstRender.current = false
+    if (previousLanguage.current !== i18n.language) {
+      previousLanguage.current = i18n.language
+      setAnnouncement(
+        t('a11y.languageChanged', {
+          language: t(`languageNames.${i18n.language}`),
+        }),
+      )
       return
     }
+
+    // A language change re-renders the translation function and updates the
+    // document title, but it is not a navigation. Moving focus or announcing a
+    // route change here would be an unexpected focus movement.
+    if (previousPath.current === location.pathname) return
+    previousPath.current = location.pathname
 
     const main = document.getElementById('main-content')
     const heading = main?.querySelector('h1')
@@ -44,7 +56,7 @@ export function RouteAnnouncer() {
       main.focus()
     }
     setAnnouncement(t('a11y.routeChanged', { page: title }))
-  }, [location.pathname, title, t])
+  }, [location.pathname, title, t, i18n.language])
 
   return (
     <p aria-live="polite" aria-atomic="true" className="sr-only">

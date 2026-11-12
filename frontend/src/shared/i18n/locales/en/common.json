@@ -62,5 +62,9 @@
   "configError": {
     "heading": "Walday could not start",
     "description": "The application configuration is invalid. Check the documented VITE_* environment variables and try again."
+  },
+  "languageNames": {
+    "en": "English",
+    "es": "Español"
   }
 }

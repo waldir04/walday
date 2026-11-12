@@ -1,40 +1,57 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  getDefaultPreferences,
-  loadPreferences,
-  savePreferences,
-} from '../src/entities/preferences'
+import { loadPreferences, savePreferences } from '../src/entities/preferences'
 import { loadCommitments, saveCommitments } from '../src/entities/commitment'
 import { loadGuestTaskStore, saveGuestTaskStore } from '../src/entities/task'
 import { PREFERENCES_STORAGE_KEY } from '../src/shared/config/preferences'
 import { COMMITMENTS_STORAGE_KEY } from '../src/shared/config/commitments'
+import { makeEnvelope, makePreferences } from './helpers/preferencesFixtures'
 
-describe('storage schema validation (US6)', () => {
+describe('storage schema validation', () => {
   beforeEach(() => {
     localStorage.clear()
     vi.unstubAllGlobals()
   })
 
-  it('returns defaults for corrupt preference JSON and invalid preference shapes', () => {
+  it('classifies corrupt and partially invalid preference payloads', () => {
     localStorage.setItem(PREFERENCES_STORAGE_KEY, '{not-json')
-    expect(loadPreferences()).toEqual(getDefaultPreferences())
+    expect(loadPreferences()).toMatchObject({ kind: 'corrupt' })
 
     localStorage.setItem(
       PREFERENCES_STORAGE_KEY,
-      JSON.stringify({ language: 'fr' }),
+      JSON.stringify({
+        version: 1,
+        preferences: { language: 'fr' },
+      }),
     )
-    expect(loadPreferences()).toEqual(getDefaultPreferences())
+    const partial = loadPreferences()
+    expect(partial.kind).toBe('partial')
+    if (partial.kind !== 'partial') return
+    expect(partial.preferences.language).toBeNull()
+    expect(partial.invalidFields).toContain('weatherUnits')
   })
 
-  it('round-trips valid preferences', () => {
-    const preferences = {
-      language: 'es' as const,
-      dateTimePresentation: 'locale-long' as const,
-      weatherUnits: 'imperial' as const,
-      weatherLocation: { name: 'Madrid' },
-    }
-    savePreferences(preferences)
-    expect(loadPreferences()).toEqual(preferences)
+  it('round-trips valid preferences inside a versioned envelope', async () => {
+    const preferences = makePreferences({
+      language: 'es',
+      dateTimePresentation: 'full',
+      weatherUnits: 'imperial',
+      weatherLocation: {
+        providerPlaceId: '3117735',
+        label: 'Madrid, Community of Madrid, and Spain',
+        latitude: 40.4165,
+        longitude: -3.7026,
+      },
+    })
+    localStorage.setItem(
+      PREFERENCES_STORAGE_KEY,
+      JSON.stringify(makeEnvelope(preferences)),
+    )
+    const loaded = loadPreferences()
+    expect(loaded).toMatchObject({ kind: 'restored', preferences })
+
+    await expect(
+      savePreferences(preferences, { revision: 'revision-a' }, 'automatic'),
+    ).resolves.toMatchObject({ ok: true })
   })
 
   it('drops invalid commitments while keeping valid records', () => {
@@ -70,6 +87,8 @@ describe('storage schema validation (US6)', () => {
     )
     const loaded = loadCommitments()
     expect(loaded.map((item) => item.id)).toEqual(['1'])
+    saveCommitments(loaded)
+    expect(loadCommitments()).toEqual(loaded)
   })
 
   it('restores valid tasks and quarantines invalid task records', () => {
@@ -109,10 +128,12 @@ describe('storage schema validation (US6)', () => {
 
   it('never throws for unavailable storage', async () => {
     vi.stubGlobal('localStorage', undefined)
-    expect(loadPreferences()).toEqual(getDefaultPreferences())
+    expect(loadPreferences()).toEqual({ kind: 'unavailable' })
     expect(loadCommitments()).toEqual([])
     expect(loadGuestTaskStore()).toEqual({ kind: 'unavailable' })
-    expect(() => savePreferences(getDefaultPreferences())).not.toThrow()
+    await expect(
+      savePreferences(makePreferences(), { revision: 'unknown' }, 'automatic'),
+    ).resolves.toMatchObject({ ok: false, code: 'STORAGE_UNAVAILABLE' })
     expect(() => saveCommitments([])).not.toThrow()
     await expect(
       saveGuestTaskStore([], 'unknown', 'normal'),

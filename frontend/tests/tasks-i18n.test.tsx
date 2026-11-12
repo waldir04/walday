@@ -109,14 +109,15 @@ describe('runtime language switching', () => {
     expect(screen.getByText('Include metrics')).toBeInTheDocument()
     expect(screen.getByText('Prioridad: Alta')).toBeInTheDocument()
 
-    const expectedDate = new Intl.DateTimeFormat('es', {
+    const expectedDate = new Intl.DateTimeFormat('en-US', {
       dateStyle: 'medium',
-    }).format(new Date(2026, 10, 20, 12))
+      timeZone: 'UTC',
+    }).format(new Date(Date.UTC(2026, 10, 20, 12)))
     expect(
       screen.getByText(`Fecha límite: ${expectedDate}`),
     ).toBeInTheDocument()
     expect(
-      screen.getByText(/Duración: 1 hora y 30 minutos/),
+      screen.getByText(/Duración: 1 hour and 30 minutes/),
     ).toBeInTheDocument()
     expect(screen.queryByText(/tasks\.[a-zA-Z]/)).not.toBeInTheDocument()
   })

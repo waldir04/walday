@@ -1,144 +1,190 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SuccessState } from '@/shared/ui/SuccessState'
-import type { UserPreferences } from '@/entities/preferences'
-import {
-  DATE_TIME_PRESENTATIONS,
-  SUPPORTED_LANGUAGES,
-  WEATHER_UNITS,
-  isDateTimePresentation,
-  isSupportedLanguage,
-  isWeatherUnit,
-} from '@/shared/config/preferences'
+import { useBlocker } from 'react-router-dom'
+import { ConfirmDialog } from '@/shared/ui/ConfirmDialog'
+import { Button } from '@/shared/ui/Button'
+import { usePreferencesController } from '../model/PreferencesRoot'
+import { LanguageField } from './LanguageField'
+import { DateTimeField } from './DateTimeField'
+import { WeatherUnitsField } from './WeatherUnitsField'
+import { WeatherLocationField } from './WeatherLocationField'
+import { DiscardDraftDialog } from './DiscardDraftDialog'
 
-interface Props {
-  preferences: UserPreferences
-  onSave: (_preferences: UserPreferences) => void
+function noticeColor(kind: string): string {
+  switch (kind) {
+    case 'success':
+      return 'text-success'
+    case 'session-only':
+      return 'text-warning'
+    case 'conflict':
+    case 'error':
+      return 'text-danger'
+    default:
+      return 'text-text-muted'
+  }
 }
 
-export function PreferencesForm({
-  preferences: initialPreferences,
-  onSave,
-}: Props) {
+export function PreferencesForm() {
   const { t } = useTranslation('preferences')
-  const [draft, setDraft] = useState<UserPreferences>(initialPreferences)
-  const [feedback, setFeedback] = useState('')
+  const controller = usePreferencesController()
+  const {
+    draft,
+    errors,
+    pending,
+    dirty,
+    notice,
+    replacePromptOpen,
+    setLanguage,
+    setDateTimePresentation,
+    setWeatherUnits,
+    requestSave,
+    cancelDraft,
+    confirmReplace,
+    cancelReplace,
+    reportDialogActive,
+  } = controller
 
-  function updateDraft(next: UserPreferences) {
-    setDraft(next)
-    setFeedback('')
-  }
+  const blocker = useBlocker(dirty)
+  const discardOpen = blocker.state === 'blocked'
+
+  useEffect(() => {
+    if (errors.locationQuery) {
+      document.getElementById('pref-location-query')?.focus()
+    } else if (errors.weatherLocation) {
+      document.getElementById('pref-location-query')?.focus()
+    }
+  }, [errors.locationQuery, errors.weatherLocation])
+
+  useEffect(() => {
+    reportDialogActive(blocker.state === 'blocked')
+  }, [blocker.state, reportDialogActive])
+
+  useEffect(() => {
+    if (!dirty) return
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [dirty])
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    onSave(draft)
-    setFeedback(t('preferences.saveFeedback'))
+    void requestSave()
   }
 
+  const errorEntries = [
+    errors.locationQuery
+      ? { field: 'locationQuery', message: t(errors.locationQuery) }
+      : null,
+    errors.weatherLocation
+      ? { field: 'weatherLocation', message: t(errors.weatherLocation) }
+      : null,
+  ].filter(
+    (entry): entry is { field: string; message: string } => entry !== null,
+  )
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mt-4 max-w-xl space-y-4"
-      aria-label={t('preferences.heading')}
-    >
-      <div>
-        <label htmlFor="pref-language" className="block text-sm font-medium">
-          {t('preferences.language')}
-        </label>
-        <select
-          id="pref-language"
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
+    <>
+      <form
+        onSubmit={handleSubmit}
+        noValidate
+        aria-label={t('form.label')}
+        className="mt-4 max-w-xl space-y-section"
+      >
+        {errorEntries.length > 0 ? (
+          <div
+            role="alert"
+            tabIndex={-1}
+            className="rounded-card border border-danger bg-surface p-3"
+          >
+            <h2 className="text-body font-semibold text-danger">
+              {t('validation.summaryHeading')}
+            </h2>
+            <ul className="mt-1 list-disc pl-5 text-body text-text">
+              {errorEntries.map((entry) => (
+                <li key={entry.field}>{entry.message}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        <LanguageField
           value={draft.language}
-          onChange={(e) => {
-            const value = e.target.value
-            if (isSupportedLanguage(value)) {
-              updateDraft({ ...draft, language: value })
-            }
-          }}
-        >
-          {SUPPORTED_LANGUAGES.map((lang) => (
-            <option key={lang} value={lang}>
-              {t(`preferences.options.language.${lang}`)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="pref-datetime" className="block text-sm font-medium">
-          {t('preferences.dateTimePresentation')}
-        </label>
-        <select
-          id="pref-datetime"
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-          value={draft.dateTimePresentation}
-          onChange={(e) => {
-            const value = e.target.value
-            if (isDateTimePresentation(value)) {
-              updateDraft({ ...draft, dateTimePresentation: value })
-            }
-          }}
-        >
-          {DATE_TIME_PRESENTATIONS.map((opt) => (
-            <option key={opt} value={opt}>
-              {t(`preferences.options.dateTimePresentation.${opt}`)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="pref-units" className="block text-sm font-medium">
-          {t('preferences.weatherUnits')}
-        </label>
-        <select
-          id="pref-units"
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-          value={draft.weatherUnits}
-          onChange={(e) => {
-            const value = e.target.value
-            if (isWeatherUnit(value)) {
-              updateDraft({ ...draft, weatherUnits: value })
-            }
-          }}
-        >
-          {WEATHER_UNITS.map((unit) => (
-            <option key={unit} value={unit}>
-              {t(`preferences.options.weatherUnits.${unit}`)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="pref-location" className="block text-sm font-medium">
-          {t('preferences.weatherLocation')}
-        </label>
-        <input
-          id="pref-location"
-          type="text"
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-          placeholder={t('preferences.weatherLocationPlaceholder')}
-          value={draft.weatherLocation?.name ?? ''}
-          onChange={(e) => {
-            const name = e.target.value
-            updateDraft({
-              ...draft,
-              weatherLocation: name.trim() ? { name } : null,
-            })
-          }}
+          effectiveLanguage={controller.effectiveLanguage}
+          onChange={setLanguage}
+          disabled={pending}
         />
-      </div>
+        <DateTimeField
+          value={draft.dateTimePresentation}
+          onChange={setDateTimePresentation}
+          disabled={pending}
+        />
+        <WeatherUnitsField
+          value={draft.weatherUnits}
+          onChange={setWeatherUnits}
+          disabled={pending}
+        />
+        <WeatherLocationField />
 
-      <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          className="rounded bg-gray-900 px-4 py-2 text-white"
+        <div className="flex flex-wrap items-center gap-3">
+          {dirty ? (
+            <p className="text-caption font-medium text-warning">
+              {t('draft.unsaved')}
+            </p>
+          ) : null}
+          <Button type="submit" disabled={pending} aria-busy={pending}>
+            {pending ? t('actions.saving') : t('actions.save')}
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={pending || !dirty}
+            onClick={cancelDraft}
+          >
+            {t('actions.cancel')}
+          </Button>
+        </div>
+
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="min-h-6 text-body"
         >
-          {t('preferences.heading')}
-        </button>
-        {feedback ? <SuccessState message={feedback} /> : null}
-      </div>
-    </form>
+          {notice ? (
+            <p className={noticeColor(notice.kind)}>{t(notice.messageKey)}</p>
+          ) : null}
+        </div>
+      </form>
+
+      <DiscardDraftDialog
+        open={discardOpen}
+        onStay={() => {
+          reportDialogActive(false)
+          if (blocker.state === 'blocked') blocker.reset()
+        }}
+        onDiscard={() => {
+          reportDialogActive(false)
+          cancelDraft()
+          if (blocker.state === 'blocked') blocker.proceed()
+        }}
+      />
+
+      <ConfirmDialog
+        open={replacePromptOpen}
+        heading={t('dialogs.replace.heading')}
+        description={t('dialogs.replace.description')}
+        confirmLabel={t('dialogs.replace.confirm')}
+        cancelLabel={t('dialogs.replace.cancel')}
+        danger
+        onConfirm={() => {
+          void confirmReplace()
+        }}
+        onCancel={cancelReplace}
+      />
+    </>
   )
 }

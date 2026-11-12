@@ -1,6 +1,6 @@
 # ADR 0004: Mechanism-Only Language Switching
 
-- **Status**: Accepted
+- **Status**: Superseded by [ADR 0007](./0007-browser-language-resolution.md)
 - **Date**: 2026-11-12
 
 ## Context

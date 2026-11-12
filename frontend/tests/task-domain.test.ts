@@ -185,7 +185,7 @@ describe('date-only due dates', () => {
     const expected = new Intl.DateTimeFormat('en', {
       dateStyle: 'medium',
     }).format(new Date(2026, 10, 20, 12))
-    expect(formatDueDate('2026-11-20', 'en', 'locale-medium')).toBe(expected)
+    expect(formatDueDate('2026-11-20', 'en', 'medium')).toBe(expected)
   })
 })
 
@@ -517,9 +517,9 @@ describe('formatting edge cases', () => {
   })
 
   it('returns the raw value when formatting an invalid date', () => {
-    expect(
-      formatDueDate('not-a-date' as LocalDate, 'en', 'locale-medium'),
-    ).toBe('not-a-date')
+    expect(formatDueDate('not-a-date' as LocalDate, 'en', 'medium')).toBe(
+      'not-a-date',
+    )
   })
 
   it('derives today from the current local date by default', () => {

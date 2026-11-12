@@ -1,46 +1,105 @@
-import type { UserPreferences, WeatherLocation } from './types'
+import { getDefaultPreferences } from './defaults'
 import {
-  getDefaultPreferences,
-  resolveDateTimePresentation,
-  resolveLanguage,
-  resolveWeatherUnits,
-} from './defaults'
+  dateTimePresentationSchema,
+  languageSchema,
+  userPreferencesSchema,
+  weatherLocationSchema,
+  weatherUnitsSchema,
+} from './schema'
+import type { PreferenceField, UserPreferences } from './types'
+
+export interface PreferenceRecoveryResult {
+  preferences: UserPreferences
+  invalidFields: PreferenceField[]
+  notRestoredFields: PreferenceField[]
+}
+
+const DEFAULT_FIELDS: PreferenceField[] = [
+  'language',
+  'dateTimePresentation',
+  'weatherUnits',
+  'weatherLocation',
+]
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
-function sanitizeWeatherLocation(value: unknown): WeatherLocation | null {
-  if (!isRecord(value)) return null
-  const name = value.name
-  if (typeof name !== 'string') return null
-  const trimmed = name.trim()
-  if (!trimmed) return null
-  return { name: trimmed }
-}
-
-export function sanitizePreferences(input: unknown): UserPreferences {
-  const defaults = getDefaultPreferences()
-  if (!isRecord(input)) return defaults
-
-  const language =
-    typeof input.language === 'string'
-      ? resolveLanguage(input.language)
-      : resolveLanguage(undefined)
-  const dateTimePresentation =
-    typeof input.dateTimePresentation === 'string'
-      ? resolveDateTimePresentation(input.dateTimePresentation)
-      : defaults.dateTimePresentation
-  const weatherUnits =
-    typeof input.weatherUnits === 'string'
-      ? resolveWeatherUnits(input.weatherUnits)
-      : defaults.weatherUnits
-  const weatherLocation = sanitizeWeatherLocation(input.weatherLocation)
-
-  return {
-    language,
-    dateTimePresentation,
-    weatherUnits,
-    weatherLocation,
+function recoverField<T>(
+  input: Record<string, unknown>,
+  field: PreferenceField,
+  schema: { safeParse: (_value: unknown) => { success: boolean; data?: T } },
+  fallback: T,
+  invalidFields: PreferenceField[],
+): T {
+  if (!(field in input)) {
+    invalidFields.push(field)
+    return fallback
   }
+  const result = schema.safeParse(input[field])
+  if (!result.success) {
+    invalidFields.push(field)
+    return fallback
+  }
+  return result.data as T
 }
+
+export function recoverPreferences(
+  input: unknown,
+  options: { notRestoredFields?: PreferenceField[] } = {},
+): PreferenceRecoveryResult {
+  const defaults = getDefaultPreferences()
+  const invalidFields: PreferenceField[] = []
+  const notRestoredFields = [...(options.notRestoredFields ?? [])]
+
+  if (!isRecord(input)) {
+    return {
+      preferences: defaults,
+      invalidFields: [...DEFAULT_FIELDS],
+      notRestoredFields,
+    }
+  }
+
+  const preferences: UserPreferences = {
+    language: recoverField(
+      input,
+      'language',
+      languageSchema,
+      defaults.language,
+      invalidFields,
+    ),
+    dateTimePresentation: recoverField(
+      input,
+      'dateTimePresentation',
+      dateTimePresentationSchema,
+      defaults.dateTimePresentation,
+      invalidFields,
+    ),
+    weatherUnits: recoverField(
+      input,
+      'weatherUnits',
+      weatherUnitsSchema,
+      defaults.weatherUnits,
+      invalidFields,
+    ),
+    weatherLocation: recoverField(
+      input,
+      'weatherLocation',
+      weatherLocationSchema.nullable(),
+      defaults.weatherLocation,
+      invalidFields,
+    ),
+  }
+
+  return { preferences, invalidFields, notRestoredFields }
+}
+
+export function validatePreferences(input: unknown): {
+  ok: boolean
+  preferences?: UserPreferences
+} {
+  const result = userPreferencesSchema.safeParse(input)
+  return result.success ? { ok: true, preferences: result.data } : { ok: false }
+}
+
+export { countGraphemes } from './graphemes'

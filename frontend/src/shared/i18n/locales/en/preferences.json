@@ -1,27 +1,125 @@
 {
   "title": "Settings",
-  "preferences": {
-    "heading": "Preferences",
+  "description": "Choose how Walday presents language, dates, weather units, and your weather location. Preferences are stored on this device only.",
+  "skeletonLabel": "Loading settings",
+  "form": {
+    "label": "Preference settings"
+  },
+  "guestNotice": {
+    "heading": "Stored on this device",
+    "description": "Preferences are kept in this browser. Clearing site data or using another device removes them."
+  },
+  "language": {
+    "legend": "Language",
+    "source": {
+      "browser": "Following your browser language. The current language is {{language}}.",
+      "explicit": "The selected language overrides the browser language."
+    },
+    "options": {
+      "browser": "Use browser language",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+  "dateTime": {
+    "legend": "Date and time format",
+    "help": "Dates use your device timezone and the regional format of your language.",
+    "options": {
+      "compact": "Compact",
+      "standard": "Standard",
+      "full": "Full"
+    }
+  },
+  "units": {
+    "legend": "Weather units",
+    "help": "Unit conversion affects display only. Stored weather values are never changed.",
+    "options": {
+      "metric": "Metric (°C, km/h, mm)",
+      "imperial": "Imperial (°F, mph, in)"
+    }
+  },
+  "location": {
+    "legend": "Weather location",
+    "help": "Search for a place and select it explicitly. Coordinates are used only for weather retrieval.",
+    "selected": "Selected location: {{label}}",
+    "none": "No weather location selected.",
+    "clear": "Clear location",
+    "queryLabel": "Search for a place",
+    "queryHelp": "Enter between 1 and 80 characters. Search uses the Walday weather service.",
+    "search": "Search",
+    "searching": "Searching",
+    "empty": "No places found. Try another search.",
+    "retry": "Try search again",
+    "candidatesLegend": "Search results",
+    "attribution": "Location search results are provided by the Walday weather service.",
+    "errors": {
+      "unavailable": "Location search is unavailable right now. Other preferences remain available.",
+      "timeout": "Location search took too long. Try again.",
+      "rateLimited": "Too many searches. Wait a moment and try again."
+    }
+  },
+  "validation": {
+    "summaryHeading": "Check the highlighted settings",
+    "locationQueryInvalid": "Enter a place name between 1 and 80 characters.",
+    "locationLabelInvalid": "That place could not be used as a saved location. Select another result."
+  },
+  "storage": {
+    "sessionOnlyHeading": "Changes are not being saved",
+    "sessionOnly": {
+      "unavailable": "Local storage is unavailable. Your changes apply for this session only.",
+      "quota": "Local storage is full. Your changes apply for this session only.",
+      "write-failed": "Preferences could not be saved. Your changes apply for this session only.",
+      "cleared": "Stored preferences were cleared elsewhere. Your changes apply for this session only."
+    },
+    "retry": "Retry saving",
+    "conflictHeading": "Preferences changed in another tab",
+    "conflictDescription": "Another tab saved newer preferences. Your draft has been kept, but it will not overwrite the newer values.",
+    "reload": "Reload settings",
+    "partialHeading": "Some preferences could not be restored",
+    "partialDescription": "Valid preferences were restored. The stored record is preserved until you replace it.",
+    "replaceAction": "Review and replace stored preferences",
+    "corruptHeading": "Stored preferences could not be read",
+    "migrationFailedHeading": "Stored preferences could not be upgraded",
+    "protectedDescription": "Safe defaults are in use. The stored record is preserved until you explicitly replace it.",
+    "unsupportedHeading": "Stored preferences use a newer version",
+    "unsupportedDescription": "This version of Walday cannot read the stored preferences safely. They are preserved until you explicitly replace them."
+  },
+  "fields": {
     "language": "Language",
     "dateTimePresentation": "Date and time format",
     "weatherUnits": "Weather units",
-    "weatherLocation": "Weather location",
-    "weatherLocationPlaceholder": "City or place",
-    "saveFeedback": "Preferences saved",
-    "options": {
-      "language": {
-        "en": "English",
-        "es": "Spanish"
-      },
-      "dateTimePresentation": {
-        "locale-short": "Short",
-        "locale-medium": "Medium",
-        "locale-long": "Long"
-      },
-      "weatherUnits": {
-        "metric": "Metric (°C)",
-        "imperial": "Imperial (°F)"
-      }
+    "weatherLocation": "Weather location"
+  },
+  "dialogs": {
+    "discard": {
+      "heading": "Discard unsaved changes?",
+      "description": "You have unsaved preference changes. Leaving now discards them.",
+      "confirm": "Discard changes",
+      "stay": "Stay on this page"
+    },
+    "replace": {
+      "heading": "Replace stored preferences?",
+      "description": "The stored record could not be read completely. Saving now replaces it with your current settings.",
+      "confirm": "Replace stored preferences",
+      "cancel": "Keep stored preferences"
     }
+  },
+  "actions": {
+    "save": "Save preferences",
+    "saving": "Saving",
+    "cancel": "Cancel"
+  },
+  "feedback": {
+    "saved": "Preferences saved.",
+    "sessionOnly": "Preferences applied for this session only. They were not saved.",
+    "conflict": "Preferences were saved in another tab. Reload or discard your draft to continue.",
+    "restoredMigrated": "Older preferences were upgraded and restored.",
+    "restoredPartial": "Some preferences could not be restored. Valid settings were applied.",
+    "clearedElsewhere": "Preferences were cleared in another tab.",
+    "updatedElsewhere": "Preferences were updated in another tab.",
+    "newerData": "Another tab changed preferences to a newer version that cannot be applied here."
+  },
+  "draft": {
+    "unsaved": "You have unsaved changes."
   }
 }

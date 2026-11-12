@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { usePreferencesContext } from '@/features/user-preferences'
+import { resolveDateStyle, usePreferences } from '@/entities/preferences'
 import {
   GuestStorageNotice,
   RecoveryNotice,
@@ -52,7 +52,7 @@ function NoticeRegion({ notice }: { notice: TaskNotice | null }) {
 
 export function TasksPage() {
   const { t } = useTranslation('tasks')
-  const { preferences } = usePreferencesContext()
+  const { preferences, formattingLocale } = usePreferences()
   const tasks = useTasks()
   const createTitleRef = useRef<HTMLInputElement>(null)
 
@@ -101,9 +101,10 @@ export function TasksPage() {
 
       <TaskList
         tasks={tasks.tasks}
+        formattingLocale={formattingLocale}
         showEmpty={showEmpty}
         pending={tasks.pending}
-        presentation={preferences.dateTimePresentation}
+        dateStyle={resolveDateStyle(preferences.dateTimePresentation)}
         focusAfterDelete={tasks.focusAfterDelete}
         onDeleteFocusHandled={tasks.handleDeleteFocusHandled}
         focusCompletionTaskId={tasks.focusCompletionTaskId}

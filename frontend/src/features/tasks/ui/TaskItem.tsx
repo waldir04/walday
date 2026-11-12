@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Task, TaskDraft } from '@/entities/task'
-import type { DateTimePresentation } from '@/shared/config/preferences'
 import { Button } from '@/shared/ui/Button'
 import { DeleteTaskDialog } from './DeleteTaskDialog'
 import { TaskEditForm } from './TaskEditForm'
@@ -12,7 +11,7 @@ export interface TaskItemProps {
   editing: boolean
   pending: boolean
   formattingLocale?: string
-  presentation?: DateTimePresentation
+  dateStyle?: Intl.DateTimeFormatOptions['dateStyle']
   shouldFocusCompletion: boolean
   onCompletionFocused: () => void
   onToggle: () => Promise<boolean>
@@ -29,7 +28,7 @@ export function TaskItem({
   editing,
   pending,
   formattingLocale,
-  presentation,
+  dateStyle,
   shouldFocusCompletion,
   onCompletionFocused,
   onToggle,
@@ -125,7 +124,7 @@ export function TaskItem({
               <TaskMetadata
                 task={task}
                 formattingLocale={formattingLocale}
-                presentation={presentation}
+                dateStyle={dateStyle}
               />
             </>
           )}

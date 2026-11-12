@@ -1,27 +1,125 @@
 {
   "title": "Configuración",
-  "preferences": {
-    "heading": "Preferencias",
+  "description": "Elige cómo Walday presenta el idioma, las fechas, las unidades del clima y tu ubicación. Las preferencias se guardan solo en este dispositivo.",
+  "skeletonLabel": "Cargando la configuración",
+  "form": {
+    "label": "Configuración de preferencias"
+  },
+  "guestNotice": {
+    "heading": "Guardado en este dispositivo",
+    "description": "Las preferencias se guardan en este navegador. Borrar los datos del sitio o usar otro dispositivo las elimina."
+  },
+  "language": {
+    "legend": "Idioma",
+    "source": {
+      "browser": "Siguiendo el idioma del navegador. El idioma actual es {{language}}.",
+      "explicit": "El idioma seleccionado prevalece sobre el idioma del navegador."
+    },
+    "options": {
+      "browser": "Usar el idioma del navegador",
+      "en": "English",
+      "es": "Español"
+    }
+  },
+  "dateTime": {
+    "legend": "Formato de fecha y hora",
+    "help": "Las fechas usan la zona horaria del dispositivo y el formato regional de tu idioma.",
+    "options": {
+      "compact": "Compacto",
+      "standard": "Estándar",
+      "full": "Completo"
+    }
+  },
+  "units": {
+    "legend": "Unidades del clima",
+    "help": "La conversión de unidades solo afecta a la presentación. Los valores guardados nunca cambian.",
+    "options": {
+      "metric": "Métrico (°C, km/h, mm)",
+      "imperial": "Imperial (°F, mph, in)"
+    }
+  },
+  "location": {
+    "legend": "Ubicación del clima",
+    "help": "Busca un lugar y selecciónalo explícitamente. Las coordenadas solo se usan para obtener el clima.",
+    "selected": "Ubicación seleccionada: {{label}}",
+    "none": "No hay una ubicación del clima seleccionada.",
+    "clear": "Borrar ubicación",
+    "queryLabel": "Buscar un lugar",
+    "queryHelp": "Escribe entre 1 y 80 caracteres. La búsqueda usa el servicio meteorológico de Walday.",
+    "search": "Buscar",
+    "searching": "Buscando",
+    "empty": "No se encontraron lugares. Prueba otra búsqueda.",
+    "retry": "Volver a buscar",
+    "candidatesLegend": "Resultados de la búsqueda",
+    "attribution": "Los resultados de búsqueda los proporciona el servicio meteorológico de Walday.",
+    "errors": {
+      "unavailable": "La búsqueda de ubicaciones no está disponible ahora. Las demás preferencias siguen disponibles.",
+      "timeout": "La búsqueda tardó demasiado. Inténtalo de nuevo.",
+      "rateLimited": "Demasiadas búsquedas. Espera un momento e inténtalo de nuevo."
+    }
+  },
+  "validation": {
+    "summaryHeading": "Revisa las opciones marcadas",
+    "locationQueryInvalid": "Escribe un nombre de lugar de entre 1 y 80 caracteres.",
+    "locationLabelInvalid": "Ese lugar no se puede usar como ubicación guardada. Selecciona otro resultado."
+  },
+  "storage": {
+    "sessionOnlyHeading": "Los cambios no se están guardando",
+    "sessionOnly": {
+      "unavailable": "El almacenamiento local no está disponible. Tus cambios se aplican solo en esta sesión.",
+      "quota": "El almacenamiento local está lleno. Tus cambios se aplican solo en esta sesión.",
+      "write-failed": "No se pudieron guardar las preferencias. Tus cambios se aplican solo en esta sesión.",
+      "cleared": "Las preferencias guardadas se borraron en otra pestaña. Tus cambios se aplican solo en esta sesión."
+    },
+    "retry": "Reintentar guardado",
+    "conflictHeading": "Las preferencias cambiaron en otra pestaña",
+    "conflictDescription": "Otra pestaña guardó preferencias más recientes. Tu borrador se conserva, pero no sobrescribirá los valores más nuevos.",
+    "reload": "Recargar la configuración",
+    "partialHeading": "Algunas preferencias no se pudieron restaurar",
+    "partialDescription": "Las preferencias válidas se restauraron. El registro guardado se conserva hasta que lo reemplaces.",
+    "replaceAction": "Revisar y reemplazar las preferencias guardadas",
+    "corruptHeading": "No se pudieron leer las preferencias guardadas",
+    "migrationFailedHeading": "No se pudieron actualizar las preferencias guardadas",
+    "protectedDescription": "Se usan valores predeterminados seguros. El registro guardado se conserva hasta que lo reemplaces explícitamente.",
+    "unsupportedHeading": "Las preferencias guardadas usan una versión más reciente",
+    "unsupportedDescription": "Esta versión de Walday no puede leer las preferencias guardadas de forma segura. Se conservan hasta que las reemplaces explícitamente."
+  },
+  "fields": {
     "language": "Idioma",
     "dateTimePresentation": "Formato de fecha y hora",
     "weatherUnits": "Unidades del clima",
-    "weatherLocation": "Ubicación del clima",
-    "weatherLocationPlaceholder": "Ciudad o lugar",
-    "saveFeedback": "Preferencias guardadas",
-    "options": {
-      "language": {
-        "en": "Inglés",
-        "es": "Español"
-      },
-      "dateTimePresentation": {
-        "locale-short": "Corto",
-        "locale-medium": "Medio",
-        "locale-long": "Largo"
-      },
-      "weatherUnits": {
-        "metric": "Métrico (°C)",
-        "imperial": "Imperial (°F)"
-      }
+    "weatherLocation": "Ubicación del clima"
+  },
+  "dialogs": {
+    "discard": {
+      "heading": "¿Descartar los cambios sin guardar?",
+      "description": "Tienes cambios de preferencias sin guardar. Si sales ahora, se descartarán.",
+      "confirm": "Descartar cambios",
+      "stay": "Seguir en esta página"
+    },
+    "replace": {
+      "heading": "¿Reemplazar las preferencias guardadas?",
+      "description": "El registro guardado no se pudo leer por completo. Guardar ahora lo reemplaza con tu configuración actual.",
+      "confirm": "Reemplazar preferencias guardadas",
+      "cancel": "Conservar preferencias guardadas"
     }
+  },
+  "actions": {
+    "save": "Guardar preferencias",
+    "saving": "Guardando",
+    "cancel": "Cancelar"
+  },
+  "feedback": {
+    "saved": "Preferencias guardadas.",
+    "sessionOnly": "Las preferencias se aplicaron solo en esta sesión. No se guardaron.",
+    "conflict": "Las preferencias se guardaron en otra pestaña. Recarga o descarta tu borrador para continuar.",
+    "restoredMigrated": "Las preferencias antiguas se actualizaron y restauraron.",
+    "restoredPartial": "Algunas preferencias no se pudieron restaurar. Se aplicaron los ajustes válidos.",
+    "clearedElsewhere": "Las preferencias se borraron en otra pestaña.",
+    "updatedElsewhere": "Las preferencias se actualizaron en otra pestaña.",
+    "newerData": "Otra pestaña cambió las preferencias a una versión más reciente que no se puede aplicar aquí."
+  },
+  "draft": {
+    "unsaved": "Tienes cambios sin guardar."
   }
 }

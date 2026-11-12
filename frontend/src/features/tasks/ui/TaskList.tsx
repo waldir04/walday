@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { groupTasks, type Task, type TaskDraft } from '@/entities/task'
-import type { DateTimePresentation } from '@/shared/config/preferences'
 import { Button } from '@/shared/ui/Button'
 import { EmptyState } from '@/shared/ui/EmptyState'
 import { TaskItem } from './TaskItem'
@@ -11,7 +10,7 @@ export interface TaskListProps {
   showEmpty: boolean
   pending: boolean
   formattingLocale?: string
-  presentation?: DateTimePresentation
+  dateStyle?: Intl.DateTimeFormatOptions['dateStyle']
   focusAfterDelete: string | 'empty' | null
   onDeleteFocusHandled: () => void
   focusCompletionTaskId: string | null
@@ -29,7 +28,7 @@ export function TaskList({
   showEmpty,
   pending,
   formattingLocale,
-  presentation,
+  dateStyle,
   focusAfterDelete,
   onDeleteFocusHandled,
   focusCompletionTaskId,
@@ -96,7 +95,7 @@ export function TaskList({
               editing={editingTaskId === task.id}
               pending={pending}
               formattingLocale={formattingLocale}
-              presentation={presentation}
+              dateStyle={dateStyle}
               shouldFocusCompletion={focusCompletionTaskId === task.id}
               onCompletionFocused={onCompletionFocused}
               onToggle={() => onToggle(task.id)}

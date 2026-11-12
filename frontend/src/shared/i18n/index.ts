@@ -1,6 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import type { SupportedLanguage } from '@/shared/config/preferences'
+import type { SupportedLanguage } from '@/shared/config/i18n'
 import enCommon from './locales/en/common.json'
 import esCommon from './locales/es/common.json'
 import enPreferences from './locales/en/preferences.json'

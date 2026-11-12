@@ -6,18 +6,17 @@ import {
   isPastDue,
   type Task,
 } from '@/entities/task'
-import type { DateTimePresentation } from '@/shared/config/preferences'
 
 export interface TaskMetadataProps {
   task: Task
   formattingLocale?: string
-  presentation?: DateTimePresentation
+  dateStyle?: Intl.DateTimeFormatOptions['dateStyle']
 }
 
 export function TaskMetadata({
   task,
   formattingLocale,
-  presentation = 'locale-medium',
+  dateStyle = 'medium',
 }: TaskMetadataProps) {
   const { t, i18n } = useTranslation('tasks')
   const locale = formattingLocale ?? i18n.language
@@ -37,7 +36,7 @@ export function TaskMetadata({
       {task.dueDate && isLocalDate(task.dueDate) ? (
         <span>
           {t('item.due', {
-            date: formatDueDate(task.dueDate, locale, presentation),
+            date: formatDueDate(task.dueDate, locale, dateStyle),
           })}
         </span>
       ) : null}

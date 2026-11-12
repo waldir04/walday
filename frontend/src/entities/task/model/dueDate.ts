@@ -1,4 +1,3 @@
-import type { DateTimePresentation } from '@/shared/config/preferences'
 import { formatDate } from '@/shared/lib/dateTimeFormat'
 import type { LocalDate, Task } from './types'
 
@@ -51,7 +50,7 @@ export function isPastDue(
 export function formatDueDate(
   dueDate: LocalDate,
   locale: string,
-  presentation: DateTimePresentation,
+  dateStyle: Intl.DateTimeFormatOptions['dateStyle'],
 ): string {
   const match = LOCAL_DATE_PATTERN.exec(dueDate)
   if (!match) return dueDate
@@ -59,7 +58,11 @@ export function formatDueDate(
   const year = Number.parseInt(match[1] ?? '', 10)
   const month = Number.parseInt(match[2] ?? '', 10)
   const day = Number.parseInt(match[3] ?? '', 10)
-  const date = new Date(year, month - 1, day, 12, 0, 0, 0)
+  if (!isLocalDate(dueDate)) return dueDate
 
-  return formatDate(date, locale, presentation)
+  const date = new Date(0)
+  date.setUTCHours(12, 0, 0, 0)
+  date.setUTCFullYear(year, month - 1, day)
+
+  return formatDate(date, { locale, dateStyle, timeZone: 'UTC' })
 }
