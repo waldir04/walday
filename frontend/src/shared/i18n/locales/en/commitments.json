@@ -1,0 +1,41 @@
+{
+  "title": "Commitments",
+  "commitments": {
+    "heading": "Daily commitments",
+    "empty": "No commitments scheduled yet",
+    "add": "Add commitment",
+    "edit": "Edit commitment",
+    "delete": "Delete commitment",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": "Are you sure you want to delete this commitment?",
+    "title": "Title",
+    "titlePlaceholder": "What are you doing?",
+    "description": "Description",
+    "descriptionPlaceholder": "Additional details (optional)",
+    "date": "Date",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "type": "Type",
+    "typeFixed": "Fixed",
+    "typeFlexible": "Flexible",
+    "typeFixedDesc": "Must happen at this time",
+    "typeFlexibleDesc": "Can be moved if needed",
+    "saveSuccess": "Commitment saved",
+    "deleteSuccess": "Commitment deleted",
+    "editSuccess": "Commitment updated",
+    "validation": {
+      "titleRequired": "Title is required",
+      "dateRequired": "Date is required",
+      "startTimeRequired": "Start time is required",
+      "endTimeRequired": "End time is required",
+      "typeRequired": "Type is required",
+      "invalidRange": "End time must be after start time"
+    },
+    "overlap": {
+      "heading": "Time conflict",
+      "message": "This commitment overlaps with another commitment on the same date.",
+      "details": "Adjust the time to resolve the conflict before saving."
+    }
+  }
+}

@@ -2,6 +2,8 @@ import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import enPreferences from './locales/en/preferences.json'
 import esPreferences from './locales/es/preferences.json'
+import enCommitments from './locales/en/commitments.json'
+import esCommitments from './locales/es/commitments.json'
 
 export const defaultNS = 'translation'
 
@@ -9,15 +11,17 @@ export const resources = {
   en: {
     translation: {
       app: { name: 'Walday' },
-      nav: { home: 'Home', tasks: 'Tasks', settings: 'Settings' },
+      nav: { home: 'Home', tasks: 'Tasks', settings: 'Settings', commitments: 'Commitments' },
       ...enPreferences,
+      ...enCommitments,
     },
   },
   es: {
     translation: {
       app: { name: 'Walday' },
-      nav: { home: 'Inicio', tasks: 'Tareas', settings: 'Configuración' },
+      nav: { home: 'Inicio', tasks: 'Tareas', settings: 'Configuración', commitments: 'Compromisos' },
       ...esPreferences,
+      ...esCommitments,
     },
   },
 } as const

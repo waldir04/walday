@@ -15,6 +15,9 @@ export function Navigation() {
         <Link to="/settings" className="text-sm text-gray-600">
           {t('nav.settings')}
         </Link>
+        <Link to="/commitments" className="text-sm text-gray-600">
+          {t('nav.commitments')}
+        </Link>
       </div>
     </nav>
   )
