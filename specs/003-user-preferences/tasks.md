@@ -1,243 +1,303 @@
 # Tasks: User Preferences and Localization
 
 **Input**: Design documents from `/specs/003-user-preferences/`
-**Prerequisites**: plan.md (required), spec.md (required), research.md, data-model.md, contracts/, quickstart.md
 
-**Tests**: Included as meaningful behavior tests (Vitest/RTL, AAA) aligned with constitution quality gates and quickstart scenarios. Tests are behavior-focused, not implementation-coupled.
+**Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/](./contracts/), [quickstart.md](./quickstart.md)
 
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
+**Status**: Implemented on 2026-11-12 against the audited specification. All tasks are complete except T061 (manual VoiceOver), which cannot be executed in this environment and is recorded as an open readiness gap in [implementation-report.md](./implementation-report.md). T067 records the undeployed backend geocoding proxy as a partial production delivery for location search.
+
+**Tests**: Included as meaningful behavior tests (Vitest/RTL, AAA) aligned with the constitution quality gates and quickstart scenarios. Tests assert observable behavior, not implementation details.
+
+**Organization**: Foundational phases first; then the six specification user stories in priority order. Each story remains independently implementable after the foundation and persistence layers.
 
 ## Format: `[ID] [P?] [Story] Description`
 
-- **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
+- **[P]**: Can run in parallel (different files, no dependency on incomplete work)
+- **[Story]**: US1–US6 from the specification
 - Include exact file paths in descriptions
 
 ## Path Conventions
 
-- **Web app (frontend-only, FSD)**: `frontend/src/`, `frontend/tests/`
-- Paths below follow the structure in `specs/003-user-preferences/plan.md`
+- Frontend FSD: `frontend/src/entities/preferences`, `frontend/src/features/user-preferences`, `frontend/src/pages`, `frontend/src/app`, `frontend/src/shared`
+- Tests: `frontend/tests`
+- Paths follow the target structure in [plan.md](./plan.md)
+
+## Requirement Coverage Map
+
+Every functional requirement (FR), validation rule (VR), and success criterion (SC) from [spec.md](./spec.md) has at least one task or a documented manual validation path.
+
+| Requirement group | Primary tasks | Notes |
+| --- | --- | --- |
+| FR-001–FR-006 | T027–T034, T045, T049, T068 | Guest access, preference independence, consumer contract |
+| FR-007–FR-019 | T005, T007, T011, T017, T035, T036, T038, T039 | Language selection, resolution, explicit/implicit distinction |
+| FR-020–FR-028 | T006, T013, T018, T031, T037 | Date and time presentation |
+| FR-029–FR-036 | T006, T014, T019, T031 | Weather units and display precision |
+| FR-037–FR-050 | T010, T025, T051–T055 | Weather location, disambiguation, privacy |
+| FR-051–FR-055 | T027, T028, T034, T038 | Defaults and first use |
+| FR-056–FR-067 | T027, T028, T040–T045, T068 | Saving, validation, feedback, draft protection |
+| FR-068–FR-083 | T009, T010, T020–T026, T045–T050 | Persistence, restoration, resilience |
+| FR-084–FR-099 | T030, T032, T041–T044, T056–T061 | Accessibility |
+| FR-100–FR-108 | T036, T038, T039, T058, T060 | Localization and formatting |
+| FR-109–FR-112 | T008, T020, T025, T067 | Migration readiness and boundary |
+| VR-001–VR-016 | T008–T010, T017–T019, T024–T026, T038–T045, T049–T055, T059–T060, T068 | Validation rules exercised by the mapped tests |
+| SC-001 | T034, quickstart §4.1 | Manual first-use timing under 2 minutes |
+| SC-002–SC-003 | T017, T024, T034, T038 | Resolution and restoration |
+| SC-004 | T045 | Non-mutation |
+| SC-005 | T037, T038, T068 | Consistent consumer propagation |
+| SC-006–SC-007 | T043–T045, T049 | Validation and truthful persistence feedback |
+| SC-008 | T059, T061 | Automated and manual accessibility |
+| SC-009 | T038, T039, T058 | Localization and runtime switching |
+| SC-010 | T018 | Date-only and timezone behavior |
+| SC-011 | T019, T045 | Units precision and preference independence |
+| SC-012–SC-014 | T024–T026, T032, T049, T050 | Storage resilience, multi-tab, guest warning |
+| SC-015 | T045, T049, T054 | Degraded external services |
+| SC-016 | T060 | Responsive, zoom, text resizing |
 
 ---
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup and Documentation Reconciliation
 
-**Purpose**: Prepare feature-specific structure and shared scaffolding
+**Purpose**: Establish the feature boundary and record decisions that this specification supersedes.
 
-- [X] T001 Create feature and entity directories per plan in `frontend/src/features/user-preferences/` and `frontend/src/entities/preferences/`
-- [X] T002 [P] Define preference constants and storage key(s) in `frontend/src/shared/config/preferences.ts` (no magic strings scattered)
-
----
-
-## Phase 2: Foundational (Blocking Prerequisites)
-
-**Purpose**: Core preference model, validation, persistence, and i18n scaffolding required by all stories
-
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
-
-- [X] T003 [P] Create `UserPreferences` types in `frontend/src/entities/preferences/model/types.ts` with fields: `language` (enum `en` | `es`, required), `dateTimePresentation` (locale-aware presentation setting, required), `weatherUnits` (enum supported unit system, e.g. `metric` | `imperial`, required), `weatherLocation` (structured location value or `null`/unset, optional). Encode invariants: language and weather units independent; weather location independent of language.
-- [X] T004 [P] Implement default and resolution helpers in `frontend/src/entities/preferences/model/defaults.ts` to resolve `language` as user preference > supported browser locale (`en`/`es`) > `en` (English fallback) and provide sensible defaults for `dateTimePresentation` and `weatherUnits` (neutral default, e.g. metric) with `weatherLocation` unset by default.
-- [X] T005 [P] Implement read-boundary validation/sanitization in `frontend/src/entities/preferences/model/validation.ts` to treat stored data as untrusted, normalize/replace unsupported `language` or `weatherUnits` values with safe fallbacks, and handle missing/invalid fields or `weatherLocation` without throwing.
-- [X] T006 Implement local persistence adapter in `frontend/src/shared/lib/preferencesStorage.ts` to load/save guest `UserPreferences` using key(s) from `frontend/src/shared/config/preferences.ts`, gracefully handling unavailable/cleared storage and corrupt/invalid data by returning resolved defaults (no app-breaking failure).
-- [X] T007 [P] Add English and Spanish i18n resources for preference labels, options, and feedback messages in `frontend/src/shared/i18n/locales/en/preferences.json` and `frontend/src/shared/i18n/locales/es/preferences.json`.
-- [X] T008 Wire preferences translations and ensure i18n initialization supports dynamic language application in `frontend/src/shared/i18n/index.ts`.
-
-**Checkpoint**: Foundation ready - user story implementation can now begin
+- [x] T001 [P] Create the target entity folders `frontend/src/entities/preferences/model/` and feature folders `frontend/src/features/user-preferences/model/` and `frontend/src/features/user-preferences/ui/`; keep public `index.ts` files.
+- [x] T002 [P] Supersede ADR 0004 with the browser-language resolution decision, or add a new ADR recording the change, in `docs/adr/`; note that the runtime switching mechanism remains authoritative.
+- [x] T003 [P] Record the backend geocoding-proxy dependency and its fallback behavior in the implementation notes or a dedicated ADR in `docs/adr/`.
+- [x] T004 [P] Update `frontend/README.md` with the preference surface, storage key/version, language resolution, and location dependency.
 
 ---
 
-## Phase 3: User Story 1 - Configure basic preferences as a guest (Priority: P1) 🎯 MVP
+## Phase 2: Foundational Domain (Blocks All Stories)
 
-**Goal**: Guest users can view defaults and select/save language, date/time presentation, weather units, and weather location locally, with persistence and restore on return (same browser/device).
+**Purpose**: Domain types, constants, validation, and derived locale rules required by every story.
 
-**Independent Test**: Open preferences as a first-time guest, change each setting (including Spanish), reload, and verify values persist and restore without an account.
+- [x] T005 [P] Define literal unions and types in `frontend/src/entities/preferences/model/types.ts`: `DateTimePresentation` (`compact`/`standard`/`full`), `WeatherUnit`, `WeatherLocation`, `WeatherMeasurement` (discriminated union), `LocalDateString`, `UserPreferences`, `PreferenceField`, `PreferencePersistenceStatus`, `PreferenceLoadResult`, `PreferenceWriteResult`, `WriteBlockCause`, `RevisionBaseline`, `PreferenceConsumerValue`. Import and re-export `SupportedLanguage` from `frontend/src/shared/config/i18n.ts`; do not duplicate it.
+- [x] T006 [P] Define named constants in `frontend/src/entities/preferences/model/constants.ts`: default locales (`en-US`, `es-ES`), presentation options/default, units/default, location label limit (1–120 graphemes), search query limit (1–80 graphemes), result limit (10), unit precision, and location timeout. Do not duplicate supported language tags (owned by `shared/config/i18n.ts`) or the storage key/version/lock name (owned by `shared/config/preferences.ts`).
+- [x] T007 [P] Implement browser-aware language resolution in `frontend/src/entities/preferences/model/defaults.ts`: explicit language, else first supported `navigator.languages` entry by base subtag case-insensitively, else English; derive `formattingLocale` from the matching regional variant or documented default; resolve `languageSource`.
+- [x] T008 [P] Implement Zod schemas in `frontend/src/entities/preferences/model/schema.ts`: v1 envelope, per-field preference schemas, and draft schema; derive contract types with `z.infer`; reject unknown envelope keys. The transient `LocationCandidate` schema is not an entity concern and lives with the feature port (T051).
+- [x] T009 Implement per-field recovery in `frontend/src/entities/preferences/model/validation.ts`: validate each field independently, keep valid fields, fall back per invalid field, return typed invalid field names, never throw.
+- [x] T010 Implement the migration registry and envelope classification in `frontend/src/entities/preferences/model/sanitize.ts`: v0 bare-record mapping (short/medium/long → compact/standard/full); v0 `language: 'es'` → explicit, v0 `language: 'en'` → explicit only when the injected first supported browser language is `es` and otherwise `null` (implicit), invalid language → `null`; v0 free-text location → `null` reported through `notRestoredFields`; failed migration preserved. The migration is pure and receives browser-language resolution as an input.
+- [x] T011 [P] Move language tags shared with i18n to `frontend/src/shared/config/i18n.ts`; reduce `frontend/src/shared/config/preferences.ts` to storage key, version, and lock name.
+- [x] T012 [P] Refactor `frontend/src/shared/lib/dateTimeFormat.ts` to generic `Intl` date/time styles with locale/timezone parameters and safe fallbacks; remove the preference type import.
+- [x] T013 [P] Implement presentation mapping and date helpers in `frontend/src/entities/preferences/model/formatting.ts`, including date-only formatting with no time and no timezone shift.
+- [x] T014 [P] Implement unit conversion and display precision in `frontend/src/entities/preferences/model/units.ts` for temperature, wind speed, and precipitation, using `Intl.NumberFormat` and localized unit display; `formatMeasurement` returns `null` for a missing `WeatherMeasurement` so the consuming surface renders localized unavailable text and never fabricates `0`.
+- [x] T015 Implement the read-only consumer context and hook in `frontend/src/entities/preferences/model/context.tsx`; export it through `frontend/src/entities/preferences/index.ts`; expose no setter.
+- [x] T016 Refactor `frontend/src/entities/task/model/dueDate.ts` to accept a resolved generic date style instead of a preference type; update `frontend/src/features/tasks/ui/TaskMetadata.tsx`, `TaskItem.tsx`, and `TaskList.tsx` props accordingly.
 
-### Tests for User Story 1
+### Foundational tests
 
-- [X] T009 [P] [US1] Add model/default/validation tests for resolution, fallbacks, and sanitization in `frontend/tests/preferences-model.test.ts` (AAA; cover unsupported/invalid stored values -> safe defaults/fallbacks).
-- [X] T010 [P] [US1] Add storage tests for save/load, restore, and graceful behavior when storage unavailable/cleared/corrupt in `frontend/tests/preferences-storage.test.ts`.
+- [x] T017 [P] `frontend/tests/preferences-model.test.ts`: resolution order, ordered browser languages, regional variants, unsupported entries, invalid stored language, defaults, formatting locale, `languageSource`.
+- [x] T018 [P] `frontend/tests/preferences-formatting.test.ts`: presentation mapping, date-only vs date-time, timezone/DST boundaries, invalid timezone fallback, numeric formatting.
+- [x] T019 [P] `frontend/tests/preferences-units.test.ts`: metric/imperial conversion, per-measurement precision, reversibility from canonical values, missing measurements returning `null`, and the consuming surface rendering localized unavailable text instead of `0`.
 
-### Implementation for User Story 1
-
-- [X] T011 [P] [US1] Implement preferences state/hook to load, read, update, and persist `UserPreferences` in `frontend/src/features/user-preferences/model/usePreferences.ts` (uses `frontend/src/entities/preferences/model/*` and `frontend/src/shared/lib/preferencesStorage.ts`).
-- [X] T012 [US1] Create preferences form UI with controls for `language` (en/es), `dateTimePresentation`, `weatherUnits`, and `weatherLocation` in `frontend/src/features/user-preferences/ui/PreferencesForm.tsx` (keyboard accessible, labeled controls, perceivable selected values).
-- [X] T013 [US1] Integrate `PreferencesForm` into the settings surface in `frontend/src/pages/SettingsPage.tsx` to display defaults and allow changes.
-- [X] T014 [US1] Apply language selection immediately in-session and persist/restore on reload by connecting `frontend/src/features/user-preferences/model/usePreferences.ts` with `frontend/src/shared/i18n/index.ts`.
-- [X] T015 [US1] Add/extend UI tests for default display, changing settings (including Spanish), persistence and restore behavior in `frontend/tests/preferences-ui.test.tsx`.
-
-**Checkpoint**: User Story 1 is fully functional and independently testable (MVP)
-
----
-
-## Phase 4: User Story 2 - Experience consistent localization and formatting (Priority: P2)
-
-**Goal**: User-selected language and locale/timezone-aware date/time formatting apply consistently across application surfaces with correct precedence and fallbacks.
-
-**Independent Test**: Set language/formatting preferences and verify translated UI, English fallback for unsupported/no preference+unsupported browser locale, and consistent date/time formatting in available UI surfaces.
-
-### Tests for User Story 2
-
-- [X] T016 [P] [US2] Add tests for language precedence (user > supported browser locale > `en`) and unsupported-locale/value fallback in `frontend/tests/preferences-localization.test.ts`.
-- [X] T017 [P] [US2] Add tests for locale/timezone-aware date/time formatting behavior in `frontend/tests/preferences-formatting.test.ts`.
-
-### Implementation for User Story 2
-
-- [X] T018 [P] [US2] Implement locale/formatting helpers that respect selected locale and appropriate timezone in `frontend/src/shared/lib/dateTimeFormat.ts` (consumes `dateTimePresentation` and effective locale context).
-- [X] T019 [US2] Expose a consistent preferences/locale context for consumers (derived `LocaleContext`: effective language, formatting locale, timezone context) in `frontend/src/features/user-preferences/model/preferencesContext.tsx` and compose it at app level in `frontend/src/app/`.
-- [X] T020 [US2] Ensure preference-governed UI surfaces use translated strings and formatting helpers consistently (update `frontend/src/pages/SettingsPage.tsx`, `frontend/src/widgets/Navigation.tsx`, and other existing surfaces as needed) without ad-hoc locale reads.
-- [X] T021 [US2] Verify and adjust fallback behavior for unsupported browser locale/no preference to English in `frontend/src/entities/preferences/model/defaults.ts` and `frontend/src/shared/i18n/index.ts`.
-
-**Checkpoint**: User Stories 1 and 2 work independently with consistent localization/formatting
+**Checkpoint**: Domain and derived rules are complete and independently tested.
 
 ---
 
-## Phase 5: User Story 3 - Update preferences safely (Priority: P3)
+## Phase 3: Persistence Layer (Blocks All Stories)
 
-**Goal**: Users can update preferences any time with clear, perceivable feedback while existing task/commitment content and stored weather information remain unchanged.
+**Purpose**: Versioned local store with safe migration, recovery, and conflict control.
 
-**Independent Test**: Update each preference and confirm feedback and persistence; with tasks/weather data present (or mocked), confirm changing language or units does not mutate underlying task/commitment data or stored weather information.
+- [x] T020 Implement envelope read/write in `frontend/src/entities/preferences/model/storage.ts`: typed load/write results, raw preservation, `unknown` narrowing, no silent errors.
+- [x] T021 Implement v0→v1 and registered migrations in the storage read path; ensure migration is pure and writes only on explicit save.
+- [x] T022 Implement revision compare-and-swap and Web Locks (with fallback) for writes; classify unavailable, quota, write failure, blocked, and conflict; support `replace-unreadable` intent with explicit confirmation.
+- [x] T023 Implement the `storage` event subscription behavior in the feature store (`frontend/src/features/user-preferences/model/usePreferencesStore.ts`): apply clean external changes, surface conflicts with a dirty draft, handle external clear, ignore invalid/unsupported payloads.
+- [x] T024 [P] `frontend/tests/preferences-storage.test.ts`: empty, restored, partial, corrupt, unavailable, quota, generic failure, blocked writes, replace confirmation, revision CAS, lock presence/absence.
+- [x] T025 [P] `frontend/tests/preferences-migration.test.ts`: v0 migration mapping; v0 `es` explicit, v0 `en` explicit when it contradicts a Spanish browser, v0 `en` implicit when the browser is English or unsupported; a v0 location produces a `partial` result with `notRestoredFields: ['weatherLocation']`; invalid v0 fields; migration failure; unsupported newer version preservation; raw payload preserved until explicit save with replacement confirmation.
+- [x] T026 [P] `frontend/tests/preferences-conflict.test.ts`: external update, external clear, dirty-draft conflict, stale write rejection, no silent overwrite.
 
-### Tests for User Story 3
-
-- [X] T022 [P] [US3] Add tests confirming preference changes emit perceivable feedback and persist updates in `frontend/tests/preferences-feedback.test.tsx`.
-- [X] T023 [P] [US3] Add non-mutation tests verifying language/units changes do not alter task data in `frontend/src/features/tasks/lib/storage.ts` and do not alter stored weather information representations in `frontend/tests/preferences-non-mutation.test.ts`.
-
-### Implementation for User Story 3
-
-- [X] T024 [US3] Implement perceivable update feedback (success/error states as applicable) in `frontend/src/features/user-preferences/ui/PreferencesForm.tsx` and supporting UI in `frontend/src/shared/ui/` if needed.
-- [X] T025 [US3] Enforce and document-in-code separation so preference updates never write to task/commitment or weather data stores; audit integration points in `frontend/src/features/user-preferences/model/usePreferences.ts` and consumers.
-- [X] T026 [US3] Ensure weather units/location changes are presentation-only and independent settings are preserved across updates in `frontend/src/features/user-preferences/ui/PreferencesForm.tsx` and `frontend/src/features/user-preferences/model/usePreferences.ts`.
-- [X] T027 [US3] Add accessibility refinements for preference controls (labels, focus order, keyboard operation, non-color-only feedback) to meet WCAG 2.2 AA in `frontend/src/features/user-preferences/ui/PreferencesForm.tsx`.
-
-**Checkpoint**: All user stories are independently functional with safe updates and feedback
+**Checkpoint**: Persistence is safe, typed, and conflict-aware. User stories can now be built.
 
 ---
 
-## Phase 6: Polish & Cross-Cutting Concerns
+## Phase 4: US1 — Configure preferences as a guest (P1)
 
-**Purpose**: Validation, quality, and documentation touch-ups across stories
+**Goal**: A guest can view defaults and save language, presentation, units, and location without an account, with persistence and restoration.
 
-- [X] T028 [P] Run quickstart validation scenarios and update notes if needed in `specs/003-user-preferences/quickstart.md`
-- [X] T029 [P] Update frontend documentation for preferences/localization behavior in `frontend/README.md`
-- [X] T030 Run quality checks (`npm test`, `npm run lint`, `npm run typecheck` from `frontend/`) and fix issues in touched files to satisfy project gates
+**Independent Test**: Clear storage, open preferences, change each value, save, reload, and verify all values are restored and applied offline.
 
----
+- [x] T027 [US1] Implement the applied-state store in `frontend/src/features/user-preferences/model/usePreferencesStore.ts`: load before render, applied values, draft, save orchestration, pending guard, persistence status, notices, cross-tab integration.
+- [x] T028 [P] [US1] Implement draft mapping/diffing in `frontend/src/features/user-preferences/model/preferencesDraft.ts`: record ↔ draft, dirty detection, location query handling, field error mapping.
+- [x] T029 [US1] Implement `PreferencesRoot` in `frontend/src/features/user-preferences/model/PreferencesRoot.tsx` and compose it in `frontend/src/app/providers.tsx`; update `frontend/src/app/bootstrap.tsx` to resolve and apply language before first paint.
+- [x] T030 [US1] Build the controlled form in `frontend/src/features/user-preferences/ui/PreferencesForm.tsx` with explicit Save/Cancel, fieldset/legend groups, pending state, and feedback.
+- [x] T031 [P] [US1] Build `LanguageField.tsx`, `DateTimeField.tsx`, and `WeatherUnitsField.tsx` in `frontend/src/features/user-preferences/ui/`.
+- [x] T032 [US1] Compose the form in `frontend/src/pages/SettingsPage.tsx` with the guest-storage notice and storage-status region; update `frontend/src/features/user-preferences/index.ts` exports.
+- [x] T033 [US1] Add `frontend/src/features/user-preferences/ui/PreferencesPageSkeleton.tsx` and use it as the `/settings` lazy fallback in `frontend/src/app/router.tsx`; remove the generic `Loading` fallback for this route.
+- [x] T034 [P] [US1] `frontend/tests/preferences-ui.test.tsx`: defaults, save/cancel, restore, first save persisting a complete record including unchanged values while preserving implicit language, pending guard, feedback, route skeleton.
 
-## Dependencies & Execution Order
-
-### Phase Dependencies
-
-- **Setup (Phase 1)**: No dependencies - start immediately
-- **Foundational (Phase 2)**: Depends on Setup - BLOCKS all user stories
-- **User Stories (Phase 3–5)**: Depend on Foundational completion
-  - Proceed in priority order (P1 → P2 → P3) or in parallel after Phase 2 if staffed, respecting file-level dependencies
-- **Polish (Phase 6)**: Depends on desired user stories being complete
-
-### User Story Dependencies
-
-- **User Story 1 (P1)**: Starts after Phase 2 - no dependencies on other stories (MVP)
-- **User Story 2 (P2)**: Starts after Phase 2 - builds on preference/i18n foundation; independently testable
-- **User Story 3 (P3)**: Starts after Phase 2 - builds on update flow; independently testable; non-mutation checks may reference existing task storage read-only
-
-### Within Each User Story
-
-- Tests written alongside/in support of story and must pass for the story’s acceptance
-- Models/types/defaults/validation before services/hooks
-- Hooks/state/context before UI integration
-- Core implementation before cross-surface integration
-- Complete and validate story before moving to next priority (when sequential)
-
-### Parallel Opportunities
-
-- **Phase 1**: T002 can run in parallel with T001 completion context (different concerns) once dirs exist
-- **Phase 2**: T003, T004, T005, T007 can run in parallel (different files); T006 depends on T002/T003–T005; T008 depends on T007
-- **US1**: T009 and T010 in parallel; T011 in parallel with tests prep once foundation ready; T012 follows types/hook contracts; UI integration follows
-- **US2**: T016, T017, T018 in parallel; T019–T021 follow foundation/helpers
-- **US3**: T022 and T023 in parallel; T024–T027 iterate on form/hook (same feature area, coordinate sequencing)
-- **Polish**: T028 and T029 in parallel; T030 after code/doc changes
+**Checkpoint**: US1 is fully functional and independently testable (MVP).
 
 ---
 
-## Parallel Example: User Story 1
+## Phase 5: US2 — Experience consistent language and locale (P1)
 
-```text
-# In parallel after Phase 2:
-T009 [US1] frontend/tests/preferences-model.test.ts
-T010 [US1] frontend/tests/preferences-storage.test.ts
-T011 [US1] frontend/src/features/user-preferences/model/usePreferences.ts
+**Goal**: Explicit language overrides the browser, implicit language follows the browser, and formatting/document language update consistently without reload.
 
-# Then:
-T012 [US1] frontend/src/features/user-preferences/ui/PreferencesForm.tsx
-T013 [US1] frontend/src/pages/SettingsPage.tsx
-T014 [US1] wire i18n/apply + persistence
-T015 [US1] frontend/tests/preferences-ui.test.tsx
-```
+**Independent Test**: Exercise explicit, implicit, and browser-only cases; verify document language, translations, formatting, and route context without reload.
 
-## Parallel Example: User Story 2
+- [x] T035 [US2] Implement the language source indication in the form (browser-derived vs explicit saved) in `frontend/src/features/user-preferences/ui/LanguageField.tsx`.
+- [x] T036 [US2] Ensure `applyLanguage` updates translations, `<html lang>`, document title, and route announcements without reload in `frontend/src/shared/i18n/index.ts` and `frontend/src/app/RouteAnnouncer.tsx`.
+- [x] T037 [US2] Wire consumer formatting through the read-only context in `frontend/src/pages/TasksPage.tsx` and `frontend/src/features/tasks/ui/*`; remove feature-to-feature preference imports.
+- [x] T038 [P] [US2] `frontend/tests/preferences-localization.test.tsx`: explicit precedence, ordered browser resolution, English fallback, "Use browser language" round trip, implicit persistence across unrelated saves, explicit English stored as explicit even when it equals the effective language, document language/title and no contradictory language flash before first meaningful paint, language names identifiable without reading the active language, formatting without reload, focus/route preservation.
+- [x] T039 [P] [US2] `frontend/tests/preferences-i18n-parity.test.ts`: en/es key parity, English fallback, no raw keys, no hardcoded interface text in preference components, and pluralization/interpolation through i18next rather than string concatenation.
 
-```text
-# In parallel after Phase 2:
-T016 [US2] frontend/tests/preferences-localization.test.ts
-T017 [US2] frontend/tests/preferences-formatting.test.ts
-T018 [US2] frontend/src/shared/lib/dateTimeFormat.ts
-
-# Then:
-T019 [US2] frontend/src/features/user-preferences/model/preferencesContext.tsx (+ frontend/src/app/)
-T020 [US2] consistent usage in frontend/src/pages/SettingsPage.tsx, frontend/src/widgets/Navigation.tsx
-T021 [US2] fallback adjustments in frontend/src/entities/preferences/model/defaults.ts, frontend/src/shared/i18n/index.ts
-```
-
-## Parallel Example: User Story 3
-
-```text
-# In parallel after Phase 2:
-T022 [US3] frontend/tests/preferences-feedback.test.tsx
-T023 [US3] frontend/tests/preferences-non-mutation.test.ts
-
-# Then (coordinate on shared files):
-T024 [US3] frontend/src/features/user-preferences/ui/PreferencesForm.tsx (+ frontend/src/shared/ui/)
-T025 [US3] frontend/src/features/user-preferences/model/usePreferences.ts (non-mutation audit)
-T026 [US3] frontend/src/features/user-preferences/ui/PreferencesForm.tsx, .../model/usePreferences.ts
-T027 [US3] frontend/src/features/user-preferences/ui/PreferencesForm.tsx
-```
+**Checkpoint**: US2 is independently verified.
 
 ---
+
+## Phase 6: US3 — Update preferences safely (P1)
+
+**Goal**: Validation, atomic apply/persist, truthful feedback, and draft protection with no mutation of feature data.
+
+**Independent Test**: Change each field, trigger validation failures and write failures, and verify no partial apply, no false success, and unchanged task/commitment records.
+
+- [x] T040 [US3] Implement validation-before-write and atomic apply semantics in `usePreferencesStore.ts`; keep applied values unchanged on validation failure; apply session-only values only with explicit wording.
+- [x] T041 [US3] Implement the accessible error summary, field association, `aria-invalid`, and first-invalid focus in `PreferencesForm.tsx`.
+- [x] T042 [US3] Implement dirty-draft state, `useBlocker` navigation blocking, and the shared `ConfirmDialog` composition in `DiscardDraftDialog.tsx`; register `beforeunload` only when the draft differs.
+- [x] T043 [US3] Implement success, session-only, retry, and conflict feedback through live regions in `PreferencesForm.tsx` and `StorageNotice.tsx`.
+- [x] T044 [P] [US3] `frontend/tests/preferences-draft.test.tsx`: dirty diff, cancel, in-app blocker stay/discard, `beforeunload` presence/absence, duplicate-save guard, no-op save producing no write or success claim, focus on first invalid field, draft preservation.
+- [x] T045 [P] [US3] `frontend/tests/preferences-non-mutation.test.ts`: language/presentation/units/location changes leave `walday:tasks` and `walday:commitments` byte-identical; only `walday:preferences` changes; changing one of the four preferences leaves the other three unchanged; core preferences save and task/commitment operations remain available with network/backend/weather access unavailable; the stored record contains no secrets, tokens, or credentials.
+
+**Checkpoint**: US3 is independently verified.
+
+---
+
+## Phase 7: US4 — Recover from storage problems (P2)
+
+**Goal**: Keep preferences usable and truthfully reported through unavailable, full, cleared, corrupt, partial, and newer-version storage.
+
+**Independent Test**: Simulate each storage condition and verify valid recovery, preserved raw data, accessible notices, and no false persistence or silent overwrite.
+
+- [x] T046 [US4] Implement `StorageNotice.tsx` states: session-only, partial restore, protected, unsupported, conflict, cleared elsewhere, with retry and replace-confirmation actions where allowed.
+- [x] T047 [US4] Implement replace-confirmation flow for corrupt, migration-failed, partial, and unsupported payloads in the feature UI; never replace a newer version automatically.
+- [x] T048 [US4] Implement retry behavior and persistence-mode transitions in `usePreferencesStore.ts`.
+- [x] T049 [P] [US4] `frontend/tests/preferences-storage-recovery.test.tsx`: unavailable, quota, corrupt, partial, unsupported, cleared-while-open, replace cancel/confirm, retry, no false success, and unrelated task/commitment operations remain available during a preference-storage failure.
+- [x] T050 [P] [US4] Extend `frontend/tests/preferences-conflict.test.ts` with storage-cleared and unreadable-external-payload cases.
+
+**Checkpoint**: US4 is independently verified.
+
+---
+
+## Phase 8: US5 — Select and maintain a weather location (P2)
+
+**Goal**: Explicit, disambiguated place selection independent of language, with graceful degradation when resolution is unavailable.
+
+**Independent Test**: With a fake resolver, search, disambiguate, select, save, change language, change units, clear, and simulate empty/unavailable/timeout responses.
+
+- [x] T051 [US5] Implement the `LocationResolver` port, `LocationCandidate` Zod schema, and typed failures in `frontend/src/features/user-preferences/model/locationResolver.ts`, plus the HTTP adapter using the validated config from `frontend/src/shared/config/env.ts` (never raw `import.meta.env`); the API base URL, timeout, and result limit are named configuration/constants rather than inline values. Validate responses with Zod.
+- [x] T052 [US5] Implement `WeatherLocationField.tsx`: query input validated at 1–80 graphemes, explicit search action, radio-group candidate list with region/country context, resolved-label validation at 1–120 graphemes, clear action, empty/unavailable/timeout/retry states, attribution text where required. The user never types a persisted label directly.
+- [x] T053 [US5] Compose the selected location label once at selection with `Intl.ListFormat` and `Intl.DisplayNames`; store it verbatim; never re-localize on language change.
+- [x] T054 [P] [US5] `frontend/tests/preferences-location.test.tsx`: no auto-selection, ambiguity context, explicit selection, query/draft preservation on failure, clear, label stability after language change, 1- and 121-grapheme resolved-label boundaries, HTML-like/script-like labels rendered as plain text and never executed, a saved location displays and clears with the resolver unavailable (no network), no geolocation, no direct provider host.
+- [x] T055 [P] [US5] `frontend/tests/location-resolver.test.ts`: query validation, request contract, response validation, timeout abort, error mapping, no automatic retry.
+
+**Checkpoint**: US5 is verified with the fake resolver. Production search remains dependent on the backend proxy; do not sign off FR-039–FR-041 in production before it is deployed.
+
+---
+
+## Phase 9: US6 — Accessible use in English and Spanish (P2)
+
+**Goal**: Complete keyboard, screen-reader, localization, responsive, zoom, and reduced-motion support for the preference experience.
+
+**Independent Test**: Keyboard-only journeys, VoiceOver with Safari, axe checks, 200%/400%, 360/768/1024/1440 px, both languages, long Spanish and long location text.
+
+- [x] T056 [US6] Audit and fix focus order, dialog focus management, live regions, target sizes, contrast, and non-color-only communication across `frontend/src/features/user-preferences/ui/`.
+- [x] T057 [US6] Ensure skeletons expose `aria-busy`, are hidden from assistive technology when decorative, and announce completion/failure.
+- [x] T058 [US6] Complete and review `preferences` namespace copy in `frontend/src/shared/i18n/locales/en/preferences.json` and `frontend/src/shared/i18n/locales/es/preferences.json`, including accessibility names and storage/location copy.
+- [x] T059 [P] [US6] `frontend/tests/preferences-a11y.test.tsx`: axe, roles, labels, fieldsets, error summary, live-region states, keyboard operation, focus return, dialog behavior.
+- [x] T060 [P] [US6] `frontend/tests/preferences-responsive.test.tsx`: 360/768/1024/1440 widths, long Spanish text, long label wrapping, no horizontal scroll, reduced motion.
+- [ ] T061 [US6] Perform and record the manual VoiceOver with Safari pass for the critical preference journeys; fix any blocking defects. — **Open**: not executable in the headless implementation environment; see implementation-report.md.
+
+**Checkpoint**: US6 is verified and accessibility defects affecting critical journeys are closed.
+
+---
+
+## Phase 10: Cross-Cutting Contract Verification
+
+**Purpose**: Verify the single consumer contract and cross-story propagation guarantees. Preference independence is verified in T045.
+
+- [x] T068 [P] `frontend/tests/preferences-consumer-contract.test.tsx`: consumers re-render after a save and after an external update; no setter is exposed; no consumer reads `walday:preferences`; `session-only`, `recovery-blocked`, `protected`, `unsupported`, and `conflict` statuses are never treated as persisted; formatting helpers use the applied locale/timezone and are deterministic for fixed inputs.
+
+---
+
+## Phase 11: Polish, Gates, and Documentation
+
+- [x] T062 [P] Reconcile `frontend/src/entities/task` and all consumers with the generic formatting contract; remove transitional compatibility shims.
+- [x] T063 [P] Update [quickstart.md](./quickstart.md) notes with any validated environment-specific details; do not duplicate implementation code.
+- [x] T064 Run `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:coverage`, and `npm run build` from the repository root; fix all failures in touched files.
+- [x] T065 Verify coverage against the existing `frontend/vite.config.ts` thresholds: 80% global, and the `src/entities/**` threshold (90% statements/functions/lines, 80% branches); justify any exclusion in writing.
+- [x] T066 Re-read [spec.md](./spec.md) §4, §4.12, and §8 against the implementation; record any remaining gap explicitly rather than marking it complete.
+- [x] T067 Confirm the backend geocoding proxy is deployed before signing off FR-039–FR-041; if it is not, record the feature as partially delivered for location search.
+
+---
+
+## Dependencies and Execution Order
+
+### Phase dependencies
+
+- **Phase 1**: No dependencies.
+- **Phase 2**: Depends on Phase 1 folder structure.
+- **Phase 3**: Depends on Phase 2 (types, schema, migration registry).
+- **Phases 4–9 (user stories)**: Depend on Phases 2–3. US1 is the MVP; US2, US3, and US4 build on the same store and form; US5 adds the location port; US6 audits the whole surface.
+- **Phase 10 (cross-cutting contract verification)**: Depends on US1 and US2 for the provider and consumer surface; can run alongside US5 and US6.
+- **Phase 11 (polish and gates)**: Depends on Phases 1–10.
+
+### Story dependencies
+
+- **US1 (P1)**: No story dependency; MVP.
+- **US2 (P1)**: Depends on US1 state and form; independently testable once the form exists.
+- **US3 (P1)**: Depends on US1 state and form; its validation and draft logic must not be bypassed by later stories.
+- **US4 (P2)**: Depends on Phase 3 persistence and US1 status surface.
+- **US5 (P2)**: Depends on US1 form and US3 validation.
+- **US6 (P2)**: Audits all preceding stories; can start after US1 and continue as stories land.
+
+### Within each story
+
+- Types/schemas/validation before state and UI.
+- Tests written with the story and passing before the story is considered complete.
+- Entity public API before feature consumption; feature public API before page composition.
+- No story may read `localStorage` directly or mutate the preference record outside the store.
+
+## Parallel Opportunities
+
+- Phase 1: T001–T004.
+- Phase 2: T005–T008 and T011–T014 in parallel; T009/T010 after T008; T015 after T005; T016 after T012.
+- Phase 2 tests: T017–T019 after their corresponding implementation tasks.
+- Phase 3: T024–T026 can be written in parallel once T020–T022 exist.
+- US1: T031 in parallel with T030; T034 after T030–T033.
+- US2: T038/T039 in parallel after implementation.
+- US3: T044/T045 in parallel.
+- US4: T049/T050 in parallel.
+- US5: T054/T055 in parallel.
+- US6: T059/T060 in parallel.
+- Phase 10: T068 after US1/US2 provider and consumer work; can run in parallel with US5/US6.
 
 ## Implementation Strategy
 
-### MVP First (User Story 1 Only)
+### MVP first (US1)
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
-3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Test US1 independently (defaults, changes, Spanish, persistence/restore)
-5. Demo/review if ready
+1. Complete Phases 1–3 (documentation, domain, persistence).
+2. Complete US1 (store, form, provider, route, skeleton).
+3. Stop and validate US1 independently: defaults, save/cancel, restore, no account/network, no misleading feedback.
+4. Demo/review before continuing.
 
-### Incremental Delivery
+### Incremental delivery
 
-1. Setup + Foundational → preference core ready
-2. Add US1 → test independently → MVP
-3. Add US2 → test independently → consistent localization/formatting
-4. Add US3 → test independently → safe updates/feedback/non-mutation
-5. Polish → quickstart/docs/gates
-
-### Parallel Team Strategy
-
-1. Complete Setup + Foundational together
-2. After Foundational:
-   - Developer A: User Story 1
-   - Developer B: User Story 2 (coordinate on shared i18n/context surfaces)
-   - Developer C: User Story 3 (coordinate on form/hook files)
-3. Integrate and run Phase 6 checks
-
----
+1. Foundation and persistence → safe local model.
+2. US1 → guest configuration MVP.
+3. US2 → language/locale consistency.
+4. US3 → safe updates and truthful feedback.
+5. US4 → storage recovery.
+6. US5 → location selection (with the proxy dependency recorded).
+7. US6 → accessibility and localization hardening.
+8. Phase 10 → consumer-contract and independence verification.
+9. Phase 11 → gates, coverage, spec re-read, ADR updates.
 
 ## Notes
 
-- [P] tasks = different files, no dependencies on incomplete work
-- [Story] label maps task to a specific user story for traceability
-- Each user story is independently completable and testable
-- Enforce constraints from data-model/spec: `language` enum `en`|`es` (required), `dateTimePresentation` required (locale/timezone-aware), `weatherUnits` required (independent, presentation-only), `weatherLocation` optional `null`/unset (independent); unsupported/invalid stored values -> safe fallbacks; no mutation of task/commitment data or stored weather information
-- Commit after each task or logical group; stop at checkpoints to validate
-- Avoid: vague tasks, same-file conflicts, cross-story dependencies that break independence
-- Future guest-to-account migration (FR-019) is out of implementation scope here except portable structure awareness
+- [P] tasks touch different files and have no dependency on incomplete work.
+- Task IDs are stable audit identifiers; phase order is authoritative where an added task ID is numerically later than an earlier phase.
+- The Requirement Coverage Map above is the traceability source of truth; update it when a requirement or task is added.
+- The previous task list is superseded; do not reuse its completion checkboxes as evidence.
+- No task may introduce a runtime dependency or call a weather provider directly.
+- TanStack Query is intentionally unused; do not wrap local preferences in query/mutation hooks.
+- A task is complete only when its relevant tests pass and `lint`, `typecheck`, `test`, `build`, and coverage gates hold.
+- Commit after each task or logical group; stop at checkpoints to validate.

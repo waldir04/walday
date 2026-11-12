@@ -31,4 +31,4 @@
 
 ## Notes
 
-- All items pass. Ready for `/speckit.clarify` or `/speckit.plan`.
+- All items pass. The specification, plan, data model, contracts, and tasks were reconciled on 2026-11-12; implementation may begin after the readiness gate in [spec.md](../spec.md) §8 is satisfied.
