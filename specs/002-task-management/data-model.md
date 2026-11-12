@@ -110,6 +110,7 @@ Validation behavior:
 | `TASK_DUPLICATE_ID`       | Two or more otherwise valid stored records share the same `id`; all affected records are quarantined as ambiguous. |
 | `TASK_CREATED_AT_INVALID` | `createdAt` is missing or not a valid ISO timestamp.                                                               |
 | `TASK_STATUS_INVALID`     | `status` is not `pending` or `completed`.                                                                          |
+| `TASK_UNKNOWN_FIELD`      | A stored record contains a key outside the domain shape; the record is quarantined rather than silently stripped.   |
 | `STORAGE_CONFLICT`        | The persisted revision changed before a write could commit.                                                        |
 | `TASK_NOT_FOUND`          | A mutation targets a task that no longer exists in the current store.                                              |
 

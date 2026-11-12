@@ -8,6 +8,22 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+if (typeof window !== 'undefined' && typeof HTMLDialogElement !== 'undefined') {
+  if (typeof HTMLDialogElement.prototype.showModal !== 'function') {
+    HTMLDialogElement.prototype.showModal = function showModal() {
+      this.open = true
+      this.setAttribute('open', '')
+    }
+  }
+  if (typeof HTMLDialogElement.prototype.close !== 'function') {
+    HTMLDialogElement.prototype.close = function close() {
+      this.open = false
+      this.removeAttribute('open')
+      this.dispatchEvent(new Event('close'))
+    }
+  }
+}
+
 if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,

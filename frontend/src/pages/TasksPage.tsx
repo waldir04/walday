@@ -1,58 +1,119 @@
-import { useEffect, useState } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Task } from '@/features/tasks'
+import { usePreferencesContext } from '@/features/user-preferences'
 import {
-  createTask,
-  loadTasks,
-  saveTasks,
+  GuestStorageNotice,
+  RecoveryNotice,
+  StorageWarning,
   TaskForm,
   TaskList,
+  useTasks,
 } from '@/features/tasks'
+import type { TaskNotice } from '@/features/tasks'
+import { Button } from '@/shared/ui/Button'
+
+function NoticeRegion({ notice }: { notice: TaskNotice | null }) {
+  const { t } = useTranslation('tasks')
+
+  const colorClass =
+    notice?.kind === 'success'
+      ? 'text-success'
+      : notice?.kind === 'session-only'
+        ? 'text-warning'
+        : notice?.kind === 'conflict' || notice?.kind === 'error'
+          ? 'text-danger'
+          : 'text-text-muted'
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="min-h-6 text-body"
+    >
+      {notice ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <p className={colorClass}>{t(notice.messageKey)}</p>
+          {notice.kind === 'conflict' ? (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                window.location.reload()
+              }}
+            >
+              {t('feedback.reload')}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  )
+}
 
 export function TasksPage() {
   const { t } = useTranslation('tasks')
-  const [tasks, setTasks] = useState<Task[]>(() => loadTasks())
+  const { preferences } = usePreferencesContext()
+  const tasks = useTasks()
+  const createTitleRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
-    saveTasks(tasks)
-  }, [tasks])
-
-  function addTask(input: {
-    title: string
-    description?: string
-    priority: Task['priority']
-    dueDate?: string
-    estimatedDuration?: string
-  }) {
-    setTasks((prev) => [createTask(input), ...prev])
-  }
-
-  function toggleTask(id: string) {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-    )
-  }
-
-  function editTask(id: string, patch: Partial<Task>) {
-    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)))
-  }
-
-  function deleteTask(id: string) {
-    setTasks((prev) => prev.filter((t) => t.id !== id))
-  }
+  const showEmpty =
+    !tasks.quarantine &&
+    !tasks.unsupported &&
+    tasks.mode !== 'recovery-blocked' &&
+    tasks.mode !== 'protected'
 
   return (
-    <div className="space-y-6">
-      <h1 tabIndex={-1} className="text-2xl font-semibold">
-        {t('title')}
-      </h1>
-      <p className="text-sm text-gray-500">{t('guestNotice')}</p>
-      <TaskForm onAdd={addTask} />
+    <div className="space-y-section">
+      <div className="space-y-2">
+        <h1 tabIndex={-1} className="text-2xl font-semibold text-text">
+          {t('title')}
+        </h1>
+        <GuestStorageNotice />
+      </div>
+
+      <NoticeRegion notice={tasks.notice} />
+
+      <StorageWarning
+        mode={tasks.mode}
+        pending={tasks.pending}
+        onRetry={() => {
+          void tasks.retryPersistence()
+        }}
+      />
+
+      <RecoveryNotice
+        quarantine={tasks.quarantine}
+        unsupported={tasks.unsupported}
+        pending={tasks.pending}
+        onDiscard={() => {
+          void tasks.discardUnreadable()
+        }}
+        onCancelDiscard={tasks.protectStore}
+        onDialogActiveChange={tasks.reportDialogActive}
+      />
+
+      <TaskForm
+        onSubmit={tasks.createTask}
+        pending={tasks.pending}
+        titleInputRef={createTitleRef}
+        onDraftActiveChange={tasks.reportDraftActive}
+      />
+
       <TaskList
-        tasks={tasks}
-        onToggle={toggleTask}
-        onEdit={editTask}
-        onDelete={deleteTask}
+        tasks={tasks.tasks}
+        showEmpty={showEmpty}
+        pending={tasks.pending}
+        presentation={preferences.dateTimePresentation}
+        focusAfterDelete={tasks.focusAfterDelete}
+        onDeleteFocusHandled={tasks.handleDeleteFocusHandled}
+        focusCompletionTaskId={tasks.focusCompletionTaskId}
+        onCompletionFocused={tasks.handleCompletionFocusHandled}
+        onCreateRequested={() => createTitleRef.current?.focus()}
+        onToggle={tasks.toggleTask}
+        onUpdate={tasks.updateTask}
+        onDelete={tasks.deleteTask}
+        onDraftActiveChange={tasks.reportDraftActive}
+        onDialogActiveChange={tasks.reportDialogActive}
       />
     </div>
   )

@@ -1,23 +1,45 @@
 {
   "title": "Tareas",
   "guestNotice": "Los datos de invitado se almacenan localmente y pueden perderse si se borra el almacenamiento del navegador o cambias de dispositivo.",
-  "empty": "Aún no hay tareas. Agrega una arriba.",
+  "skeletonLabel": "Cargando tareas",
+  "empty": {
+    "heading": "Aún no hay tareas",
+    "description": "Aún no hay tareas. Agrega una arriba.",
+    "action": "Crear una tarea"
+  },
   "form": {
+    "heading": "Nueva tarea",
     "title": "Título",
     "description": "Descripción (opcional)",
     "priority": "Prioridad",
     "dueDate": "Fecha límite (opcional)",
     "duration": "Duración (opcional)",
-    "durationPlaceholder": "30 min",
+    "durationPlaceholder": "p. ej. 1 h 30 min",
     "submit": "Agregar tarea",
+    "submitting": "Agregando tarea…",
     "priorityOptions": {
       "low": "Baja",
       "medium": "Media",
       "high": "Alta"
     }
   },
+  "edit": {
+    "heading": "Editar tarea",
+    "save": "Guardar cambios",
+    "saving": "Guardando cambios…",
+    "cancel": "Cancelar"
+  },
   "validation": {
-    "titleMinLength": "El título debe tener al menos 3 caracteres"
+    "summary": "Corrige lo siguiente:",
+    "titleRequired": "Escribe un título",
+    "titleTooShort": "El título debe tener al menos 3 caracteres",
+    "titleTooLong": "El título debe tener 200 caracteres o menos",
+    "descriptionTooLong": "La descripción debe tener 2000 caracteres o menos",
+    "priorityInvalid": "Elige una prioridad válida",
+    "dueDateInvalid": "Escribe una fecha límite válida",
+    "durationInvalid": "Escribe una duración con unidad, como 30 min o 1 h 30 min",
+    "durationRange": "La duración debe estar entre 1 minuto y 24 horas",
+    "durationFractional": "La duración debe ser un número entero de minutos"
   },
   "item": {
     "markPending": "Marcar {{title}} como pendiente",
@@ -25,10 +47,69 @@
     "priority": "Prioridad: {{priority}}",
     "due": "Fecha límite: {{date}}",
     "duration": "Duración: {{duration}}",
+    "pastDue": "Fecha límite vencida",
+    "editTask": "Editar {{title}}",
+    "deleteTask": "Eliminar {{title}}",
     "edit": "Editar",
     "delete": "Eliminar",
-    "confirmDelete": "¿Confirmar eliminación?",
-    "yes": "Sí",
-    "no": "Cancelar"
+    "statusPending": "Pendiente",
+    "statusCompleted": "Completada"
+  },
+  "groups": {
+    "pending": "Tareas pendientes",
+    "completed": "Tareas completadas"
+  },
+  "delete": {
+    "heading": "Eliminar tarea",
+    "message": "¿Eliminar «{{title}}»? Esta acción no se puede deshacer.",
+    "confirm": "Eliminar tarea",
+    "cancel": "Cancelar"
+  },
+  "recovery": {
+    "heading": "Algunas tareas almacenadas no se pudieron restaurar",
+    "count_one": "{{count}} registro almacenado no se pudo restaurar. Los datos almacenados se conservan.",
+    "count_other": "{{count}} registros almacenados no se pudieron restaurar. Los datos almacenados se conservan.",
+    "unsupportedHeading": "Las tareas almacenadas fueron escritas por una versión más reciente",
+    "unsupportedDescription": "Esta versión no puede leerlas de forma segura. Los datos almacenados se conservan y no se sobrescribirán.",
+    "discard": "Descartar datos ilegibles",
+    "confirmHeading": "¿Descartar los datos ilegibles?",
+    "confirmMessage_one": "{{count}} registro almacenado se descartará de forma permanente. Las tareas restauradas se conservan.",
+    "confirmMessage_other": "{{count}} registros almacenados se descartarán de forma permanente. Las tareas restauradas se conservan.",
+    "confirm": "Descartar",
+    "cancel": "Cancelar"
+  },
+  "storage": {
+    "memoryOnlyHeading": "Es posible que los cambios no se guarden",
+    "memoryOnlyDescription": "El almacenamiento del navegador no está disponible. Los cambios solo se aplican a esta sesión.",
+    "retry": "Intentar guardar de nuevo",
+    "retrying": "Intentando guardar…",
+    "recoveryBlockedHeading": "Los datos almacenados requieren atención",
+    "recoveryBlockedDescription": "Revisa los datos ilegibles antes de guardar nuevos cambios.",
+    "protectedHeading": "Los datos almacenados están protegidos",
+    "protectedDescription": "El guardado está desactivado para conservar tus datos. Revisa y confirma el descarte de los datos ilegibles, o recarga.",
+    "unsupportedHeading": "Los datos almacenados fueron escritos por una versión más reciente",
+    "unsupportedDescription": "Esta versión no puede leerlos de forma segura. Los datos se conservan y los cambios solo se aplican a esta sesión."
+  },
+  "feedback": {
+    "created": "Tarea creada.",
+    "createdSessionOnly": "Tarea creada solo para esta sesión. No se guardó.",
+    "updated": "Tarea actualizada.",
+    "updatedSessionOnly": "Tarea actualizada solo para esta sesión. No se guardó.",
+    "deleted": "Tarea eliminada.",
+    "deletedSessionOnly": "Tarea eliminada solo para esta sesión. La eliminación no se guardó.",
+    "completed": "Tarea marcada como completada.",
+    "pending": "Tarea marcada como pendiente.",
+    "statusSessionOnly": "El estado cambió solo para esta sesión. No se guardó.",
+    "restored": "Tareas restauradas.",
+    "restoredPartial": "Tareas restauradas. Algunos registros almacenados no se pudieron leer.",
+    "updatedElsewhere": "Las tareas se actualizaron en otra pestaña.",
+    "clearedElsewhere": "Las tareas almacenadas se borraron en otra pestaña.",
+    "newerData": "Se encontraron tareas más recientes en otra pestaña. Recarga para verlas antes de guardar.",
+    "conflict": "Tu cambio no se guardó porque existen datos más recientes. Recarga para revisarlos.",
+    "reload": "Recargar",
+    "retrySucceeded": "Cambios guardados.",
+    "retryFailed": "Los cambios aún no se guardan. Solo se aplican a esta sesión.",
+    "discarded": "Se descartaron los datos ilegibles y se guardaron las tareas restauradas.",
+    "protected": "Los datos almacenados se conservaron. El guardado sigue desactivado hasta que descartes los datos ilegibles o recargues."
   }
 }

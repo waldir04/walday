@@ -18,8 +18,7 @@ dependency), and no slice exposed a public API. This violated the FSD boundary r
 - Directory-climbing imports use the `@/` alias.
 - ESLint blocks deep cross-slice imports and `../../` chains.
 
-The task model intentionally remains in `features/tasks`; moving it to `entities/task` is recorded
-follow-up debt.
+The task model was later moved to `entities/task`; see ADR 0006 for the completed follow-up.
 
 ## Consequences
 

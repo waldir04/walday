@@ -5,7 +5,7 @@ import {
   savePreferences,
 } from '../src/entities/preferences'
 import { loadCommitments, saveCommitments } from '../src/entities/commitment'
-import { loadTasks, saveTasks } from '../src/features/tasks'
+import { loadGuestTaskStore, saveGuestTaskStore } from '../src/entities/task'
 import { PREFERENCES_STORAGE_KEY } from '../src/shared/config/preferences'
 import { COMMITMENTS_STORAGE_KEY } from '../src/shared/config/commitments'
 
@@ -72,7 +72,7 @@ describe('storage schema validation (US6)', () => {
     expect(loaded.map((item) => item.id)).toEqual(['1'])
   })
 
-  it('drops invalid tasks while keeping valid records', () => {
+  it('restores valid tasks and quarantines invalid task records', () => {
     localStorage.setItem(
       'walday:tasks',
       JSON.stringify([
@@ -100,17 +100,22 @@ describe('storage schema validation (US6)', () => {
         'junk',
       ]),
     )
-    const loaded = loadTasks()
-    expect(loaded.map((item) => item.id)).toEqual(['1'])
+    const loaded = loadGuestTaskStore()
+    expect(loaded.kind).toBe('legacy')
+    if (loaded.kind !== 'legacy') return
+    expect(loaded.tasks.map((item) => item.id)).toEqual(['1'])
+    expect(loaded.quarantine.invalidRecords).toBe(3)
   })
 
-  it('never throws for unavailable storage', () => {
+  it('never throws for unavailable storage', async () => {
     vi.stubGlobal('localStorage', undefined)
     expect(loadPreferences()).toEqual(getDefaultPreferences())
     expect(loadCommitments()).toEqual([])
-    expect(loadTasks()).toEqual([])
+    expect(loadGuestTaskStore()).toEqual({ kind: 'unavailable' })
     expect(() => savePreferences(getDefaultPreferences())).not.toThrow()
     expect(() => saveCommitments([])).not.toThrow()
-    expect(() => saveTasks([])).not.toThrow()
+    await expect(
+      saveGuestTaskStore([], 'unknown', 'normal'),
+    ).resolves.toMatchObject({ ok: false, code: 'STORAGE_UNAVAILABLE' })
   })
 })

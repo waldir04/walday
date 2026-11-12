@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/002-task-management/spec.md`
 
-**Status**: Reconciled with the updated specification. Source code is intentionally unchanged by this plan; the audit below defines the refactoring contract for the implementation phase.
+**Status**: Implemented on 2026-11-12 and reconciled with the final source. The audit below records the contract that drove the refactoring; the implementation now matches it.
 
 ## Summary
 
@@ -160,6 +160,7 @@ frontend/src/
 ├── features/
 │   └── tasks/
 │       ├── index.ts                 # Public API for the feature slice
+│       ├── skeleton.ts              # Narrow public entry for the route fallback
 │       ├── model/
 │       │   ├── useTasks.ts          # State orchestration, storage status, cross-tab sync
 │       │   └── taskDraft.ts         # Form draft <-> domain mapping and error mapping
@@ -202,7 +203,7 @@ frontend/tests/
 └── tasks-routing.test.tsx           # `/tasks` route and layout-matching lazy fallback
 ```
 
-**Structure Decision**: The task domain moves to `entities/task` because the constitution assigns domain models, validation, and persistence to entities and use cases to features. Domain constants live in `entities/task/model/constants.ts`; `shared/config/tasks.ts` holds only persistence configuration (key, version, lock name) because `shared` must not contain business rules. `features/tasks` keeps the interaction layer (`useTasks`, forms, list, dialogs, notices, skeleton). `pages/TasksPage.tsx` only composes the feature and heading. `shared` receives one generic, business-agnostic `ConfirmDialog`. The router imports the skeleton through the feature's public API, never from `features/tasks/ui` directly. Imports flow downward only and use the `@/` alias.
+**Structure Decision**: The task domain moves to `entities/task` because the constitution assigns domain models, validation, and persistence to entities and use cases to features. Domain constants live in `entities/task/model/constants.ts`; `shared/config/tasks.ts` holds only persistence configuration (key, version, lock name) because `shared` must not contain business rules. `features/tasks` keeps the interaction layer (`useTasks`, forms, list, dialogs, notices, skeleton). `pages/TasksPage.tsx` only composes the feature and heading. `shared` receives one generic, business-agnostic `ConfirmDialog`. The router imports the skeleton through the feature's narrow `features/tasks/skeleton.ts` public entry, never from `features/tasks/ui` directly, so the lazy route chunk is not pulled into the initial bundle. Imports flow downward only and use the `@/` alias.
 
 ## Design Overview
 
@@ -291,7 +292,7 @@ No constitutional violations. No additional abstraction, dependency, backend ser
 
 ## Implementation Follow-ups
 
-- Record ADR 0006 for the move of task domain and storage ownership to `entities/task`, and update the follow-up note in ADR 0003.
+- Recorded ADR 0006 for the move of task domain and storage ownership to `entities/task`, and updated the follow-up note in ADR 0003.
 - Update the constitution's known-gaps register only through a separate amendment; this plan does not modify the constitution. Its entries for TanStack Query, strict flags, and the shared skeleton are stale relative to the observed repository; see research §23.
-- Reconcile `tasks.md` with this plan before implementation.
+- Reconciled `tasks.md` with this plan before implementation.
 - Keep domain validation limits in `entities/task/model/constants.ts`; `shared/config/tasks.ts` must contain persistence configuration only.

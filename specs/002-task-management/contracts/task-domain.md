@@ -16,16 +16,32 @@ export type {
   Priority,
   LocalDate,
   TaskDraft,
+  StoredTask,
   TaskValidationCode,
   TaskRecordValidationCode,
   TaskFieldError,
+  TaskFieldName,
+  QuarantineReasonCode,
+  QuarantineSummary,
   TaskStoreLoadResult,
   TaskStoreWriteResult,
+  TaskStoreWriteErrorCode,
+  WriteBlockCause,
   PersistenceMode,
-  QuarantineSummary,
+  RevisionBaseline,
+  WriteIntent,
+  LegacyMigrationResult,
+  StorageLike,
+  LockManagerLike,
+  TaskStorageDependencies,
 } from './model/types'
 
-export { TASK_PRIORITIES, TASK_STATUSES } from './model/types'
+export {
+  TASK_PRIORITIES,
+  TASK_STATUSES,
+  isPriority,
+  isTaskStatus,
+} from './model/types'
 
 export {
   DEFAULT_PRIORITY,
@@ -48,9 +64,15 @@ export {
   validateTaskDraft,
   validateStoredTask,
   countGraphemes,
+  isIsoTimestamp,
 } from './model/validation'
 
-export { compareTasks, groupTasks } from './model/ordering'
+export {
+  compareTasks,
+  groupTasks,
+  orderedTasks,
+  sortTasks,
+} from './model/ordering'
 export { parseDurationInput, formatDuration } from './model/duration'
 export {
   isLocalDate,
@@ -59,6 +81,16 @@ export {
   formatDueDate,
 } from './model/dueDate'
 export { loadGuestTaskStore, saveGuestTaskStore } from './model/storage'
+export {
+  migrateLegacyRecords,
+  sanitizeTaskRecords,
+  emptyQuarantine,
+  quarantineTotal,
+} from './model/sanitize'
+
+`features/tasks/skeleton.ts` is a narrow secondary public entry that re-exports
+`TasksPageSkeleton`. The app router imports it so the route fallback does not pull
+the interactive task slice into the initial bundle (ADR 0006).
 ```
 
 ## 2. Domain types
@@ -124,6 +156,7 @@ type TaskRecordValidationCode =
   | 'TASK_ID_INVALID'
   | 'TASK_CREATED_AT_INVALID'
   | 'TASK_STATUS_INVALID'
+  | 'TASK_UNKNOWN_FIELD'
 
 interface TaskFieldError {
   field: 'title' | 'description' | 'priority' | 'dueDate' | 'estimatedMinutes'
@@ -142,7 +175,7 @@ Rules:
 - Validation functions are pure and return codes, never localized messages.
 - `validateTaskDraft` applies trimming before length checks and checks every field; it never returns only the first error.
 - Form payloads use `.strict()` schemas; unknown keys are rejected.
-- `validateStoredTask` accepts `unknown`, never throws, and never coerces invalid values into valid domain values. Duplicate identities are detected by the store's sanitizer, not by this single-record validator.
+- `validateStoredTask` accepts `unknown`, never throws, and never coerces invalid values into valid domain values. Unknown record keys are rejected with `TASK_UNKNOWN_FIELD`. Duplicate identities are detected by the store's sanitizer, not by this single-record validator.
 - Grapheme counting uses `Intl.Segmenter` with `granularity: 'grapheme'` after trimming.
 - An invalid record is quarantined by the store; it is not passed to the domain.
 

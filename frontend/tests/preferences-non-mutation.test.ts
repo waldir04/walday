@@ -1,25 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { loadTasks, saveTasks } from '../src/features/tasks'
+import { loadGuestTaskStore, saveGuestTaskStore } from '../src/entities/task'
 import { savePreferences } from '../src/entities/preferences'
+import { makeTask } from './helpers/taskFixtures'
 
 describe('Preferences non-mutation (US3)', () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
-  it('changing language or units does not alter task data', () => {
-    const tasks = [
-      {
-        id: '1',
-        title: 'Task A',
-        description: 'desc',
-        priority: 'medium' as const,
-        completed: false,
-        createdAt: 1,
-      },
-    ]
-    saveTasks(tasks)
-    const before = JSON.stringify(loadTasks())
+  it('changing language or units does not alter task data', async () => {
+    const tasks = [makeTask({ id: '1', title: 'Task A', description: 'desc' })]
+    await saveGuestTaskStore(tasks, 'empty', 'normal')
+    const before = JSON.stringify(loadGuestTaskStore())
 
     savePreferences({
       language: 'es',
@@ -28,7 +20,7 @@ describe('Preferences non-mutation (US3)', () => {
       weatherLocation: { name: 'Bogotá' },
     })
 
-    const after = JSON.stringify(loadTasks())
+    const after = JSON.stringify(loadGuestTaskStore())
     expect(after).toEqual(before)
   })
 

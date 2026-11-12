@@ -1,23 +1,45 @@
 {
   "title": "Tasks",
   "guestNotice": "Guest data is stored locally and may be lost if browser storage is cleared or you change devices.",
-  "empty": "No tasks yet. Add one above.",
+  "skeletonLabel": "Loading tasks",
+  "empty": {
+    "heading": "No tasks yet",
+    "description": "No tasks yet. Add one above.",
+    "action": "Create a task"
+  },
   "form": {
+    "heading": "New task",
     "title": "Title",
     "description": "Description (optional)",
     "priority": "Priority",
     "dueDate": "Due date (optional)",
     "duration": "Duration (optional)",
-    "durationPlaceholder": "30 min",
+    "durationPlaceholder": "e.g. 1 h 30 min",
     "submit": "Add task",
+    "submitting": "Adding task…",
     "priorityOptions": {
       "low": "Low",
       "medium": "Medium",
       "high": "High"
     }
   },
+  "edit": {
+    "heading": "Edit task",
+    "save": "Save changes",
+    "saving": "Saving changes…",
+    "cancel": "Cancel"
+  },
   "validation": {
-    "titleMinLength": "Title must be at least 3 characters"
+    "summary": "Please fix the following:",
+    "titleRequired": "Enter a title",
+    "titleTooShort": "Title must be at least 3 characters",
+    "titleTooLong": "Title must be 200 characters or fewer",
+    "descriptionTooLong": "Description must be 2000 characters or fewer",
+    "priorityInvalid": "Choose a valid priority",
+    "dueDateInvalid": "Enter a valid due date",
+    "durationInvalid": "Enter a duration with a unit, such as 30 min or 1 h 30 min",
+    "durationRange": "Duration must be between 1 minute and 24 hours",
+    "durationFractional": "Duration must resolve to a whole number of minutes"
   },
   "item": {
     "markPending": "Mark {{title}} pending",
@@ -25,10 +47,69 @@
     "priority": "Priority: {{priority}}",
     "due": "Due: {{date}}",
     "duration": "Duration: {{duration}}",
+    "pastDue": "Past due",
+    "editTask": "Edit {{title}}",
+    "deleteTask": "Delete {{title}}",
     "edit": "Edit",
     "delete": "Delete",
-    "confirmDelete": "Confirm delete?",
-    "yes": "Yes",
-    "no": "Cancel"
+    "statusPending": "Pending",
+    "statusCompleted": "Completed"
+  },
+  "groups": {
+    "pending": "Pending tasks",
+    "completed": "Completed tasks"
+  },
+  "delete": {
+    "heading": "Delete task",
+    "message": "Delete “{{title}}”? This cannot be undone.",
+    "confirm": "Delete task",
+    "cancel": "Cancel"
+  },
+  "recovery": {
+    "heading": "Some stored tasks could not be restored",
+    "count_one": "{{count}} stored record could not be restored. The stored data is preserved.",
+    "count_other": "{{count}} stored records could not be restored. The stored data is preserved.",
+    "unsupportedHeading": "Stored tasks were written by a newer version",
+    "unsupportedDescription": "These tasks cannot be read safely by this version. The stored data has been preserved and will not be overwritten.",
+    "discard": "Discard unreadable data",
+    "confirmHeading": "Discard unreadable data?",
+    "confirmMessage_one": "{{count}} stored record will be permanently discarded. Restored tasks are kept.",
+    "confirmMessage_other": "{{count}} stored records will be permanently discarded. Restored tasks are kept.",
+    "confirm": "Discard",
+    "cancel": "Cancel"
+  },
+  "storage": {
+    "memoryOnlyHeading": "Changes may not be saved",
+    "memoryOnlyDescription": "Browser storage is unavailable. Changes apply only to this session.",
+    "retry": "Try saving again",
+    "retrying": "Trying to save…",
+    "recoveryBlockedHeading": "Stored data needs attention",
+    "recoveryBlockedDescription": "Review the unreadable stored data before new changes can be saved.",
+    "protectedHeading": "Stored data is protected",
+    "protectedDescription": "Saving is disabled to preserve your stored data. Review and confirm discarding unreadable data, or reload.",
+    "unsupportedHeading": "Stored data was written by a newer version",
+    "unsupportedDescription": "This version cannot read it safely. The data has been preserved, and changes apply only to this session."
+  },
+  "feedback": {
+    "created": "Task created.",
+    "createdSessionOnly": "Task created for this session only. It was not saved.",
+    "updated": "Task updated.",
+    "updatedSessionOnly": "Task updated for this session only. It was not saved.",
+    "deleted": "Task deleted.",
+    "deletedSessionOnly": "Task deleted for this session only. The deletion was not saved.",
+    "completed": "Task marked complete.",
+    "pending": "Task marked pending.",
+    "statusSessionOnly": "Task status changed for this session only. It was not saved.",
+    "restored": "Tasks restored.",
+    "restoredPartial": "Tasks restored. Some stored records could not be read.",
+    "updatedElsewhere": "Tasks were updated in another tab.",
+    "clearedElsewhere": "Stored tasks were cleared in another tab.",
+    "newerData": "Newer tasks were found in another tab. Reload to see them before saving.",
+    "conflict": "Your change was not saved because newer data exists. Reload to review it.",
+    "reload": "Reload",
+    "retrySucceeded": "Changes saved.",
+    "retryFailed": "Changes are still not saved. They apply only to this session.",
+    "discarded": "Unreadable stored data was discarded and restored tasks were saved.",
+    "protected": "Stored data was preserved. Saving remains disabled until you discard unreadable data or reload."
   }
 }

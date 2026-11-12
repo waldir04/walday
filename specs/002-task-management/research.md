@@ -205,7 +205,7 @@ The following observations from the current repository are relevant to implement
 - The strict TypeScript flags named by Principle II are enabled in `frontend/tsconfig.app.json`.
 - A `Skeleton` component already exists in `frontend/src/shared/ui/Skeleton.tsx`; the shared `Loading` component uses it.
 - The frontend environment module and root quality-gate scripts already exist; see ADR 0005.
-- The task domain is still in `features/tasks` and the commitments flow still uses `window.confirm`; both are tracked debt for the relevant implementation work, not precedents for this feature.
+- The task domain now lives in `entities/task` (ADR 0006); the commitments flow still uses `window.confirm` as tracked debt for its own feature work.
 
 ## 24. Deferred presentation decisions
 

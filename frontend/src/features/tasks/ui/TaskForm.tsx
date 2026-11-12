@@ -1,136 +1,267 @@
-import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { FormEvent, RefObject } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Priority } from '../model/task'
-import { validateTitle } from '../model/task'
-import { isPriority } from '../model/schema'
+import {
+  TASK_PRIORITIES,
+  isPriority,
+  validateTaskDraft,
+  type TaskDraft,
+} from '@/entities/task'
+import { Button } from '@/shared/ui/Button'
+import {
+  emptyTaskDraft,
+  errorsByField,
+  validationMessageKey,
+} from '../model/taskDraft'
 
-interface Props {
-  onAdd: (_input: {
-    title: string
-    description?: string
-    priority: Priority
-    dueDate?: string
-    estimatedDuration?: string
-  }) => void
+export interface TaskFormProps {
+  onSubmit: (_draft: TaskDraft) => Promise<boolean>
+  pending: boolean
+  titleInputRef?: RefObject<HTMLInputElement | null>
+  onDraftActiveChange?: (_active: boolean) => void
 }
 
-export function TaskForm({ onAdd }: Props) {
-  const { t } = useTranslation('tasks')
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<Priority>('medium')
-  const [dueDate, setDueDate] = useState('')
-  const [duration, setDuration] = useState('')
-  const [error, setError] = useState<string | null>(null)
+const FIELD_CLASSES =
+  'mt-1 min-h-11 w-full rounded-control border border-border bg-surface px-3 py-2 text-body text-text'
 
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    const err = validateTitle(title)
-    if (err) {
-      setError(err)
+export function TaskForm({
+  onSubmit,
+  pending,
+  titleInputRef,
+  onDraftActiveChange,
+}: TaskFormProps) {
+  const { t } = useTranslation('tasks')
+  const [draft, setDraft] = useState<TaskDraft>(emptyTaskDraft)
+  const [errors, setErrors] = useState(
+    [] as ReturnType<typeof validateTaskDraft>,
+  )
+  const localTitleRef = useRef<HTMLInputElement>(null)
+  const activeChangeRef = useRef(onDraftActiveChange)
+
+  useEffect(() => {
+    activeChangeRef.current = onDraftActiveChange
+  }, [onDraftActiveChange])
+  const titleRef = titleInputRef ?? localTitleRef
+
+  useEffect(() => {
+    return () => {
+      activeChangeRef.current?.(false)
+    }
+  }, [])
+
+  const fieldErrors = errorsByField(errors)
+  const showSummary = errors.length > 1
+
+  function change<K extends keyof TaskDraft>(field: K, value: TaskDraft[K]) {
+    setDraft((current) => ({ ...current, [field]: value }))
+    activeChangeRef.current?.(true)
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (pending) return
+
+    const validation = validateTaskDraft(draft)
+    if (validation.length > 0) {
+      setErrors(validation)
       return
     }
-    setError(null)
-    onAdd({
-      title,
-      description,
-      priority,
-      dueDate,
-      estimatedDuration: duration,
-    })
-    setTitle('')
-    setDescription('')
-    setPriority('medium')
-    setDueDate('')
-    setDuration('')
+
+    setErrors([])
+    const saved = await onSubmit(draft)
+    if (!saved) return
+
+    setDraft(emptyTaskDraft())
+    setErrors([])
+    activeChangeRef.current?.(false)
+    titleRef.current?.focus()
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3" aria-label={t('title')}>
+    <form
+      onSubmit={handleSubmit}
+      aria-label={t('form.heading')}
+      aria-busy={pending || undefined}
+      className="space-y-stack rounded-card border border-border bg-surface p-section"
+      noValidate
+    >
+      {showSummary ? (
+        <div
+          role="alert"
+          className="rounded-card border border-danger bg-surface-subtle p-3"
+        >
+          <p className="font-medium text-danger">{t('validation.summary')}</p>
+          <ul className="mt-1 list-disc pl-5 text-caption text-text">
+            {errors.map((error, index) => (
+              <li key={`${error.field}-${error.code}-${index}`}>
+                {t(validationMessageKey(error.code))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
       <div>
-        <label htmlFor="title" className="block text-sm font-medium">
+        <label htmlFor="task-title" className="block text-caption font-medium">
           {t('form.title')}
         </label>
         <input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? 'task-title-error' : undefined}
+          id="task-title"
+          ref={titleRef}
+          type="text"
+          value={draft.title}
+          onChange={(event) => change('title', event.target.value)}
+          className={FIELD_CLASSES}
+          aria-invalid={fieldErrors.title ? true : undefined}
+          aria-describedby={fieldErrors.title ? 'task-title-error' : undefined}
         />
-        {error && (
+        {fieldErrors.title ? (
           <p
             id="task-title-error"
-            className="mt-1 text-sm text-danger"
-            role="alert"
+            role={showSummary ? undefined : 'alert'}
+            className="mt-1 text-caption text-danger"
           >
-            {t(error)}
+            {t(validationMessageKey(fieldErrors.title))}
           </p>
-        )}
+        ) : null}
       </div>
+
       <div>
-        <label htmlFor="description" className="block text-sm font-medium">
+        <label
+          htmlFor="task-description"
+          className="block text-caption font-medium"
+        >
           {t('form.description')}
         </label>
         <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mt-1 w-full rounded border border-gray-300 px-3 py-2"
+          id="task-description"
+          value={draft.description}
+          onChange={(event) => change('description', event.target.value)}
+          rows={3}
+          className={FIELD_CLASSES}
+          aria-invalid={fieldErrors.description ? true : undefined}
+          aria-describedby={
+            fieldErrors.description ? 'task-description-error' : undefined
+          }
         />
+        {fieldErrors.description ? (
+          <p
+            id="task-description-error"
+            role={showSummary ? undefined : 'alert'}
+            className="mt-1 text-caption text-danger"
+          >
+            {t(validationMessageKey(fieldErrors.description))}
+          </p>
+        ) : null}
       </div>
-      <div className="flex flex-wrap gap-3">
+
+      <div className="grid gap-stack sm:grid-cols-3">
         <div>
-          <label htmlFor="priority" className="block text-sm font-medium">
+          <label
+            htmlFor="task-priority"
+            className="block text-caption font-medium"
+          >
             {t('form.priority')}
           </label>
           <select
-            id="priority"
-            value={priority}
-            onChange={(e) => {
-              const value = e.target.value
-              if (isPriority(value)) setPriority(value)
+            id="task-priority"
+            value={draft.priority}
+            onChange={(event) => {
+              if (isPriority(event.target.value)) {
+                change('priority', event.target.value)
+              }
             }}
-            className="mt-1 rounded border border-gray-300 px-3 py-2"
+            className={FIELD_CLASSES}
+            aria-invalid={fieldErrors.priority ? true : undefined}
+            aria-describedby={
+              fieldErrors.priority ? 'task-priority-error' : undefined
+            }
           >
-            <option value="low">{t('form.priorityOptions.low')}</option>
-            <option value="medium">{t('form.priorityOptions.medium')}</option>
-            <option value="high">{t('form.priorityOptions.high')}</option>
+            {TASK_PRIORITIES.map((priority) => (
+              <option key={priority} value={priority}>
+                {t(`form.priorityOptions.${priority}`)}
+              </option>
+            ))}
           </select>
+          {fieldErrors.priority ? (
+            <p
+              id="task-priority-error"
+              role={showSummary ? undefined : 'alert'}
+              className="mt-1 text-caption text-danger"
+            >
+              {t(validationMessageKey(fieldErrors.priority))}
+            </p>
+          ) : null}
         </div>
+
         <div>
-          <label htmlFor="dueDate" className="block text-sm font-medium">
+          <label
+            htmlFor="task-dueDate"
+            className="block text-caption font-medium"
+          >
             {t('form.dueDate')}
           </label>
           <input
-            id="dueDate"
+            id="task-dueDate"
             type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            className="mt-1 rounded border border-gray-300 px-3 py-2"
+            value={draft.dueDate}
+            onChange={(event) => change('dueDate', event.target.value)}
+            className={FIELD_CLASSES}
+            aria-invalid={fieldErrors.dueDate ? true : undefined}
+            aria-describedby={
+              fieldErrors.dueDate ? 'task-dueDate-error' : undefined
+            }
           />
+          {fieldErrors.dueDate ? (
+            <p
+              id="task-dueDate-error"
+              role={showSummary ? undefined : 'alert'}
+              className="mt-1 text-caption text-danger"
+            >
+              {t(validationMessageKey(fieldErrors.dueDate))}
+            </p>
+          ) : null}
         </div>
+
         <div>
-          <label htmlFor="duration" className="block text-sm font-medium">
+          <label
+            htmlFor="task-duration"
+            className="block text-caption font-medium"
+          >
             {t('form.duration')}
           </label>
           <input
-            id="duration"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
+            id="task-duration"
+            type="text"
+            inputMode="text"
+            value={draft.estimatedDurationInput}
+            onChange={(event) =>
+              change('estimatedDurationInput', event.target.value)
+            }
             placeholder={t('form.durationPlaceholder')}
-            className="mt-1 rounded border border-gray-300 px-3 py-2"
+            className={FIELD_CLASSES}
+            aria-invalid={fieldErrors.estimatedMinutes ? true : undefined}
+            aria-describedby={
+              fieldErrors.estimatedMinutes ? 'task-duration-error' : undefined
+            }
           />
+          {fieldErrors.estimatedMinutes ? (
+            <p
+              id="task-duration-error"
+              role={showSummary ? undefined : 'alert'}
+              className="mt-1 text-caption text-danger"
+            >
+              {t(validationMessageKey(fieldErrors.estimatedMinutes))}
+            </p>
+          ) : null}
         </div>
       </div>
-      <button
-        type="submit"
-        className="rounded bg-primary px-4 py-2 text-text-inverse"
-      >
-        {t('form.submit')}
-      </button>
+
+      <div>
+        <Button type="submit" disabled={pending}>
+          {pending ? t('form.submitting') : t('form.submit')}
+        </Button>
+      </div>
     </form>
   )
 }
