@@ -10,11 +10,12 @@ import { AppShell } from '@/widgets/AppShell'
 import { HomePage } from '@/pages/HomePage'
 import { FoundationPage } from '@/pages/FoundationPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
-import { Loading } from '@/shared/ui/Loading'
 // eslint-disable-next-line no-restricted-imports -- tasks/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
 import { TasksPageSkeleton } from '@/features/tasks/skeleton'
 // eslint-disable-next-line no-restricted-imports -- preferences/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
 import { PreferencesPageSkeleton } from '@/features/user-preferences/skeleton'
+// eslint-disable-next-line no-restricted-imports -- commitments/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
+import { CommitmentsPageSkeleton } from '@/features/commitments/skeleton'
 import { RouteError } from './RouteError'
 
 const TasksPage = lazy(() =>
@@ -36,16 +37,16 @@ export interface RouteHandle {
   titleNamespace?: string
 }
 
-function LazyRoute({ children }: { children: ReactNode }) {
-  return <Suspense fallback={<Loading />}>{children}</Suspense>
-}
-
 function TasksLazyRoute({ children }: { children: ReactNode }) {
   return <Suspense fallback={<TasksPageSkeleton />}>{children}</Suspense>
 }
 
 function SettingsLazyRoute({ children }: { children: ReactNode }) {
   return <Suspense fallback={<PreferencesPageSkeleton />}>{children}</Suspense>
+}
+
+function CommitmentsLazyRoute({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<CommitmentsPageSkeleton />}>{children}</Suspense>
 }
 
 export const routes: RouteObject[] = [
@@ -95,9 +96,9 @@ export const routes: RouteObject[] = [
       {
         path: 'commitments',
         element: (
-          <LazyRoute>
+          <CommitmentsLazyRoute>
             <CommitmentsPage />
-          </LazyRoute>
+          </CommitmentsLazyRoute>
         ),
         handle: {
           titleKey: 'title',

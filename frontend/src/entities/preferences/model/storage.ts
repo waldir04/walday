@@ -1,3 +1,5 @@
+import { enqueueWrite, isQuotaExceeded } from '@/shared/lib/guestStore'
+
 import {
   PREFERENCES_LOCK_NAME,
   PREFERENCES_STORAGE_KEY,
@@ -18,14 +20,6 @@ import type {
   UserPreferences,
   WriteBlockCause,
 } from './types'
-
-let writeChain: Promise<unknown> = Promise.resolve()
-
-function enqueueWrite<T>(operation: () => Promise<T>): Promise<T> {
-  const next = writeChain.then(operation, operation)
-  writeChain = next.catch(() => undefined)
-  return next
-}
 
 function resolveStorage(
   deps: PreferenceStorageDependencies | undefined,
@@ -76,17 +70,6 @@ function migrationContext(
   return {
     firstSupportedBrowserLanguage: firstSupportedBrowserLanguage(languages),
   }
-}
-
-function isQuotaExceeded(error: unknown): boolean {
-  if (typeof error !== 'object' || error === null) return false
-  const candidate = error as { name?: unknown; code?: unknown }
-  return (
-    candidate.name === 'QuotaExceededError' ||
-    candidate.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
-    candidate.code === 22 ||
-    candidate.code === 1014
-  )
 }
 
 export function loadPreferences(

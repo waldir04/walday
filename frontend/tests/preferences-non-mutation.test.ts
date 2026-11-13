@@ -32,16 +32,21 @@ beforeEach(() => {
 describe('preference independence and non-mutation (US3)', () => {
   it('changes only walday:preferences and leaves task and commitment bytes untouched', async () => {
     await saveGuestTaskStore([makeTask()], 'empty', 'normal')
-    saveCommitments([
-      {
-        id: 'commitment-1',
-        title: 'Weekly review',
-        date: '2026-11-12',
-        startTime: '09:00',
-        endTime: '10:00',
-        type: 'fixed',
-      },
-    ])
+    await saveCommitments(
+      [
+        {
+          id: '11111111-1111-4111-8111-111111111111',
+          title: 'Weekly review',
+          date: '2026-11-12',
+          startTime: '09:00',
+          endTime: '10:00',
+          type: 'fixed',
+          createdAt: '2026-11-12T08:00:00.000Z',
+        },
+      ],
+      { revision: 'empty' },
+      'normal',
+    )
     localStorage.setItem(
       'walday:weather',
       JSON.stringify({ location: 'Madrid', temperatureC: 20 }),
@@ -125,16 +130,21 @@ describe('preference independence and non-mutation (US3)', () => {
       'empty',
       'normal',
     )
-    saveCommitments([
-      {
-        id: 'commitment-2',
-        title: 'Still works',
-        date: '2026-11-12',
-        startTime: '11:00',
-        endTime: '12:00',
-        type: 'fixed',
-      },
-    ])
+    await saveCommitments(
+      [
+        {
+          id: '22222222-2222-4222-8222-222222222222',
+          title: 'Still works',
+          date: '2026-11-12',
+          startTime: '11:00',
+          endTime: '12:00',
+          type: 'fixed',
+          createdAt: '2026-11-12T08:00:00.000Z',
+        },
+      ],
+      { revision: 'empty' },
+      'normal',
+    )
 
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(loadGuestTaskStore()).toMatchObject({

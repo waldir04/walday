@@ -1,3 +1,5 @@
+import { enqueueWrite, isQuotaExceeded } from '@/shared/lib/guestStore'
+
 import {
   TASKS_LOCK_NAME,
   TASKS_STORAGE_KEY,
@@ -34,14 +36,6 @@ interface MigrationOutcome {
 type RegisteredMigration = (input: Record<string, unknown>) => MigrationOutcome
 
 const REGISTERED_MIGRATIONS: Record<number, RegisteredMigration> = {}
-
-let writeChain: Promise<unknown> = Promise.resolve()
-
-function enqueueWrite<T>(operation: () => Promise<T>): Promise<T> {
-  const next = writeChain.then(operation, operation)
-  writeChain = next.catch(() => undefined)
-  return next
-}
 
 function resolveStorage(
   deps: TaskStorageDependencies | undefined,
@@ -87,17 +81,6 @@ function resolveRandomId(deps: TaskStorageDependencies | undefined): string {
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-function isQuotaExceeded(error: unknown): boolean {
-  if (typeof error !== 'object' || error === null) return false
-  const candidate = error as { name?: unknown; code?: unknown }
-  return (
-    candidate.name === 'QuotaExceededError' ||
-    candidate.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
-    candidate.code === 22 ||
-    candidate.code === 1014
-  )
 }
 
 export function loadGuestTaskStore(

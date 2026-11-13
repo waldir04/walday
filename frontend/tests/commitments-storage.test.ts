@@ -1,88 +1,111 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest'
-import { loadCommitments, saveCommitments } from '../src/entities/commitment'
-import type { Commitment } from '../src/entities/commitment'
+import { describe, expect, it } from 'vitest'
 import { COMMITMENTS_STORAGE_KEY } from '../src/shared/config/commitments'
+import { loadCommitments } from '../src/entities/commitment'
+import { FakeStorage } from './helpers/fakeStorage'
+import {
+  COMMITMENT_A_ID,
+  COMMITMENT_B_ID,
+  makeCommitment,
+  makeEnvelope,
+} from './helpers/commitmentFixtures'
 
-describe('commitments storage', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    vi.unstubAllGlobals()
+const now = () => new Date('2026-11-12T10:00:00.000Z')
+
+describe('commitment store read contract', () => {
+  it('returns empty when nothing is stored', () => {
+    expect(loadCommitments({ storage: new FakeStorage(), now })).toEqual({
+      kind: 'empty',
+    })
   })
 
-  it('returns empty array when nothing stored', () => {
-    expect(loadCommitments()).toEqual([])
+  it('restores a valid v1 envelope', () => {
+    const storage = new FakeStorage({
+      [COMMITMENTS_STORAGE_KEY]: makeEnvelope([makeCommitment()]),
+    })
+    const result = loadCommitments({ storage, now })
+    expect(result.kind).toBe('restored')
+    if (result.kind !== 'restored') return
+    expect(result.commitments).toHaveLength(1)
+    expect(result.revision).toBe('rev-1')
   })
 
-  it('saves and restores commitments', () => {
-    const commitments: Commitment[] = [
-      {
-        id: '1',
-        title: 'Meeting',
-        description: 'Team sync',
-        date: '2026-11-10',
-        startTime: '09:00',
-        endTime: '10:00',
-        type: 'fixed',
-      },
-      {
-        id: '2',
-        title: 'Exercise',
-        date: '2026-11-10',
-        startTime: '17:00',
-        endTime: '18:00',
-        type: 'flexible',
-      },
-    ]
-    saveCommitments(commitments)
-    expect(loadCommitments()).toEqual(commitments)
+  it('quarantines invalid records and returns partial', () => {
+    const storage = new FakeStorage({
+      [COMMITMENTS_STORAGE_KEY]: makeEnvelope([
+        makeCommitment(),
+        { ...makeCommitment({ id: COMMITMENT_B_ID }), title: '' },
+      ]),
+    })
+    const result = loadCommitments({ storage, now })
+    expect(result.kind).toBe('partial')
+    if (result.kind !== 'partial') return
+    expect(result.commitments).toHaveLength(1)
+    expect(result.quarantine.invalidRecords).toBe(1)
   })
 
-  it('returns empty array for corrupt data', () => {
-    localStorage.setItem(COMMITMENTS_STORAGE_KEY, '{not-json')
-    expect(loadCommitments()).toEqual([])
-  })
-
-  it('sanitizes and drops invalid stored records', () => {
-    localStorage.setItem(
-      COMMITMENTS_STORAGE_KEY,
-      JSON.stringify([
+  it('migrates a legacy raw array without fabricating identity', () => {
+    const storage = new FakeStorage({
+      [COMMITMENTS_STORAGE_KEY]: JSON.stringify([
         {
-          id: '1',
-          title: 'Valid',
+          id: COMMITMENT_A_ID,
+          title: 'Legacy',
           date: '2026-11-10',
           startTime: '09:00',
           endTime: '10:00',
           type: 'fixed',
         },
         {
-          id: '2',
-          title: '',
+          title: 'No id',
           date: '2026-11-10',
           startTime: '09:00',
           endTime: '10:00',
           type: 'fixed',
         },
       ]),
-    )
-    const loaded = loadCommitments()
-    expect(loaded).toHaveLength(1)
-    expect(loaded[0]?.id).toBe('1')
+    })
+    const result = loadCommitments({ storage, now })
+    expect(result.kind).toBe('legacy')
+    if (result.kind !== 'legacy') return
+    expect(result.commitments).toHaveLength(1)
+    expect(result.commitments[0]?.createdAt).toBe(now().toISOString())
+    expect(result.quarantine.reasonCodes).toContain('MISSING_ID')
+    expect(storage.setItemCalls).toBe(0)
   })
 
-  it('gracefully handles unavailable storage', () => {
-    vi.stubGlobal('localStorage', undefined)
-    expect(loadCommitments()).toEqual([])
-    expect(() =>
-      saveCommitments([
-        {
-          id: '1',
-          title: 'Meeting',
-          date: '2026-11-10',
-          startTime: '09:00',
-          endTime: '10:00',
-          type: 'fixed',
-        },
-      ]),
-    ).not.toThrow()
+  it('classifies corrupt, unsupported, migration-failed, and unavailable', () => {
+    expect(
+      loadCommitments({
+        storage: new FakeStorage({ [COMMITMENTS_STORAGE_KEY]: '{bad' }),
+        now,
+      }).kind,
+    ).toBe('corrupt')
+    expect(
+      loadCommitments({
+        storage: new FakeStorage({
+          [COMMITMENTS_STORAGE_KEY]: makeEnvelope([], { version: 2 }),
+        }),
+        now,
+      }).kind,
+    ).toBe('unsupported')
+    expect(
+      loadCommitments({
+        storage: new FakeStorage({
+          [COMMITMENTS_STORAGE_KEY]: JSON.stringify({
+            version: 0,
+            commitments: [],
+          }),
+        }),
+        now,
+      }).kind,
+    ).toBe('migration-failed')
+    expect(loadCommitments({ storage: null, now }).kind).toBe('unavailable')
+  })
+
+  it('does not write during any read', () => {
+    const storage = new FakeStorage({
+      [COMMITMENTS_STORAGE_KEY]: makeEnvelope([makeCommitment()]),
+    })
+    loadCommitments({ storage, now })
+    expect(storage.setItemCalls).toBe(0)
   })
 })

@@ -1,74 +1,140 @@
-import type { Commitment, CommitmentType } from './types'
 import { COMMITMENT_TYPES } from '@/shared/config/commitments'
-import { includesValue } from '@/shared/lib/includes'
+import { countGraphemes } from '@/shared/lib/graphemes'
+import { isLocalDate, isLocalTime } from '@/shared/lib/localDateTime'
+import {
+  COMMITMENT_DESCRIPTION_MAX_GRAPHEMES,
+  COMMITMENT_TITLE_MAX_GRAPHEMES,
+} from './constants'
+import type { Commitment, CommitmentDraft, CommitmentType } from './types'
 
-export interface ValidationError {
-  field:
-    'title' | 'date' | 'startTime' | 'endTime' | 'type' | 'range' | 'overlap'
-  messageKey: string
+export type CommitmentField =
+  'title' | 'description' | 'date' | 'startTime' | 'endTime' | 'type' | 'range'
+
+export type CommitmentValidationCode =
+  | 'TITLE_REQUIRED'
+  | 'TITLE_TOO_LONG'
+  | 'DESCRIPTION_TOO_LONG'
+  | 'DATE_REQUIRED'
+  | 'DATE_INVALID'
+  | 'START_TIME_REQUIRED'
+  | 'START_TIME_INVALID'
+  | 'END_TIME_REQUIRED'
+  | 'END_TIME_INVALID'
+  | 'RANGE_INVALID'
+  | 'CROSS_MIDNIGHT'
+  | 'TYPE_REQUIRED'
+  | 'TYPE_INVALID'
+
+export interface CommitmentFieldError {
+  field: CommitmentField
+  code: CommitmentValidationCode
 }
 
-export function validateCommitment(
-  commitment: Partial<Commitment>,
-): ValidationError[] {
-  const errors: ValidationError[] = []
+export function validateCommitmentDraft(
+  draft: CommitmentDraft,
+): CommitmentFieldError[] {
+  const errors: CommitmentFieldError[] = []
+  const title = draft.title.trim()
+  const description = draft.description.trim()
 
-  if (!commitment.title || commitment.title.trim().length === 0) {
-    errors.push({
-      field: 'title',
-      messageKey: 'commitments.validation.titleRequired',
-    })
+  if (title.length === 0) {
+    errors.push({ field: 'title', code: 'TITLE_REQUIRED' })
+  } else if (countGraphemes(title) > COMMITMENT_TITLE_MAX_GRAPHEMES) {
+    errors.push({ field: 'title', code: 'TITLE_TOO_LONG' })
   }
 
-  if (!commitment.date || commitment.date.trim().length === 0) {
-    errors.push({
-      field: 'date',
-      messageKey: 'commitments.validation.dateRequired',
-    })
+  if (countGraphemes(description) > COMMITMENT_DESCRIPTION_MAX_GRAPHEMES) {
+    errors.push({ field: 'description', code: 'DESCRIPTION_TOO_LONG' })
   }
 
-  if (!commitment.startTime || commitment.startTime.trim().length === 0) {
-    errors.push({
-      field: 'startTime',
-      messageKey: 'commitments.validation.startTimeRequired',
-    })
+  if (draft.date.trim().length === 0) {
+    errors.push({ field: 'date', code: 'DATE_REQUIRED' })
+  } else if (!isLocalDate(draft.date)) {
+    errors.push({ field: 'date', code: 'DATE_INVALID' })
   }
 
-  if (!commitment.endTime || commitment.endTime.trim().length === 0) {
-    errors.push({
-      field: 'endTime',
-      messageKey: 'commitments.validation.endTimeRequired',
-    })
+  if (draft.startTime.trim().length === 0) {
+    errors.push({ field: 'startTime', code: 'START_TIME_REQUIRED' })
+  } else if (!isLocalTime(draft.startTime)) {
+    errors.push({ field: 'startTime', code: 'START_TIME_INVALID' })
   }
 
-  if (commitment.type !== undefined && !isValidType(commitment.type)) {
-    errors.push({
-      field: 'type',
-      messageKey: 'commitments.validation.typeRequired',
-    })
+  if (draft.endTime.trim().length === 0) {
+    errors.push({ field: 'endTime', code: 'END_TIME_REQUIRED' })
+  } else if (!isLocalTime(draft.endTime)) {
+    errors.push({ field: 'endTime', code: 'END_TIME_INVALID' })
   }
 
-  if (
-    commitment.startTime &&
-    commitment.endTime &&
-    commitment.startTime.trim().length > 0 &&
-    commitment.endTime.trim().length > 0
-  ) {
-    if (!(commitment.startTime < commitment.endTime)) {
-      errors.push({
-        field: 'range',
-        messageKey: 'commitments.validation.invalidRange',
-      })
+  if (isLocalTime(draft.startTime) && isLocalTime(draft.endTime)) {
+    if (draft.endTime === '00:00') {
+      errors.push({ field: 'endTime', code: 'CROSS_MIDNIGHT' })
+    } else if (draft.startTime >= draft.endTime) {
+      errors.push({ field: 'endTime', code: 'RANGE_INVALID' })
     }
+  }
+
+  if (draft.type === '') {
+    errors.push({ field: 'type', code: 'TYPE_REQUIRED' })
+  } else if (!isCommitmentType(draft.type)) {
+    errors.push({ field: 'type', code: 'TYPE_INVALID' })
   }
 
   return errors
 }
 
-export function hasInvalidRange(startTime: string, endTime: string): boolean {
-  return !(startTime < endTime)
+export function validateCommitmentRecord(
+  commitment: Commitment,
+): CommitmentFieldError[] {
+  return validateCommitmentDraft({
+    title: commitment.title,
+    description: commitment.description ?? '',
+    date: commitment.date,
+    startTime: commitment.startTime,
+    endTime: commitment.endTime,
+    type: commitment.type,
+  })
 }
 
-export function isValidType(type: string): type is CommitmentType {
-  return includesValue(COMMITMENT_TYPES, type)
+export function isCommitmentType(value: string): value is CommitmentType {
+  return COMMITMENT_TYPES.some((type) => type === value)
+}
+
+export function hasInvalidRange(startTime: string, endTime: string): boolean {
+  return (
+    isLocalTime(startTime) &&
+    isLocalTime(endTime) &&
+    (endTime === '00:00' || startTime >= endTime)
+  )
+}
+
+export function errorsByField(
+  errors: readonly CommitmentFieldError[],
+): Partial<Record<CommitmentField, CommitmentValidationCode>> {
+  const result: Partial<Record<CommitmentField, CommitmentValidationCode>> = {}
+  for (const error of errors) {
+    if (result[error.field] === undefined) {
+      result[error.field] = error.code
+    }
+  }
+  return result
+}
+
+const MESSAGE_KEYS: Record<CommitmentValidationCode, string> = {
+  TITLE_REQUIRED: 'commitments.validation.titleRequired',
+  TITLE_TOO_LONG: 'commitments.validation.titleTooLong',
+  DESCRIPTION_TOO_LONG: 'commitments.validation.descriptionTooLong',
+  DATE_REQUIRED: 'commitments.validation.dateRequired',
+  DATE_INVALID: 'commitments.validation.dateInvalid',
+  START_TIME_REQUIRED: 'commitments.validation.startTimeRequired',
+  START_TIME_INVALID: 'commitments.validation.startTimeInvalid',
+  END_TIME_REQUIRED: 'commitments.validation.endTimeRequired',
+  END_TIME_INVALID: 'commitments.validation.endTimeInvalid',
+  RANGE_INVALID: 'commitments.validation.invalidRange',
+  CROSS_MIDNIGHT: 'commitments.validation.crossMidnight',
+  TYPE_REQUIRED: 'commitments.validation.typeRequired',
+  TYPE_INVALID: 'commitments.validation.typeInvalid',
+}
+
+export function validationMessageKey(code: CommitmentValidationCode): string {
+  return MESSAGE_KEYS[code]
 }

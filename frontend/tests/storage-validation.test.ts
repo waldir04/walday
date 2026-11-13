@@ -54,12 +54,12 @@ describe('storage schema validation', () => {
     ).resolves.toMatchObject({ ok: true })
   })
 
-  it('drops invalid commitments while keeping valid records', () => {
+  it('drops invalid commitments while keeping valid records', async () => {
     localStorage.setItem(
       COMMITMENTS_STORAGE_KEY,
       JSON.stringify([
         {
-          id: '1',
+          id: '11111111-1111-4111-8111-111111111111',
           title: 'Valid',
           date: '2026-11-10',
           startTime: '09:00',
@@ -86,9 +86,14 @@ describe('storage schema validation', () => {
       ]),
     )
     const loaded = loadCommitments()
-    expect(loaded.map((item) => item.id)).toEqual(['1'])
-    saveCommitments(loaded)
-    expect(loadCommitments()).toEqual(loaded)
+    expect(loaded.kind).toBe('legacy')
+    if (loaded.kind !== 'legacy') return
+    expect(loaded.commitments.map((item) => item.id)).toEqual([
+      '11111111-1111-4111-8111-111111111111',
+    ])
+    await saveCommitments(loaded.commitments, { revision: 'legacy' }, 'normal')
+    const reloaded = loadCommitments()
+    expect(reloaded.kind).toBe('restored')
   })
 
   it('restores valid tasks and quarantines invalid task records', () => {
@@ -129,12 +134,14 @@ describe('storage schema validation', () => {
   it('never throws for unavailable storage', async () => {
     vi.stubGlobal('localStorage', undefined)
     expect(loadPreferences()).toEqual({ kind: 'unavailable' })
-    expect(loadCommitments()).toEqual([])
+    expect(loadCommitments()).toEqual({ kind: 'unavailable' })
     expect(loadGuestTaskStore()).toEqual({ kind: 'unavailable' })
     await expect(
       savePreferences(makePreferences(), { revision: 'unknown' }, 'automatic'),
     ).resolves.toMatchObject({ ok: false, code: 'STORAGE_UNAVAILABLE' })
-    expect(() => saveCommitments([])).not.toThrow()
+    await expect(
+      saveCommitments([], { revision: 'unknown' }, 'normal'),
+    ).resolves.toMatchObject({ ok: false, code: 'STORAGE_UNAVAILABLE' })
     await expect(
       saveGuestTaskStore([], 'unknown', 'normal'),
     ).resolves.toMatchObject({ ok: false, code: 'STORAGE_UNAVAILABLE' })

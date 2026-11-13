@@ -1,108 +1,133 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  within,
-} from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
-import type { ReactElement } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { CommitmentsPage } from '../src/pages/CommitmentsPage'
-import '../src/shared/i18n'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { applyLanguage } from '@/shared/i18n'
+import { renderCommitmentsPage } from './helpers/renderCommitments'
+import { readEnvelope } from './helpers/commitmentFixtures'
 
-function renderWithRouter(ui: ReactElement) {
-  return render(<MemoryRouter>{ui}</MemoryRouter>)
+function fill(values: {
+  title?: string
+  description?: string
+  date?: string
+  start?: string
+  end?: string
+}) {
+  if (values.title !== undefined) {
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: values.title },
+    })
+  }
+  if (values.description !== undefined) {
+    fireEvent.change(screen.getByLabelText('Description (optional)'), {
+      target: { value: values.description },
+    })
+  }
+  if (values.date !== undefined) {
+    fireEvent.change(screen.getByLabelText('Date'), {
+      target: { value: values.date },
+    })
+  }
+  if (values.start !== undefined) {
+    fireEvent.change(screen.getByLabelText('Start time'), {
+      target: { value: values.start },
+    })
+  }
+  if (values.end !== undefined) {
+    fireEvent.change(screen.getByLabelText('End time'), {
+      target: { value: values.end },
+    })
+  }
 }
 
-describe('Commitments UI (US1)', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    vi.stubGlobal('navigator', { language: 'en-US' })
+function chooseType(label: 'Fixed' | 'Flexible') {
+  fireEvent.click(screen.getByRole('radio', { name: new RegExp(label) }))
+}
+
+beforeEach(() => {
+  localStorage.clear()
+  applyLanguage('en')
+})
+
+describe('creating commitments', () => {
+  it('shows the empty state, guest notice, and no preselected type', () => {
+    renderCommitmentsPage(['/commitments?date=2026-11-10'])
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Daily commitments' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/stored only in this browser/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'No commitments for this date' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Must happen at this time')).toBeInTheDocument()
+    expect(screen.getByText('Can be moved if needed')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: /Fixed/ })).not.toBeChecked()
+    expect(screen.getByRole('radio', { name: /Flexible/ })).not.toBeChecked()
+    expect(screen.getByLabelText('Date')).toHaveValue('2026-11-10')
+    expect(screen.queryByRole('button', { name: /sign in/i })).toBeNull()
   })
 
-  it('creates a fixed commitment and displays it identified as fixed', async () => {
-    renderWithRouter(<CommitmentsPage />)
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
-      target: { value: 'Team meeting' },
+  it('requires an explicit type before saving', () => {
+    renderCommitmentsPage(['/commitments?date=2026-11-10'])
+    fill({
+      title: 'Team sync',
+      date: '2026-11-10',
+      start: '09:00',
+      end: '10:00',
     })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
-      target: { value: '2026-11-10' },
-    })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
-      target: { value: '09:00' },
-    })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
-      target: { value: '10:00' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
-    await waitFor(() => {
-      expect(screen.getByText('Team meeting')).toBeInTheDocument()
-    })
-    const fixedItem = screen.getByText('Team meeting').closest('article')
-    expect(within(fixedItem!).getByText(/Fixed/i)).toBeInTheDocument()
+    expect(screen.getByText('Choose fixed or flexible')).toBeInTheDocument()
+    expect(localStorage.getItem('walday:commitments')).toBeNull()
   })
 
-  it('creates a flexible commitment identified as flexible', async () => {
-    renderWithRouter(<CommitmentsPage />)
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
-      target: { value: 'Exercise' },
-    })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
-      target: { value: '2026-11-10' },
-    })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
-      target: { value: '17:00' },
-    })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
-      target: { value: '18:00' },
-    })
-    fireEvent.click(screen.getByRole('radio', { name: /Flexible|Flexible/i }))
-    fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
+  it('creates fixed and flexible commitments with text labels and explanations', async () => {
+    renderCommitmentsPage(['/commitments?date=2026-11-10'])
+    fill({ title: 'Fixed sync', start: '09:00', end: '10:00' })
+    chooseType('Fixed')
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
-    await waitFor(() => {
-      expect(screen.getByText('Exercise')).toBeInTheDocument()
-    })
-    const flexibleItem = screen.getByText('Exercise').closest('article')
-    expect(within(flexibleItem!).getByText(/Flexible/i)).toBeInTheDocument()
+    expect(await screen.findByText('Commitment saved')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByLabelText('Title')).toHaveValue(''))
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Fixed sync' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Must happen at this time')).toBeInTheDocument()
+
+    fill({ title: 'Flexible walk', start: '17:00', end: '18:00' })
+    chooseType('Flexible')
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(
+      await screen.findByRole('heading', { level: 3, name: 'Flexible walk' }),
+    ).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('list')).getByText(/Can be moved if needed/),
+    ).toBeInTheDocument()
+    expect(readEnvelope().commitments).toHaveLength(2)
   })
 
-  it('rejects invalid time range and does not save', async () => {
-    renderWithRouter(<CommitmentsPage />)
-    fireEvent.change(screen.getByLabelText(/Title|Título/i), {
-      target: { value: 'Bad range' },
-    })
-    fireEvent.change(screen.getByLabelText(/Date|Fecha/i), {
-      target: { value: '2026-11-10' },
-    })
-    fireEvent.change(screen.getByLabelText(/Start time|Hora de inicio/i), {
-      target: { value: '10:00' },
-    })
-    fireEvent.change(screen.getByLabelText(/End time|Hora de fin/i), {
-      target: { value: '09:00' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /Save|Guardar/i }))
+  it('accepts past and future dates and prevents duplicate submissions', async () => {
+    renderCommitmentsPage(['/commitments?date=2026-11-10'])
+    fill({ title: 'Past plan', start: '09:00', end: '10:00' })
+    chooseType('Fixed')
+    const form = screen.getByRole('form')
+    fireEvent.submit(form)
+    fireEvent.submit(form)
 
-    expect(screen.queryByText('Bad range')).not.toBeInTheDocument()
-    expect(screen.getByRole('alert')).toBeInTheDocument()
-  })
+    expect(await screen.findByText('Past plan')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByLabelText('Title')).toHaveValue(''))
+    expect(readEnvelope().commitments).toHaveLength(1)
 
-  it('restores saved commitments after reload', () => {
-    localStorage.setItem(
-      'walday:commitments',
-      JSON.stringify([
-        {
-          id: '1',
-          title: 'Restored meeting',
-          date: '2026-11-10',
-          startTime: '09:00',
-          endTime: '10:00',
-          type: 'fixed',
-        },
-      ]),
-    )
-    renderWithRouter(<CommitmentsPage />)
-    expect(screen.getByText('Restored meeting')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Next day' }))
+    fill({
+      title: 'Future plan',
+      date: '2026-11-20',
+      start: '11:00',
+      end: '12:00',
+    })
+    chooseType('Flexible')
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    await waitFor(() => expect(readEnvelope().commitments).toHaveLength(2))
   })
 })
