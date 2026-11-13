@@ -1,3 +1,29 @@
+<!--
+Sync Impact Report
+==================
+Version change: 2.0.0 → 3.0.0
+Bump rationale: MAJOR. The approved default theme changes from light to dark, which
+redefines an existing Principle VI obligation, and a mandatory product-wide visual
+identity is added. Existing light-theme implementations become non-compliant.
+
+Modified principles:
+- VI. Styling, Design Tokens, and Visual Consistency — default theme changed from
+  light to dark; canonical Walday Dark UI identity referenced.
+
+Added sections:
+- Visual Identity and Design System (Walday Dark UI)
+
+Modified sections:
+- Technology Stack version reference and Known-gaps register refreshed to 3.0.0;
+  stale entries that no longer reflect the repository were removed.
+
+Removed sections:
+- None.
+
+Follow-up TODOs:
+- None.
+-->
+
 # Walday Constitution
 
 This document defines **how** Walday must be engineered. `docs/product-overview.md` defines **what** Walday is intended to accomplish and which product requirements guide its development. Where the two documents overlap, the product overview governs product behavior and this constitution governs engineering standards.
@@ -148,7 +174,7 @@ Design tokens:
 - The semantic palette MUST define at least `primary`, `surface`, `muted`, `border`, `danger`, `success`, `warning`, and `focus`, and MUST meet WCAG AA contrast where used for text and interface elements.
 - Components MUST NOT contain raw hex colors; they MUST use semantic tokens.
 - Typography MUST follow an explicit hierarchy (display, title, body, caption) with consistent spacing, radius, shadow, and density scales.
-- Visual implementation MUST align with Walday's calm, friendly, minimalist direction, with a light theme by default.
+- Visual implementation MUST align with the Walday Dark UI identity defined in "Visual Identity and Design System (Walday Dark UI)". Dark mode is the default and only approved theme until a later constitutional amendment introduces another theme.
 
 Layout and interaction:
 
@@ -516,9 +542,122 @@ The approved stack is defined in **Technology Stack and Architectural Boundaries
 - Dependency updates MUST be reviewed; deprecated or unmaintained packages MUST NOT be introduced.
 - Minor and patch upgrades within an approved major version are routine maintenance. Major version upgrades, replacements, or removals require a constitutional amendment.
 
+## Visual Identity and Design System (Walday Dark UI)
+
+The Walday Dark UI is the mandatory visual identity for every user-facing surface. It
+complements Principle VI: Principle VI governs token mechanics and styling technology; this
+section defines the canonical visual values and interaction character. When both apply, the
+stricter accessibility requirement wins.
+
+### 1. Personality and Visual Direction
+
+- The product MUST present a calm, refined dark mode ("Calm Tech Dark"), inspired by Linear,
+  Raycast, and deep slate developer dashboards.
+- The interface MUST feel restful on the eyes, crisp without harsh pure black, and highly
+  scannable.
+- `#000000` MUST NOT be used as the canvas or as a primary surface color.
+- Heavy shadows, glossy effects, gradients unrelated to weather states, and decorative
+  animation MUST NOT be introduced.
+- The brand logo MUST be an inline vector SVG component named `WaldayLogo.tsx`, placed under
+  `frontend/src/shared/ui/`. It MUST render a minimalist geometric "W" monogram formed by two
+  smooth, rounded wave/check strokes in mint (`#34D399`) paired with the clean off-white
+  `Walday` wordmark. Raster logos or externally loaded logo images MUST NOT be used.
+
+### 2. Canonical Dark Palette
+
+The following values are the canonical token definitions. They MUST be defined once in the
+Tailwind v4 `@theme` block and consumed through semantic token names. Components MUST NOT
+hardcode these hex values.
+
+| Semantic token | Canonical value | Use |
+|---|---|---|
+| `canvas` | `#0B1215` | Main application background; calm, low-glare backdrop |
+| `surface` | `#131D22` | Cards, containers, and task or commitment rows |
+| `surface-raised` | `#152026` | Nested panels, hover surfaces, and suggestion-adjacent containers |
+| `border` | `#23323A` | Subtle 1px boundaries for cards, rows, and controls |
+| `text` | `#F3F4F6` | Headings, task titles, and primary content |
+| `text-muted` | `#8B9BA3` | Timestamps, locations, metadata, and secondary labels |
+| `primary` | `#34D399` | Brand logo, active checkboxes, primary indicators, and primary actions |
+| `primary-strong` | `#10B981` | Primary hover and active states |
+| `warm` | `#FBBF24` | Sunny and warm-weather highlights |
+| `cool` | `#38BDF8` | Rain, cold, and cool-weather indicators |
+| `suggestion-surface` | `#A7F3D0` | Walday Smart Suggestions card background |
+| `suggestion-surface-strong` | `#6EE7B7` | Suggestion accents and hover emphasis |
+| `suggestion-text` | `#064E3B` | Text on the suggestion surface |
+| `suggestion-cta` | `#0F172A` | Suggestion call-to-action background |
+| `tag-border` | `#2A3B44` | Category pill border |
+| `tag-text` | `#9CA3AF` | Category pill label |
+
+Palette rules:
+
+- Text and interactive elements MUST meet WCAG AA contrast against their actual background.
+- Color MUST NOT be the sole carrier of state, category, weather, or validation meaning; a text
+  label or icon MUST accompany it.
+- The suggestion card MUST use the high-contrast mint surface with deep slate text and a dark
+  slate CTA with white text so daily insights remain visually distinct without relying on
+  shadows.
+- Darker and lighter state variants MAY be derived from these tokens but MUST preserve the
+  approved hue and contrast relationships.
+
+### 3. Typography and Numerals
+
+- The primary typeface MUST be Inter, with `system-ui` as the fallback. Plus Jakarta Sans MAY be
+  used only if a later amendment replaces Inter as the primary family.
+- A single geometric sans-serif family MUST be used for interface text; a second display
+  typeface MUST NOT be introduced.
+- The existing type hierarchy (display, title, body, caption) and spacing scale MUST be reused;
+  this identity does not authorize a parallel scale.
+- All timestamps and temperatures MUST render with `tabular-nums` (for example `09:00`,
+  `11:30`, `22°C`) so digits align vertically in lists and weather surfaces.
+
+### 4. Shape, Spacing, and Row Density
+
+- Main cards, task rows, and commitment rows MUST use a 16px radius (`rounded-2xl`).
+- Buttons MUST use an 8px radius (`rounded-lg`).
+- Category tags and other compact status pills MUST use a fully rounded shape
+  (`rounded-full`).
+- Card padding MUST be generous (20px to 24px). Vertical gaps between task or commitment rows
+  MUST be 12px to 16px.
+- Boundaries MUST be expressed with the subtle border token first. Shadows MUST remain minimal
+  and MUST NOT provide the only separation between surfaces.
+- A task or commitment row MUST show at most three primary data points: the left status control,
+  the activity title with its time, and a right-aligned category pill.
+- Secondary actions (edit, delete) MUST be hidden by default and revealed smoothly on row
+  hover. They MUST also be revealed on keyboard focus and MUST remain visible or otherwise
+  directly reachable on touch and narrow viewports; hover MUST NOT be the only access path.
+- Revealing secondary actions MUST NOT shift the row layout.
+- Category pills MUST be implemented with the `tag-border` and `tag-text` tokens, not arbitrary
+  hex values.
+- The time inside a row MUST use `tabular-nums`.
+
+### 5. Motion, States, and Micro-interactions
+
+- Hover borders and task or commitment completion states MUST transition with `150ms ease-out`.
+- Hover emphasis on interactive rows MAY use `primary` at 50% opacity on the border.
+- All motion MUST respect `prefers-reduced-motion`; reduced-motion users MUST receive the same
+  state changes without essential animation.
+- Empty states MUST use a calm dark card with a subtle mint icon, a clear explanation, and a
+  primary call-to-action when the user can act.
+- Success, warning, danger, and conflict states MUST use semantic tokens, include text or an
+  icon, and MUST NOT rely on color alone.
+- `focus-visible` styling is mandatory on every interactive element, including row actions that
+  appear on hover.
+- Transitions MUST NOT animate layout-affecting properties in ways that cause visible shift.
+
+### 6. Compliance and Verification
+
+- New UI and any UI touched by a change MUST use the Walday Dark UI tokens, radii, spacing,
+  typography, and interaction behavior defined here.
+- Reviews MUST verify: no raw hex in components, no pure-black canvas, correct `tabular-nums`,
+  token-only category pills, keyboard and touch access to row actions, and WCAG AA contrast.
+- Responsive verification MUST cover 360, 768, 1024, and 1440 pixel widths and 200% browser
+  zoom, with no horizontal scrolling and no hover-only behavior.
+- Existing light-theme surfaces that predate this amendment MUST be migrated when the affected
+  area is touched and MUST NOT be used as precedent for new work.
+
 ## Technology Stack and Architectural Boundaries
 
-The following stack is approved as of version 2.0.0 of this constitution. Versions indicate the approved major line; routine minor and patch updates within it do not require an amendment.
+The following stack is approved as of version 3.0.0 of this constitution. Versions indicate the approved major line; routine minor and patch updates within it do not require an amendment.
 
 | Area | Approved technology | Notes |
 |---|---|---|
@@ -676,18 +815,13 @@ The constitution uses semantic versioning:
 - Violations affecting security, data integrity, or accessibility of critical journeys take priority over cosmetic compliance.
 - Deviations MUST be recorded in the known-gaps register below or in an ADR until resolved.
 
-### Known-gaps register (as of 2.0.0)
+### Known-gaps register (as of 3.0.0)
 
 These gaps are tracked, not accepted as compliant behavior. Each MUST be closed when the affected area is touched.
 
-- TanStack Query is not yet installed and no `QueryClientProvider` is configured.
-- TypeScript strictness flags are not yet enabled in the frontend `tsconfig` files.
-- The shared loading component is a text placeholder rather than a layout-matching skeleton.
-- Design tokens are duplicated between the Tailwind v4 `@theme` block and a legacy Tailwind configuration file.
-- The frontend environment module is an unvalidated stub.
+- The shared UI still uses the previous light palette and legacy token values; the Walday Dark UI palette, radii, `tabular-nums` rules, hover/focus-revealed row actions, inline `WaldayLogo.tsx`, and suggestion-card treatment are not yet implemented.
 - The backend application does not exist yet; Principles IV, X, XVIII, and XIX describe its mandatory target state.
-- Git hooks invoke scripts that are not currently runnable from the repository root; the per-application script contract is the target state.
 
 The constitution should evolve as the project matures, but changes MUST preserve its role as a consistent engineering standard.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-30 | **Last Amended**: 2026-11-12
+**Version**: 3.0.0 | **Ratified**: 2026-10-30 | **Last Amended**: 2026-11-13
