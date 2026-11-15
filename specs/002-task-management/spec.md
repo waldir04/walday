@@ -302,7 +302,7 @@ As a keyboard, screen-reader, English-speaking, or Spanish-speaking user, I can 
 
 - **FR-001**: The system MUST allow a guest to create, view, edit, delete, complete, and reopen tasks without an account, authenticated session, or backend service.
 - **FR-002**: Task management MUST remain fully usable when the network, weather service, authentication service, or backend is unavailable.
-- **FR-003**: Task operations MUST NOT assign a task to a time slot, schedule a task automatically, reschedule a task, or modify commitments.
+- **FR-003**: Task operations MUST NOT assign a task to a time slot, schedule a task automatically, reschedule a task, or modify commitments. *Refined by `specs/006-daily-agenda/spec.md`: tasks gain an optional planned slot that only the Daily Agenda may set through an explicit user action. Automatic or inferred scheduling remains prohibited, and task create/edit/complete operations still never assign or change a time slot.*
 - **FR-004**: Every task MUST expose stable identity and validated status, priority, optional due date, optional estimated duration, and creation-order information so future Daily Agenda and Planning Suggestions features can consume it.
 - **FR-005**: Guest task data MUST remain local to the browser and device context; the feature MUST NOT share data, synchronize it across devices, or require cross-device availability.
 - **FR-006**: Future guest-to-account migration MUST be explicit and MUST NOT be implemented or simulated by this feature; local and account data MUST NOT be silently mixed.
