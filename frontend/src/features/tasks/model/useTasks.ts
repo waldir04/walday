@@ -5,9 +5,11 @@ import {
   orderedTasks,
   quarantineTotal,
   saveGuestTaskStore,
+  validateStoredTask,
   type PersistenceMode,
   type QuarantineSummary,
   type RevisionBaseline,
+  type ScheduleSlot,
   type Task,
   type TaskDraft,
   type TaskStorageDependencies,
@@ -309,6 +311,10 @@ export function useTasks(deps?: TaskStorageDependencies) {
     const fields = fieldsFromDraft(draft)
     if (!fields.ok) return false
 
+    const scheduledMinutes =
+      task.plannedDate !== undefined ? task.estimatedMinutes : undefined
+    const estimatedMinutes = fields.value.estimatedMinutes ?? scheduledMinutes
+
     const updated: Task = {
       id: task.id,
       title: fields.value.title,
@@ -319,8 +325,12 @@ export function useTasks(deps?: TaskStorageDependencies) {
         ? { description: fields.value.description }
         : {}),
       ...(fields.value.dueDate ? { dueDate: fields.value.dueDate } : {}),
-      ...(fields.value.estimatedMinutes !== undefined
-        ? { estimatedMinutes: fields.value.estimatedMinutes }
+      ...(estimatedMinutes !== undefined ? { estimatedMinutes } : {}),
+      ...(task.plannedDate !== undefined && task.plannedStartTime !== undefined
+        ? {
+            plannedDate: task.plannedDate,
+            plannedStartTime: task.plannedStartTime,
+          }
         : {}),
     }
 
@@ -374,6 +384,66 @@ export function useTasks(deps?: TaskStorageDependencies) {
       nextStatus === 'completed' ? 'feedback.completed' : 'feedback.pending',
       'feedback.statusSessionOnly',
       { focusCompletionTaskId: id },
+    )
+  }
+
+  async function scheduleTask(
+    id: string,
+    slot: ScheduleSlot,
+  ): Promise<boolean> {
+    const before = stateRef.current
+    if (before.pending) return false
+
+    const task = before.tasks.find((candidate) => candidate.id === id)
+    if (!task || task.status !== 'pending') return false
+
+    const validated = validateStoredTask({
+      ...task,
+      plannedDate: slot.plannedDate,
+      plannedStartTime: slot.plannedStartTime,
+      estimatedMinutes: slot.estimatedMinutes,
+    })
+    if (!validated.ok) return false
+
+    const nextTasks = before.tasks.map((candidate) =>
+      candidate.id === id ? validated.value : candidate,
+    )
+
+    return runMutation(
+      nextTasks,
+      'feedback.scheduled',
+      'feedback.scheduledSessionOnly',
+    )
+  }
+
+  async function unscheduleTask(id: string): Promise<boolean> {
+    const before = stateRef.current
+    if (before.pending) return false
+
+    const task = before.tasks.find((candidate) => candidate.id === id)
+    if (!task) return false
+
+    const nextTask: Task = {
+      id: task.id,
+      title: task.title,
+      status: task.status,
+      priority: task.priority,
+      createdAt: task.createdAt,
+      ...(task.description ? { description: task.description } : {}),
+      ...(task.dueDate ? { dueDate: task.dueDate } : {}),
+      ...(task.estimatedMinutes !== undefined
+        ? { estimatedMinutes: task.estimatedMinutes }
+        : {}),
+    }
+
+    const nextTasks = before.tasks.map((candidate) =>
+      candidate.id === id ? nextTask : candidate,
+    )
+
+    return runMutation(
+      nextTasks,
+      'feedback.unscheduled',
+      'feedback.unscheduledSessionOnly',
     )
   }
 
@@ -632,6 +702,8 @@ export function useTasks(deps?: TaskStorageDependencies) {
     updateTask,
     deleteTask,
     toggleTask,
+    scheduleTask,
+    unscheduleTask,
     retryPersistence,
     discardUnreadable,
     protectStore,

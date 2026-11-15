@@ -169,7 +169,7 @@ describe('guest task store loading', () => {
     })
 
     const invalid = new FakeStorage()
-    const raw = JSON.stringify({ version: 1, tasks: [] })
+    const raw = JSON.stringify({ version: 2, tasks: [] })
     invalid.data.set(TASKS_STORAGE_KEY, raw)
     expect(loadGuestTaskStore({ storage: invalid })).toEqual({
       kind: 'corrupt',
@@ -222,7 +222,7 @@ describe('guest task store writes', () => {
 
     const stored = readStore(storage)
     expect(stored).toMatchObject({
-      version: 1,
+      version: 2,
       revision: 'revision-1',
       updatedAt: '2026-11-12T14:30:00.000Z',
     })
@@ -378,7 +378,7 @@ describe('guest task store writes', () => {
       writeDeps(storage),
     )
     expect(result.ok).toBe(true)
-    expect(readStore(storage).version).toBe(1)
+    expect(readStore(storage).version).toBe(2)
   })
 
   it('blocks automatic writes in memory-only mode and allows an explicit retry', async () => {
@@ -482,7 +482,7 @@ describe('guest task store writes', () => {
       deps,
     )
     expect(discard.ok).toBe(true)
-    expect(readStore(storage).version).toBe(1)
+    expect(readStore(storage).version).toBe(2)
   })
 
   it('blocks legacy migration writes when unreadable records were quarantined', async () => {
@@ -723,7 +723,7 @@ describe('failed migration recovery', () => {
       deps,
     )
     expect(discard.ok).toBe(true)
-    expect(readStore(storage).version).toBe(1)
+    expect(readStore(storage).version).toBe(2)
   })
 })
 

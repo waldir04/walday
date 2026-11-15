@@ -1,0 +1,128 @@
+{
+  "dateNav": {
+    "sectionLabel": "Selector de fecha de la agenda",
+    "selectedDate": "Fecha seleccionada: {{date}}",
+    "label": "Fecha seleccionada",
+    "previous": "Día anterior",
+    "next": "Día siguiente",
+    "today": "Hoy"
+  },
+  "headings": {
+    "timeline": "Cronología del {{date}}",
+    "conflicts": "Conflictos del {{date}}",
+    "availability": "Tiempo disponible el {{date}}",
+    "unscheduled": "Tareas sin programar"
+  },
+  "orderingHint": "Ordenado por hora de inicio. Las actividades que empiezan a la misma hora aparecen como compromisos fijos, luego compromisos flexibles y luego tareas.",
+  "categories": {
+    "fixed-commitment": "Compromiso fijo",
+    "flexible-commitment": "Compromiso flexible",
+    "task": "Tarea"
+  },
+  "entry": {
+    "timeRange": "{{start}} – {{end}}",
+    "endOfDay": "Fin del día",
+    "completed": "Completada",
+    "pending": "Pendiente",
+    "oversize": "El periodo planificado supera el final del día.",
+    "conflict": "Coincide con {{title}}, {{start}} – {{end}}",
+    "adjustable": "Ajustable",
+    "ariaCommitment": "{{category}}: {{title}}, de {{start}} a {{end}}",
+    "ariaTask": "{{category}}: {{title}}, de {{start}} a {{end}}, {{status}}",
+    "ariaConflicts": "{{base}}, coincide con {{conflicts}}",
+    "ariaOversize": "{{base}}, el periodo planificado supera el final del día"
+  },
+  "actions": {
+    "changeTime": "Cambiar hora",
+    "removeSchedule": "Quitar horario",
+    "adjustTime": "Ajustar hora o duración",
+    "schedule": "Programar",
+    "openTasks": "Abrir tareas",
+    "menuLabel": "Acciones para {{title}}"
+  },
+  "scheduling": {
+    "unavailable": "La programación no está disponible: {{reason}}",
+    "reasonExternal": "primero debes revisar en Tareas los cambios de otra pestaña",
+    "tasksLink": "Revisar tareas"
+  },
+  "unscheduled": {
+    "noAssignedTime": "Estas tareas no tienen una hora asignada.",
+    "empty": "No hay tareas pendientes sin una hora programada.",
+    "openTasks": "Abrir tareas"
+  },
+  "emptyTimeline": {
+    "heading": "No hay nada programado para esta fecha",
+    "description": "No hay actividades programadas para el {{date}}."
+  },
+  "emptyDay": {
+    "heading": "No hay nada programado para el {{date}}",
+    "description": "Añade un compromiso o una tarea para empezar a planificar este día.",
+    "createCommitment": "Crear un compromiso",
+    "createTask": "Crear una tarea"
+  },
+  "incomplete": {
+    "heading": "Resumen incompleto",
+    "description": "No se pudieron leer algunos datos, por lo que este resumen está incompleto. Los conflictos y el tiempo disponible están ocultos."
+  },
+  "conflicts": {
+    "group": "Conflicto {{index}}: {{count}} actividades — {{titles}}",
+    "entry": "{{title}} ({{start}} – {{end}})",
+    "adjustable": "{{title}} es ajustable",
+    "total": "{{conflicts}} conflictos, {{activities}} actividades implicadas"
+  },
+  "availability": {
+    "period": "Disponible {{start}} – {{end}}",
+    "total": "Total disponible: {{duration}}",
+    "noneToday": "No queda ningún hueco de al menos 30 minutos hoy.",
+    "noneFuture": "No hay ningún periodo libre de al menos 30 minutos en esta fecha.",
+    "pastDate": "El tiempo disponible no se muestra para fechas pasadas.",
+    "incomplete": "No se puede calcular el tiempo disponible porque no se pudieron leer todos los datos.",
+    "ariaPeriod": "Disponible y sin asignar: de {{start}} a {{end}}"
+  },
+  "dialog": {
+    "scheduleTitle": "Programar “{{title}}”",
+    "moveTitle": "Cambiar la hora de “{{title}}”",
+    "date": "Fecha",
+    "startTime": "Hora de inicio",
+    "duration": "Duración",
+    "durationHint": "p. ej. 1 h 30 min",
+    "derivedEnd": "Termina a las {{time}}",
+    "conflictsHeading": "Actividades superpuestas",
+    "conflictEntry": "{{title}} ({{start}} – {{end}})",
+    "acknowledge": "Entiendo que estas actividades se solapan",
+    "confirm": "Guardar horario",
+    "moveConfirm": "Mover horario",
+    "cancel": "Cancelar",
+    "pending": "Guardando…",
+    "failure": "No se pudo guardar el horario. Tus cambios se conservan.",
+    "errorsHeading": "Corrige lo siguiente:",
+    "removeTitle": "Quitar horario",
+    "removeMessage": "¿Quitar la hora programada de “{{title}}”? La tarea se conserva.",
+    "removeConfirm": "Quitar horario",
+    "codes": {
+      "START_TIME_REQUIRED": "Introduce una hora de inicio",
+      "START_TIME_INVALID": "Introduce una hora válida",
+      "DURATION_REQUIRED": "Introduce una duración",
+      "DURATION_INVALID": "Introduce una duración con unidad, como 30 min o 1 h 30 min",
+      "DURATION_OUT_OF_RANGE": "La duración debe estar entre 1 minuto y 24 horas",
+      "END_NOT_AFTER_START": "El final debe ser posterior al inicio",
+      "ENDS_AFTER_MIDNIGHT": "El periodo planificado no puede pasar de medianoche",
+      "TASK_NOT_FOUND": "Esta tarea ya no existe",
+      "TASK_NOT_PENDING": "Las tareas completadas no se pueden programar",
+      "CONFLICTS_NOT_ACKNOWLEDGED": "Confirma las actividades superpuestas para continuar"
+    }
+  },
+  "announcement": {
+    "date": "{{date}}: {{count}} actividades",
+    "conflicts": "{{count}} conflictos en esta fecha",
+    "availability": "{{duration}} disponible en esta fecha",
+    "summary": "{{date}}: {{count}} actividades, {{conflicts}} conflictos, {{duration}} disponible",
+    "scheduled": "Tarea programada.",
+    "moved": "Horario movido.",
+    "unscheduled": "Horario eliminado.",
+    "failed": "No se pudo guardar el horario."
+  },
+  "loading": {
+    "label": "Cargando agenda"
+  }
+}

@@ -58,7 +58,7 @@ describe('creating tasks', () => {
     expect(screen.getByLabelText('Title')).toHaveFocus()
 
     const stored = readEnvelope()
-    expect(stored.version).toBe(1)
+    expect(stored.version).toBe(2)
     expect(typeof stored.revision).toBe('string')
     expect(stored.tasks).toHaveLength(1)
   })

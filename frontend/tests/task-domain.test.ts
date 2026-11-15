@@ -480,14 +480,14 @@ describe('zod schemas', () => {
 
   it('validates the guest store envelope', () => {
     const envelope = {
-      version: 1,
+      version: 2,
       revision: 'revision',
       updatedAt: '2026-11-12T14:30:00.000Z',
       tasks: [],
     }
     expect(guestTaskStoreSchema.safeParse(envelope).success).toBe(true)
     expect(
-      guestTaskStoreSchema.safeParse({ ...envelope, version: 2 }).success,
+      guestTaskStoreSchema.safeParse({ ...envelope, version: 3 }).success,
     ).toBe(false)
     expect(
       guestTaskStoreSchema.safeParse({ ...envelope, extra: true }).success,

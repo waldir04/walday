@@ -1,0 +1,128 @@
+{
+  "dateNav": {
+    "sectionLabel": "Agenda date selector",
+    "selectedDate": "Selected date: {{date}}",
+    "label": "Selected date",
+    "previous": "Previous day",
+    "next": "Next day",
+    "today": "Today"
+  },
+  "headings": {
+    "timeline": "Timeline for {{date}}",
+    "conflicts": "Conflicts for {{date}}",
+    "availability": "Available time for {{date}}",
+    "unscheduled": "Unscheduled tasks"
+  },
+  "orderingHint": "Ordered by start time. Activities that start at the same time appear as fixed commitments, then flexible commitments, then tasks.",
+  "categories": {
+    "fixed-commitment": "Fixed commitment",
+    "flexible-commitment": "Flexible commitment",
+    "task": "Task"
+  },
+  "entry": {
+    "timeRange": "{{start}} – {{end}}",
+    "endOfDay": "End of day",
+    "completed": "Completed",
+    "pending": "Pending",
+    "oversize": "Planned period exceeds the end of the day.",
+    "conflict": "Conflicts with {{title}}, {{start}} – {{end}}",
+    "adjustable": "Adjustable",
+    "ariaCommitment": "{{category}}: {{title}}, {{start}} to {{end}}",
+    "ariaTask": "{{category}}: {{title}}, {{start}} to {{end}}, {{status}}",
+    "ariaConflicts": "{{base}}, conflicts with {{conflicts}}",
+    "ariaOversize": "{{base}}, planned period exceeds the end of the day"
+  },
+  "actions": {
+    "changeTime": "Change time",
+    "removeSchedule": "Remove schedule",
+    "adjustTime": "Adjust time or duration",
+    "schedule": "Schedule",
+    "openTasks": "Open Tasks",
+    "menuLabel": "Actions for {{title}}"
+  },
+  "scheduling": {
+    "unavailable": "Scheduling is unavailable: {{reason}}",
+    "reasonExternal": "changes from another tab must be reviewed in Tasks first",
+    "tasksLink": "Review Tasks"
+  },
+  "unscheduled": {
+    "noAssignedTime": "These tasks have no assigned time.",
+    "empty": "No pending tasks without a scheduled time.",
+    "openTasks": "Open Tasks"
+  },
+  "emptyTimeline": {
+    "heading": "Nothing is scheduled for this date",
+    "description": "No activities are scheduled for {{date}}."
+  },
+  "emptyDay": {
+    "heading": "Nothing is scheduled for {{date}}",
+    "description": "Add a commitment or a task to start planning this day.",
+    "createCommitment": "Create a commitment",
+    "createTask": "Create a task"
+  },
+  "incomplete": {
+    "heading": "Overview incomplete",
+    "description": "Some data could not be read, so this overview is incomplete. Conflicts and available time are hidden."
+  },
+  "conflicts": {
+    "group": "Conflict {{index}}: {{count}} activities — {{titles}}",
+    "entry": "{{title}} ({{start}} – {{end}})",
+    "adjustable": "{{title}} is adjustable",
+    "total": "{{conflicts}} conflicts, {{activities}} activities involved"
+  },
+  "availability": {
+    "period": "Available {{start}} – {{end}}",
+    "total": "Total available: {{duration}}",
+    "noneToday": "No gap of at least 30 minutes remains today.",
+    "noneFuture": "No free period of at least 30 minutes on this date.",
+    "pastDate": "Available time is not shown for past dates.",
+    "incomplete": "Available time cannot be calculated because not all data could be read.",
+    "ariaPeriod": "Available and unassigned: {{start}} to {{end}}"
+  },
+  "dialog": {
+    "scheduleTitle": "Schedule “{{title}}”",
+    "moveTitle": "Change time for “{{title}}”",
+    "date": "Date",
+    "startTime": "Start time",
+    "duration": "Duration",
+    "durationHint": "e.g. 1 h 30 min",
+    "derivedEnd": "Ends at {{time}}",
+    "conflictsHeading": "Overlapping activities",
+    "conflictEntry": "{{title}} ({{start}} – {{end}})",
+    "acknowledge": "I understand these activities overlap",
+    "confirm": "Save schedule",
+    "moveConfirm": "Move schedule",
+    "cancel": "Cancel",
+    "pending": "Saving…",
+    "failure": "The schedule could not be saved. Your changes are kept.",
+    "errorsHeading": "Please fix the following:",
+    "removeTitle": "Remove schedule",
+    "removeMessage": "Remove the scheduled time for “{{title}}”? The task itself is kept.",
+    "removeConfirm": "Remove schedule",
+    "codes": {
+      "START_TIME_REQUIRED": "Enter a start time",
+      "START_TIME_INVALID": "Enter a valid time",
+      "DURATION_REQUIRED": "Enter a duration",
+      "DURATION_INVALID": "Enter a duration with a unit, such as 30 min or 1 h 30 min",
+      "DURATION_OUT_OF_RANGE": "Duration must be between 1 minute and 24 hours",
+      "END_NOT_AFTER_START": "The end must be after the start",
+      "ENDS_AFTER_MIDNIGHT": "The planned period cannot extend past midnight",
+      "TASK_NOT_FOUND": "This task no longer exists",
+      "TASK_NOT_PENDING": "Completed tasks cannot be scheduled",
+      "CONFLICTS_NOT_ACKNOWLEDGED": "Acknowledge the overlapping activities to continue"
+    }
+  },
+  "announcement": {
+    "date": "{{date}}: {{count}} activities",
+    "conflicts": "{{count}} conflicts on this date",
+    "availability": "{{duration}} available on this date",
+    "summary": "{{date}}: {{count}} activities, {{conflicts}} conflicts, {{duration}} available",
+    "scheduled": "Task scheduled.",
+    "moved": "Schedule moved.",
+    "unscheduled": "Schedule removed.",
+    "failed": "Schedule could not be saved."
+  },
+  "loading": {
+    "label": "Loading agenda"
+  }
+}

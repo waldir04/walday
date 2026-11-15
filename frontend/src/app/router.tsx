@@ -7,7 +7,6 @@ import {
   type RouteObject,
 } from 'react-router-dom'
 import { AppShell } from '@/widgets/AppShell'
-import { HomePage } from '@/pages/HomePage'
 import { FoundationPage } from '@/pages/FoundationPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 // eslint-disable-next-line no-restricted-imports -- tasks/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
@@ -16,7 +15,13 @@ import { TasksPageSkeleton } from '@/features/tasks/skeleton'
 import { PreferencesPageSkeleton } from '@/features/user-preferences/skeleton'
 // eslint-disable-next-line no-restricted-imports -- commitments/skeleton.ts is a documented public entry that keeps the lazy route chunk out of the initial bundle.
 import { CommitmentsPageSkeleton } from '@/features/commitments/skeleton'
+// eslint-disable-next-line no-restricted-imports -- agenda/skeleton.ts is a documented public entry that keeps the lazy Home chunk out of the initial bundle.
+import { AgendaSkeleton } from '@/features/agenda/skeleton'
 import { RouteError } from './RouteError'
+
+const HomePage = lazy(() =>
+  import('@/pages/HomePage').then((module) => ({ default: module.HomePage })),
+)
 
 const TasksPage = lazy(() =>
   import('@/pages/TasksPage').then((module) => ({ default: module.TasksPage })),
@@ -35,6 +40,10 @@ const CommitmentsPage = lazy(() =>
 export interface RouteHandle {
   titleKey: string
   titleNamespace?: string
+}
+
+function HomeLazyRoute({ children }: { children: ReactNode }) {
+  return <Suspense fallback={<AgendaSkeleton />}>{children}</Suspense>
 }
 
 function TasksLazyRoute({ children }: { children: ReactNode }) {
@@ -57,7 +66,11 @@ export const routes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <HomeLazyRoute>
+            <HomePage />
+          </HomeLazyRoute>
+        ),
         handle: {
           titleKey: 'title',
           titleNamespace: 'home',

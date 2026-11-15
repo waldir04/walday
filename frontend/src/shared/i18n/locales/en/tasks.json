@@ -110,6 +110,10 @@
     "retrySucceeded": "Changes saved.",
     "retryFailed": "Changes are still not saved. They apply only to this session.",
     "discarded": "Unreadable stored data was discarded and restored tasks were saved.",
-    "protected": "Stored data was preserved. Saving remains disabled until you discard unreadable data or reload."
+    "protected": "Stored data was preserved. Saving remains disabled until you discard unreadable data or reload.",
+    "scheduled": "Task scheduled.",
+    "scheduledSessionOnly": "Task scheduled for this session only. It was not saved.",
+    "unscheduled": "Schedule removed.",
+    "unscheduledSessionOnly": "Schedule removed for this session only. It was not saved."
   }
 }

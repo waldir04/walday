@@ -1,24 +1,8 @@
 {
   "title": "Home",
   "heading": "Today",
-  "description": "A calm overview of your day.",
+  "description": "Your day at a glance, in one calm chronological agenda.",
   "today": "Today",
-  "tasks": {
-    "heading": "Tasks",
-    "pending": "{{count}} pending",
-    "completed": "{{count}} completed",
-    "emptyHeading": "No tasks yet",
-    "emptyDescription": "Add a task to see it on your day.",
-    "emptyAction": "Go to Tasks",
-    "viewAll": "View all tasks"
-  },
-  "commitments": {
-    "heading": "Today's commitments",
-    "emptyHeading": "Nothing scheduled",
-    "emptyDescription": "There are no commitments for today.",
-    "emptyAction": "Go to Commitments",
-    "viewAll": "View commitments"
-  },
   "storageNotice": {
     "heading": "Storage notice",
     "description": "Some changes may not be saved in this session. Your existing data is still shown.",

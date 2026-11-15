@@ -1,4 +1,5 @@
 import { includesValue } from '@/shared/lib/includes'
+import type { LocalTime } from '@/shared/lib/localDateTime'
 
 export const TASK_STATUSES = ['pending', 'completed'] as const
 export type TaskStatus = (typeof TASK_STATUSES)[number]
@@ -26,7 +27,18 @@ export interface Task {
   priority: Priority
   dueDate?: LocalDate
   estimatedMinutes?: number
+  /** Optional. Must be a real calendar date. Present if and only if `plannedStartTime` is present. */
+  plannedDate?: LocalDate
+  /** Optional. Present if and only if `plannedDate` is present. */
+  plannedStartTime?: LocalTime
   createdAt: string
+}
+
+/** A planned slot written atomically with the task's estimated duration. */
+export interface ScheduleSlot {
+  plannedDate: LocalDate
+  plannedStartTime: LocalTime
+  estimatedMinutes: number
 }
 
 export interface TaskDraft {
@@ -54,6 +66,10 @@ export type TaskRecordValidationCode =
   | 'TASK_CREATED_AT_INVALID'
   | 'TASK_STATUS_INVALID'
   | 'TASK_UNKNOWN_FIELD'
+  | 'SLOT_DATE_INVALID'
+  | 'SLOT_TIME_INVALID'
+  | 'SLOT_INCOMPLETE'
+  | 'SLOT_DURATION_REQUIRED'
 
 export type TaskFieldName =
   'title' | 'description' | 'priority' | 'dueDate' | 'estimatedMinutes'

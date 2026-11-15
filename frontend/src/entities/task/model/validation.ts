@@ -7,6 +7,7 @@ import {
 } from './constants'
 import { isLocalDate } from './dueDate'
 import { parseDurationInput } from './duration'
+import { isLocalTime } from '@/shared/lib/localDateTime'
 import {
   isPriority,
   isTaskStatus,
@@ -29,6 +30,8 @@ const RECORD_KEYS = new Set([
   'priority',
   'dueDate',
   'estimatedMinutes',
+  'plannedDate',
+  'plannedStartTime',
   'createdAt',
 ])
 
@@ -193,6 +196,45 @@ export function validateStoredTask(input: unknown): StoredTaskValidationResult {
     estimatedMinutes = value
   }
 
+  const hasPlannedDate = input.plannedDate !== undefined
+  const hasPlannedStartTime = input.plannedStartTime !== undefined
+
+  if (hasPlannedDate !== hasPlannedStartTime) {
+    return { ok: false, code: 'SLOT_INCOMPLETE' }
+  }
+
+  let plannedDate: Task['plannedDate']
+  if (hasPlannedDate) {
+    if (typeof input.plannedDate !== 'string') {
+      return { ok: false, code: 'SLOT_DATE_INVALID' }
+    }
+    const trimmed = input.plannedDate.trim()
+    if (!isLocalDate(trimmed)) {
+      return { ok: false, code: 'SLOT_DATE_INVALID' }
+    }
+    plannedDate = trimmed
+  }
+
+  let plannedStartTime: Task['plannedStartTime']
+  if (hasPlannedStartTime) {
+    if (typeof input.plannedStartTime !== 'string') {
+      return { ok: false, code: 'SLOT_TIME_INVALID' }
+    }
+    const trimmed = input.plannedStartTime.trim()
+    if (!isLocalTime(trimmed)) {
+      return { ok: false, code: 'SLOT_TIME_INVALID' }
+    }
+    plannedStartTime = trimmed
+  }
+
+  if (
+    plannedDate !== undefined &&
+    plannedStartTime !== undefined &&
+    estimatedMinutes === undefined
+  ) {
+    return { ok: false, code: 'SLOT_DURATION_REQUIRED' }
+  }
+
   return {
     ok: true,
     value: {
@@ -203,6 +245,8 @@ export function validateStoredTask(input: unknown): StoredTaskValidationResult {
       priority: input.priority,
       ...(dueDate ? { dueDate } : {}),
       ...(estimatedMinutes !== undefined ? { estimatedMinutes } : {}),
+      ...(plannedDate !== undefined ? { plannedDate } : {}),
+      ...(plannedStartTime !== undefined ? { plannedStartTime } : {}),
       createdAt: input.createdAt,
     },
   }

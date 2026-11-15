@@ -22,7 +22,7 @@ describe('keyboard and focus (US3)', () => {
       expect(link.getAttribute('tabindex')).not.toBe('-1')
     }
     expect(links.length).toBeGreaterThanOrEqual(6)
-    expect(screen.getByRole('heading', { level: 1 })).toHaveAttribute(
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveAttribute(
       'tabindex',
       '-1',
     )

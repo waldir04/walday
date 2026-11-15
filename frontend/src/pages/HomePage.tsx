@@ -1,10 +1,29 @@
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { commitmentsForDate, orderedCommitments } from '@/entities/commitment'
-import { groupTasks } from '@/entities/task'
+import { useNavigate } from 'react-router-dom'
+import { formatDuration } from '@/entities/task'
+import type { TFunction } from 'i18next'
 import { resolveDateStyle, usePreferences } from '@/entities/preferences'
-import { formatLocalDate, getLocalToday } from '@/shared/lib/localDateTime'
+// eslint-disable-next-line no-restricted-imports -- narrow controller entry keeps agenda UI out of the initial bundle.
+import {
+  buildAgendaDay,
+  useAgendaDate,
+  validateScheduleDraft,
+  scheduleConflicts,
+  type AgendaDay,
+  type ScheduleDraft,
+} from '@/features/agenda/controller'
+import {
+  AgendaIncompleteNotice,
+  DailyAgenda,
+  RemoveScheduleDialog,
+  ScheduleTaskDialog,
+} from '@/features/agenda'
+import { useNow } from '@/shared/lib/useNow'
+import { formatLocalDate } from '@/shared/lib/localDateTime'
 // eslint-disable-next-line no-restricted-imports -- narrow controller entry keeps task UI out of the initial bundle.
 import { useTasks } from '@/features/tasks/controller'
+import { RecoveryNotice, StorageWarning } from '@/features/tasks'
 // eslint-disable-next-line no-restricted-imports -- narrow controller entry keeps commitment UI out of the initial bundle.
 import { useCommitments } from '@/features/commitments/controller'
 import { Link } from '@/shared/ui/Link'
@@ -12,29 +31,107 @@ import { HomeDashboard } from '@/widgets/HomeDashboard'
 import type { SmartSuggestionsState } from '@/widgets/SmartSuggestions'
 import type { WeatherCardState } from '@/widgets/WeatherCard'
 
-const TASK_NOTICE_MODES = new Set([
-  'recovery-blocked',
-  'protected',
-  'unsupported',
-  'memory-only',
-])
-
 const COMMITMENT_NOTICE_MODES = new Set(['recovery-blocked', 'unsupported'])
 
+type ScheduleDialogState = {
+  mode: 'create' | 'move'
+  taskId: string
+}
+
 export function HomePage() {
-  const { t, i18n } = useTranslation('home')
+  const { t } = useTranslation('home')
+  const { t: tAgenda } = useTranslation('agenda')
+  const navigate = useNavigate()
   const { preferences, formattingLocale } = usePreferences()
   const tasks = useTasks()
   const commitments = useCommitments()
+  const { date: selectedDate, today, selectDate } = useAgendaDate()
+  const now = useNow()
 
   const dateStyle = resolveDateStyle(preferences.dateTimePresentation)
-  const today = getLocalToday()
-  const todayLabel = formatLocalDate(today, formattingLocale, dateStyle)
-  const todayCommitments = orderedCommitments(
-    commitmentsForDate(commitments.commitments, today),
-    i18n.language,
+  const selectedDateLabel = formatLocalDate(
+    selectedDate,
+    formattingLocale,
+    dateStyle,
   )
-  const groups = groupTasks(tasks.tasks)
+
+  const tasksIncomplete =
+    tasks.quarantine !== null ||
+    tasks.unsupported ||
+    tasks.mode === 'recovery-blocked' ||
+    tasks.mode === 'protected'
+  const commitmentsIncomplete =
+    !commitments.ready ||
+    commitments.quarantine !== null ||
+    commitments.unsupported ||
+    commitments.mode === 'recovery-blocked'
+  const sources =
+    tasksIncomplete || commitmentsIncomplete ? 'incomplete' : 'complete'
+
+  const day = useMemo(
+    () =>
+      buildAgendaDay({
+        date: selectedDate,
+        tasks: tasks.tasks,
+        commitments: commitments.commitments,
+        now,
+        locale: formattingLocale,
+        sources,
+      }),
+    [
+      tasks.tasks,
+      commitments.commitments,
+      selectedDate,
+      now,
+      formattingLocale,
+      sources,
+    ],
+  )
+
+  const [liveMessage, setLiveMessage] = useState<string | null>(null)
+  const dateSignatureRef = useRef<string | null>(null)
+  const dataSignatureRef = useRef<string | null>(null)
+  const holdMessageRef = useRef(false)
+
+  const summary = useMemo(
+    () => summaryMessage(day, selectedDateLabel, formattingLocale, tAgenda),
+    [day, selectedDateLabel, formattingLocale, tAgenda],
+  )
+
+  useEffect(() => {
+    if (dateSignatureRef.current === null) {
+      dateSignatureRef.current = selectedDate
+      dataSignatureRef.current = summary
+      return
+    }
+    if (dateSignatureRef.current !== selectedDate) {
+      dateSignatureRef.current = selectedDate
+      dataSignatureRef.current = summary
+      holdMessageRef.current = false
+      setLiveMessage(summary)
+    }
+  }, [selectedDate, summary])
+
+  useEffect(() => {
+    if (dataSignatureRef.current === null) {
+      dataSignatureRef.current = summary
+      return
+    }
+    if (holdMessageRef.current) return
+    if (dataSignatureRef.current !== summary) {
+      dataSignatureRef.current = summary
+      setLiveMessage(summary)
+    }
+  }, [summary])
+
+  const [dialog, setDialog] = useState<ScheduleDialogState | null>(null)
+  const [removeTarget, setRemoveTarget] = useState<string | null>(null)
+  const dialogTask = dialog
+    ? tasks.tasks.find((task) => task.id === dialog.taskId)
+    : undefined
+  const removeTask = removeTarget
+    ? tasks.tasks.find((task) => task.id === removeTarget)
+    : undefined
 
   const weather: WeatherCardState = preferences.weatherLocation
     ? { status: 'unavailable' }
@@ -44,12 +141,80 @@ export function HomePage() {
     suggestions: [],
   }
 
-  const tasksNeedAttention = TASK_NOTICE_MODES.has(tasks.mode)
   const commitmentsNeedAttention = COMMITMENT_NOTICE_MODES.has(commitments.mode)
+
+  function openSchedule(taskId: string): void {
+    const task = tasks.tasks.find((candidate) => candidate.id === taskId)
+    if (!task) return
+    setRemoveTarget(null)
+    setDialog({ mode: task.plannedDate ? 'move' : 'create', taskId })
+  }
+
+  function openRemove(taskId: string): void {
+    setDialog(null)
+    setRemoveTarget(taskId)
+  }
+
+  async function confirmSchedule(draft: ScheduleDraft): Promise<boolean> {
+    if (!dialogTask) return false
+    const validation = validateScheduleDraft(draft, {
+      tasks: tasks.tasks,
+      day,
+      date: selectedDate,
+    })
+    if (!validation.ok) {
+      setLiveMessage(tAgenda('announcement.failed'))
+      return false
+    }
+
+    const saved = await tasks.scheduleTask(dialogTask.id, validation.slot)
+    holdMessageRef.current = saved
+    setLiveMessage(
+      saved
+        ? tAgenda(
+            dialog?.mode === 'move'
+              ? 'announcement.moved'
+              : 'announcement.scheduled',
+          )
+        : tAgenda('announcement.failed'),
+    )
+    return saved
+  }
+
+  async function confirmRemove(): Promise<boolean> {
+    if (!removeTask) return false
+    const saved = await tasks.unscheduleTask(removeTask.id)
+    holdMessageRef.current = saved
+    setLiveMessage(
+      saved
+        ? tAgenda('announcement.unscheduled')
+        : tAgenda('announcement.failed'),
+    )
+    return saved
+  }
 
   return (
     <div className="space-y-section">
-      {tasksNeedAttention || commitmentsNeedAttention ? (
+      <StorageWarning
+        mode={tasks.mode}
+        pending={tasks.pending}
+        onRetry={() => {
+          void tasks.retryPersistence()
+        }}
+      />
+
+      <RecoveryNotice
+        quarantine={tasks.quarantine}
+        unsupported={tasks.unsupported}
+        pending={tasks.pending}
+        onDiscard={() => {
+          void tasks.discardUnreadable()
+        }}
+        onCancelDiscard={tasks.protectStore}
+        onDialogActiveChange={tasks.reportDialogActive}
+      />
+
+      {tasksNeedAttention(tasks.mode) || commitmentsNeedAttention ? (
         <section
           role="status"
           aria-labelledby="home-storage-notice-heading"
@@ -65,7 +230,7 @@ export function HomePage() {
             {t('storageNotice.description')}
           </p>
           <p className="flex flex-wrap gap-3 text-caption">
-            {tasksNeedAttention ? (
+            {tasksNeedAttention(tasks.mode) ? (
               <Link to="/tasks">{t('storageNotice.tasksLink')}</Link>
             ) : null}
             {commitmentsNeedAttention ? (
@@ -77,20 +242,107 @@ export function HomePage() {
         </section>
       ) : null}
 
+      {sources === 'incomplete' ? <AgendaIncompleteNotice /> : null}
+
       <HomeDashboard
-        tasks={tasks.tasks}
-        todayCommitments={todayCommitments}
-        taskCounts={{
-          pending: groups.pending.length,
-          completed: groups.completed.length,
-        }}
+        agenda={
+          <DailyAgenda
+            day={day}
+            selectedDate={selectedDate}
+            today={today}
+            locale={formattingLocale}
+            dateStyle={dateStyle}
+            scheduling={{
+              enabled: !tasks.externalChange,
+              reasonKey: tasks.externalChange
+                ? 'scheduling.reasonExternal'
+                : null,
+            }}
+            pending={tasks.pending}
+            onSelectDate={selectDate}
+            onSchedule={openSchedule}
+            onAdjust={openSchedule}
+            onUnschedule={openRemove}
+            onOpenTasks={() => navigate('/tasks')}
+            onOpenCommitments={() => navigate('/commitments')}
+            onCreateTask={() => navigate('/tasks')}
+            onCreateCommitment={() => navigate('/commitments')}
+            liveMessage={liveMessage}
+          />
+        }
+        selectedDateLabel={selectedDateLabel}
+        showTodaySurfaces={selectedDate === today}
         weather={weather}
         suggestions={suggestions}
         formattingLocale={formattingLocale}
-        dateStyle={dateStyle}
         weatherUnit={preferences.weatherUnits}
-        todayLabel={todayLabel}
       />
+
+      {dialog && dialogTask ? (
+        <ScheduleTaskDialog
+          open
+          mode={dialog.mode}
+          task={dialogTask}
+          date={selectedDate}
+          locale={formattingLocale}
+          dateStyle={dateStyle}
+          initialStartTime={
+            dialog.mode === 'move'
+              ? (dialogTask.plannedStartTime ?? null)
+              : null
+          }
+          initialDurationInput=""
+          conflictsFor={(startTime) =>
+            scheduleConflicts(
+              day.entries,
+              dialogTask.id,
+              startTime,
+              dialogTask.estimatedMinutes ?? 0,
+            )
+          }
+          pending={tasks.pending}
+          onConfirm={confirmSchedule}
+          onClose={() => setDialog(null)}
+        />
+      ) : null}
+
+      {removeTarget && removeTask ? (
+        <RemoveScheduleDialog
+          open
+          taskTitle={removeTask.title}
+          pending={tasks.pending}
+          onConfirm={confirmRemove}
+          onClose={() => setRemoveTarget(null)}
+        />
+      ) : null}
     </div>
   )
+}
+
+function tasksNeedAttention(mode: string): boolean {
+  return (
+    mode === 'recovery-blocked' ||
+    mode === 'protected' ||
+    mode === 'unsupported' ||
+    mode === 'memory-only'
+  )
+}
+
+function summaryMessage(
+  day: AgendaDay,
+  dateLabel: string,
+  locale: string,
+  t: TFunction<'agenda'>,
+): string {
+  const conflicts = day.conflicts?.length ?? 0
+  const available =
+    day.availability.kind === 'available'
+      ? formatDuration(day.availability.totalMinutes, locale)
+      : formatDuration(0, locale)
+  return t('announcement.summary', {
+    date: dateLabel,
+    count: day.entries.length,
+    conflicts,
+    duration: available,
+  })
 }

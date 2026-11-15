@@ -51,6 +51,32 @@ export function getLocalToday(now: Date = new Date()): LocalDate {
   return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
 }
 
+/**
+ * Shift a local calendar date by whole days. Calendar arithmetic uses local
+ * date parts only, so month and year boundaries are safe and no UTC conversion
+ * ever moves the day.
+ */
+export function shiftLocalDate(date: LocalDate, days: number): LocalDate {
+  const match = LOCAL_DATE_PATTERN.exec(date)
+  if (!match) return date
+
+  const year = Number.parseInt(match[1] ?? '', 10)
+  const month = Number.parseInt(match[2] ?? '', 10)
+  const day = Number.parseInt(match[3] ?? '', 10)
+
+  const value = new Date(year, month - 1, day)
+  value.setDate(value.getDate() + days)
+
+  return `${value.getFullYear()}-${pad(value.getMonth() + 1)}-${pad(value.getDate())}`
+}
+
+/** Minute of the local day, rounded up to the next whole minute (0–1440). */
+export function minuteOfDayRoundedUp(now: Date): number {
+  const elapsed = now.getHours() * 60 + now.getMinutes()
+  const partialMinute = now.getSeconds() > 0 || now.getMilliseconds() > 0
+  return Math.min(1440, Math.max(0, elapsed + (partialMinute ? 1 : 0)))
+}
+
 export function compareLocalTimes(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }

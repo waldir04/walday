@@ -6,8 +6,9 @@ import { renderApp } from './helpers/renderApp'
 const DESTINATIONS = ['/', '/tasks', '/commitments', '/settings']
 
 describe('application shell (US1)', () => {
-  it('renders one banner, one named navigation, one main region, and one page heading', () => {
+  it('renders one banner, one named navigation, one main region, and one page heading', async () => {
     renderApp(['/'])
+    await screen.findByRole('heading', { level: 1 })
 
     expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(

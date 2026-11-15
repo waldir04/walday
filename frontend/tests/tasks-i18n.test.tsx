@@ -59,9 +59,13 @@ describe('task locale resources', () => {
 
   it('falls back to English when a Spanish key is missing', () => {
     i18n.addResource('en', 'tasks', 'fallbackProbe', 'English fallback copy')
-    expect(i18n.t('fallbackProbe', { ns: 'tasks', lng: 'es' })).toBe(
-      'English fallback copy',
-    )
+    try {
+      expect(i18n.t('fallbackProbe', { ns: 'tasks', lng: 'es' })).toBe(
+        'English fallback copy',
+      )
+    } finally {
+      Reflect.deleteProperty(enTasks, 'fallbackProbe')
+    }
   })
 
   it('uses locale pluralization for recovery counts', () => {

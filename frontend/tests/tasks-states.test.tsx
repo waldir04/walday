@@ -133,7 +133,7 @@ describe('task page states', () => {
       ).not.toBeInTheDocument(),
     )
     const stored = JSON.parse(storedRaw()) as Record<string, unknown>
-    expect(stored.version).toBe(1)
+    expect(stored.version).toBe(2)
     expect(stored.revision).toEqual(expect.any(String))
   })
 

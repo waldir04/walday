@@ -91,6 +91,7 @@ interface AgendaSchedulingState {
 interface AgendaTimelineProps {
   entries: AgendaEntry[]
   locale: string
+  dateLabel: string             // localized selected date for the region name
   empty: boolean
   pending: boolean
   scheduling: AgendaSchedulingState
@@ -140,6 +141,7 @@ interface AgendaConflictSummaryProps {
   conflicts: TimeConflict[]
   entries: AgendaEntry[]
   locale: string
+  dateLabel: string             // localized selected date for the region name
 }
 ```
 
@@ -157,6 +159,7 @@ interface AgendaAvailabilityProps {
   availability: AvailabilityResult
   locale: string
   isToday: boolean
+  dateLabel: string             // localized selected date for the region name
 }
 
 interface AvailablePeriodRowProps {
@@ -203,9 +206,7 @@ interface AgendaUnscheduledListProps {
 
 ```ts
 interface AgendaEmptyStateProps {
-  date: LocalDate
-  locale: string
-  dateStyle: Intl.DateTimeFormatOptions['dateStyle']
+  dateLabel: string             // localized selected date
   onCreateCommitment: () => void
   onCreateTask: () => void
 }

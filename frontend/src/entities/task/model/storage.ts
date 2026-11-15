@@ -6,6 +6,7 @@ import {
   TASKS_STORAGE_VERSION,
 } from '@/shared/config/tasks'
 import {
+  emptyQuarantine,
   migrateLegacyRecords,
   quarantineTotal,
   sanitizeTaskRecords,
@@ -35,7 +36,15 @@ interface MigrationOutcome {
 
 type RegisteredMigration = (input: Record<string, unknown>) => MigrationOutcome
 
-const REGISTERED_MIGRATIONS: Record<number, RegisteredMigration> = {}
+const REGISTERED_MIGRATIONS: Record<number, RegisteredMigration> = {
+  1: (input) => {
+    const tasks = input.tasks
+    if (!Array.isArray(tasks)) {
+      return { ok: false }
+    }
+    return { ok: true, tasks, quarantine: emptyQuarantine() }
+  },
+}
 
 function resolveStorage(
   deps: TaskStorageDependencies | undefined,

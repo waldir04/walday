@@ -110,6 +110,10 @@
     "retrySucceeded": "Cambios guardados.",
     "retryFailed": "Los cambios aún no se guardan. Solo se aplican a esta sesión.",
     "discarded": "Se descartaron los datos ilegibles y se guardaron las tareas restauradas.",
-    "protected": "Los datos almacenados se conservaron. El guardado sigue desactivado hasta que descartes los datos ilegibles o recargues."
+    "protected": "Los datos almacenados se conservaron. El guardado sigue desactivado hasta que descartes los datos ilegibles o recargues.",
+    "scheduled": "Tarea programada.",
+    "scheduledSessionOnly": "Tarea programada solo para esta sesión. No se guardó.",
+    "unscheduled": "Horario eliminado.",
+    "unscheduledSessionOnly": "Horario eliminado solo para esta sesión. No se guardó."
   }
 }

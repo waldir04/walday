@@ -6,6 +6,7 @@ export type {
   LocalDate,
   TaskDraft,
   StoredTask,
+  ScheduleSlot,
   TaskValidationCode,
   TaskRecordValidationCode,
   TaskFieldError,

@@ -63,8 +63,6 @@ describe('English and Spanish key parity (US1-US3)', () => {
       'heading',
       'description',
       'today',
-      'tasks',
-      'commitments',
       'storageNotice',
       'weather',
       'suggestions',
