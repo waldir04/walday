@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { createRoot, type Root } from 'react-dom/client'
 import '@fontsource-variable/inter'
 import '../index.css'
 import '@/shared/i18n'
@@ -46,18 +46,18 @@ function installGlobalErrorHandlers(): void {
 export function bootstrap({
   rootId = 'root',
   envSource,
-}: BootstrapOptions = {}): boolean {
-  const root = document.getElementById(rootId)
-  if (!root) {
+}: BootstrapOptions = {}): Root | null {
+  const container = document.getElementById(rootId)
+  if (!container) {
     console.error('[walday] Root element is missing')
-    return false
+    return null
   }
 
   try {
     initEnv(envSource)
   } catch {
-    showConfigurationError(root)
-    return false
+    showConfigurationError(container)
+    return null
   }
 
   const loaded = loadPreferences()
@@ -68,10 +68,11 @@ export function bootstrap({
   applyLanguage(resolveLanguage(preferences.language).language)
   installGlobalErrorHandlers()
 
-  createRoot(root).render(
+  const root = createRoot(container)
+  root.render(
     <StrictMode>
       <App />
     </StrictMode>,
   )
-  return true
+  return root
 }

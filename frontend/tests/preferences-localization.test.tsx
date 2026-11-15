@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { PREFERENCES_STORAGE_KEY } from '../src/shared/config/preferences'
 import { applyLanguage } from '../src/shared/i18n'
@@ -136,20 +136,26 @@ describe('language selection and localization (US2)', () => {
     ).toBeInTheDocument()
   })
 
-  it('applies the stored language before the first meaningful paint', () => {
+  it('applies the stored language before the first meaningful paint', async () => {
     localStorage.setItem(
       PREFERENCES_STORAGE_KEY,
       JSON.stringify(makeEnvelope(makePreferences({ language: 'es' }))),
     )
-    const root = document.createElement('div')
-    root.id = 'language-test-root'
-    document.body.append(root)
+    const container = document.createElement('div')
+    container.id = 'language-test-root'
+    document.body.append(container)
 
-    expect(bootstrap({ rootId: 'language-test-root', envSource: {} })).toBe(
-      true,
-    )
+    let appRoot: ReturnType<typeof bootstrap> = null
+    await act(async () => {
+      appRoot = bootstrap({ rootId: 'language-test-root', envSource: {} })
+    })
+
+    expect(appRoot).not.toBeNull()
     expect(document.documentElement.lang).toBe('es')
 
-    root.remove()
+    await act(async () => {
+      appRoot?.unmount()
+    })
+    container.remove()
   })
 })

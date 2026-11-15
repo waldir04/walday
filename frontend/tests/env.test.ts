@@ -51,7 +51,7 @@ describe('bootstrap configuration gate (US6)', () => {
       envSource: { VITE_API_BASE_URL: 'not-a-url' },
     })
 
-    expect(rendered).toBe(false)
+    expect(rendered).toBeNull()
     const alert = root.querySelector('[role="alert"]')
     expect(alert).not.toBeNull()
     expect(alert?.textContent).not.toContain('not-a-url')
@@ -60,6 +60,6 @@ describe('bootstrap configuration gate (US6)', () => {
   })
 
   it('reports a missing root element without throwing', () => {
-    expect(bootstrap({ rootId: 'missing-root', envSource: {} })).toBe(false)
+    expect(bootstrap({ rootId: 'missing-root', envSource: {} })).toBeNull()
   })
 })

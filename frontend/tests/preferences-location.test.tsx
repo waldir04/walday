@@ -163,7 +163,7 @@ describe('weather location selection (US5)', () => {
       expect(envelope.preferences.weatherLocation.label).toBe(madridLabel)
     })
     expect(
-      screen.getByText('Ubicación seleccionada: ' + madridLabel),
+      await screen.findByText('Ubicación seleccionada: ' + madridLabel),
     ).toBeInTheDocument()
   })
 
