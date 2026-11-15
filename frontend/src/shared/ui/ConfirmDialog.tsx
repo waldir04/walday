@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react'
-import type { KeyboardEvent, ReactNode } from 'react'
+import { useRef } from 'react'
+import type { ReactNode } from 'react'
+import { useDialogFocusTrap } from '@/shared/lib/useDialogFocusTrap'
 import { Button } from './Button'
 
 export interface ConfirmDialogProps {
@@ -11,14 +12,6 @@ export interface ConfirmDialogProps {
   onConfirm: () => void
   onCancel: () => void
   danger?: boolean
-}
-
-function focusableElements(dialog: HTMLDialogElement): HTMLElement[] {
-  return Array.from(
-    dialog.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    ),
-  ).filter((element) => !element.hasAttribute('disabled'))
 }
 
 export function ConfirmDialog({
@@ -33,72 +26,14 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
-  const previouslyFocused = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const dialog = dialogRef.current
-    previouslyFocused.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null
-
-    if (dialog && !dialog.open) {
-      if (typeof dialog.showModal === 'function') {
-        dialog.showModal()
-      } else {
-        dialog.setAttribute('open', '')
-      }
-    }
-
-    cancelRef.current?.focus()
-
-    return () => {
-      if (dialog?.open) {
-        if (typeof dialog.close === 'function') {
-          dialog.close()
-        } else {
-          dialog.removeAttribute('open')
-        }
-      }
-      const previous = previouslyFocused.current
-      if (previous?.isConnected) {
-        previous.focus()
-      }
-    }
-  }, [open])
+  const { handleKeyDown, handleCancel } = useDialogFocusTrap({
+    open,
+    dialogRef,
+    initialFocusRef: cancelRef,
+    onClose: onCancel,
+  })
 
   if (!open) return null
-
-  function handleKeyDown(event: KeyboardEvent<HTMLDialogElement>) {
-    if (event.key === 'Escape') {
-      event.preventDefault()
-      onCancel()
-      return
-    }
-    if (event.key !== 'Tab') return
-    const dialog = dialogRef.current
-    if (!dialog) return
-
-    const elements = focusableElements(dialog)
-    if (elements.length === 0) {
-      event.preventDefault()
-      dialog.focus()
-      return
-    }
-
-    const first = elements[0]
-    const last = elements[elements.length - 1]
-    if (!first || !last) return
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault()
-      last.focus()
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault()
-      first.focus()
-    }
-  }
 
   return (
     <dialog
@@ -106,13 +41,10 @@ export function ConfirmDialog({
       aria-modal="true"
       aria-labelledby="confirm-dialog-heading"
       aria-describedby={description ? 'confirm-dialog-description' : undefined}
-      onCancel={(event) => {
-        event.preventDefault()
-        onCancel()
-      }}
+      onCancel={handleCancel}
       onKeyDown={handleKeyDown}
       tabIndex={-1}
-      className="w-full max-w-md rounded-card border border-border bg-surface p-section text-text shadow-card backdrop:bg-text/40"
+      className="w-full max-w-md rounded-2xl border border-border bg-surface p-5 text-text shadow-card backdrop:bg-canvas/80"
     >
       <h2
         id="confirm-dialog-heading"

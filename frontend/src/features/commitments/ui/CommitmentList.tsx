@@ -46,7 +46,7 @@ export function CommitmentList({
   }
 
   return (
-    <ul className="grid gap-3">
+    <ul className="space-y-3">
       {commitments.map((commitment) => (
         <CommitmentItem
           key={commitment.id}

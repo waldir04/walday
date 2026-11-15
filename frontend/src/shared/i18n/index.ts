@@ -9,6 +9,8 @@ import enCommitments from './locales/en/commitments.json'
 import esCommitments from './locales/es/commitments.json'
 import enTasks from './locales/en/tasks.json'
 import esTasks from './locales/es/tasks.json'
+import enHome from './locales/en/home.json'
+import esHome from './locales/es/home.json'
 
 export const defaultNS = 'common'
 export const namespaces = [
@@ -16,6 +18,7 @@ export const namespaces = [
   'preferences',
   'commitments',
   'tasks',
+  'home',
 ] as const
 
 export const resources = {
@@ -24,12 +27,14 @@ export const resources = {
     preferences: enPreferences,
     commitments: enCommitments,
     tasks: enTasks,
+    home: enHome,
   },
   es: {
     common: esCommon,
     preferences: esPreferences,
     commitments: esCommitments,
     tasks: esTasks,
+    home: esHome,
   },
 }
 

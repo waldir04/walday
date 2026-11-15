@@ -58,7 +58,10 @@ export const routes: RouteObject[] = [
       {
         index: true,
         element: <HomePage />,
-        handle: { titleKey: 'app.title' } satisfies RouteHandle,
+        handle: {
+          titleKey: 'title',
+          titleNamespace: 'home',
+        } satisfies RouteHandle,
         errorElement: <RouteError />,
       },
       {

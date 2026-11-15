@@ -35,14 +35,17 @@ export function WeatherLocationField() {
   const queryInvalid = Boolean(errors.locationQuery)
 
   return (
-    <fieldset className="space-y-3">
+    <fieldset
+      id="weather-location"
+      className="scroll-mt-24 space-y-3 rounded-2xl border border-border bg-surface p-5"
+    >
       <legend className="text-body font-medium text-text">
         {t('location.legend')}
       </legend>
       <p className="text-caption text-text-muted">{t('location.help')}</p>
 
       {draft.weatherLocation ? (
-        <div className="rounded-control border border-border bg-surface-subtle p-3">
+        <div className="rounded-control border border-border bg-surface-raised p-3">
           <p className="break-words text-body text-text">
             {t('location.selected', { label: draft.weatherLocation.label })}
           </p>
@@ -86,7 +89,7 @@ export function WeatherLocationField() {
                 void searchLocations()
               }
             }}
-            className="min-h-11 w-full max-w-sm rounded-control border border-border bg-surface px-3 py-2 text-body text-text"
+            className="min-h-11 w-full max-w-sm rounded-control border border-border-strong bg-surface px-3 py-2 text-body text-text"
           />
           <Button
             variant="secondary"
@@ -166,7 +169,7 @@ export function WeatherLocationField() {
                       candidate.providerPlaceId
                     }
                     onChange={() => selectLocation(candidate)}
-                    className="mt-1 h-6 w-6 border-border text-primary"
+                    className="mt-1 h-6 w-6 border-border-strong text-primary"
                   />
                   <label
                     htmlFor={id}

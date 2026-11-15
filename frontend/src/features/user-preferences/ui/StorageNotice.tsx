@@ -14,7 +14,7 @@ export function StorageNotice() {
     return (
       <section
         aria-live="polite"
-        className="rounded-card border border-warning bg-surface p-section"
+        className="rounded-2xl border border-warning bg-surface p-5"
       >
         <h2 className="text-title font-semibold text-warning">
           {t('storage.sessionOnlyHeading')}
@@ -43,7 +43,7 @@ export function StorageNotice() {
     return (
       <section
         aria-live="polite"
-        className="rounded-card border border-danger bg-surface p-section"
+        className="rounded-2xl border border-danger bg-surface p-5"
       >
         <h2 className="text-title font-semibold text-danger">
           {t('storage.conflictHeading')}
@@ -69,7 +69,7 @@ export function StorageNotice() {
     return (
       <section
         aria-live="polite"
-        className="rounded-card border border-warning bg-surface p-section"
+        className="rounded-2xl border border-warning bg-surface p-5"
       >
         <h2 className="text-title font-semibold text-warning">
           {t('storage.partialHeading')}
@@ -105,7 +105,7 @@ export function StorageNotice() {
     return (
       <section
         aria-live="polite"
-        className="rounded-card border border-danger bg-surface p-section"
+        className="rounded-2xl border border-danger bg-surface p-5"
       >
         <h2 className="text-title font-semibold text-danger">{heading}</h2>
         <p className="mt-2 text-body text-text">
@@ -127,7 +127,7 @@ export function StorageNotice() {
   return (
     <section
       aria-live="polite"
-      className="rounded-card border border-warning bg-surface p-section"
+      className="rounded-2xl border border-warning bg-surface p-5"
     >
       <h2 className="text-title font-semibold text-warning">
         {t('storage.unsupportedHeading')}

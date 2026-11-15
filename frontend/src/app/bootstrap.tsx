@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@fontsource-variable/inter'
 import '../index.css'
 import '@/shared/i18n'
 import i18n, { applyLanguage } from '@/shared/i18n'

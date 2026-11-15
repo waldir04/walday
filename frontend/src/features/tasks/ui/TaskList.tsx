@@ -83,11 +83,11 @@ export function TaskList({
   function renderGroup(id: string, heading: string, groupTasksList: Task[]) {
     if (groupTasksList.length === 0) return null
     return (
-      <section aria-labelledby={id} className="space-y-stack">
+      <section aria-labelledby={id} className="space-y-3">
         <h2 id={id} className="text-title font-semibold text-text">
           {heading}
         </h2>
-        <ul className="space-y-stack">
+        <ul className="space-y-3">
           {groupTasksList.map((task) => (
             <TaskItem
               key={task.id}

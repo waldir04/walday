@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Task, TaskDraft } from '@/entities/task'
-import { Button } from '@/shared/ui/Button'
+import { RowActions, type RowActionView } from '@/shared/ui/RowActions'
 import { DeleteTaskDialog } from './DeleteTaskDialog'
 import { TaskEditForm } from './TaskEditForm'
 import { TaskMetadata } from './TaskMetadata'
@@ -61,6 +61,7 @@ export function TaskItem({
   }, [editing])
 
   function requestDelete() {
+    if (pending) return
     deleteButtonRef.current?.focus()
     setConfirmingDelete(true)
     onDialogActiveChange(true)
@@ -77,7 +78,7 @@ export function TaskItem({
   }
 
   return (
-    <li className="rounded-card border border-border bg-surface p-3">
+    <li className="group rounded-2xl border border-border bg-surface p-5">
       <div className="flex items-start gap-3">
         <input
           ref={completionRef}
@@ -93,7 +94,7 @@ export function TaskItem({
               ? t('item.markPending', { title: task.title })
               : t('item.markComplete', { title: task.title })
           }
-          className="mt-1 h-6 w-6 min-h-6 min-w-6 rounded border-border text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="mt-1 h-6 w-6 min-h-6 min-w-6 rounded border-border-strong text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         />
 
         <div className="min-w-0 flex-1">
@@ -131,26 +132,31 @@ export function TaskItem({
         </div>
 
         {editing ? null : (
-          <div className="flex shrink-0 flex-wrap gap-1">
-            <Button
-              buttonRef={editButtonRef}
-              variant="ghost"
-              disabled={pending}
-              aria-label={t('item.editTask', { title: task.title })}
-              onClick={onStartEdit}
-            >
-              {t('item.edit')}
-            </Button>
-            <Button
-              buttonRef={deleteButtonRef}
-              variant="ghost"
-              disabled={pending}
-              aria-label={t('item.deleteTask', { title: task.title })}
-              onClick={requestDelete}
-            >
-              {t('item.delete')}
-            </Button>
-          </div>
+          <RowActions
+            menuLabel={t('actions.menuLabel', {
+              title: task.title,
+              ns: 'common',
+            })}
+            actions={
+              [
+                {
+                  id: 'edit',
+                  label: t('item.editTask', { title: task.title }),
+                  onSelect: () => {
+                    if (!pending) onStartEdit()
+                  },
+                  buttonRef: editButtonRef,
+                },
+                {
+                  id: 'delete',
+                  label: t('item.deleteTask', { title: task.title }),
+                  onSelect: requestDelete,
+                  tone: 'danger',
+                  buttonRef: deleteButtonRef,
+                },
+              ] satisfies RowActionView[]
+            }
+          />
         )}
       </div>
 

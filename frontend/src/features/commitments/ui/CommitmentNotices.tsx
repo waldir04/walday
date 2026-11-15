@@ -27,7 +27,7 @@ export function CommitmentNotices({
     <div className="grid gap-3">
       <section
         aria-label={t('commitments.storageWarning.heading')}
-        className="rounded-control border border-warning bg-surface-subtle p-control text-caption text-text"
+        className="rounded-2xl border border-border bg-surface-raised p-5 text-caption text-text-muted"
       >
         {t('commitments.guestNotice')}
       </section>

@@ -14,7 +14,7 @@ export interface LinkProps {
 const VARIANT_CLASSES: Record<LinkVariant, string> = {
   inline: 'text-primary underline underline-offset-2 hover:text-primary-hover',
   navigation:
-    'inline-flex min-h-11 min-w-11 items-center rounded-control px-3 text-caption font-medium text-text-muted hover:bg-surface-subtle hover:text-text',
+    'inline-flex min-h-11 min-w-11 items-center rounded-control px-3 text-caption font-medium text-text-muted hover:bg-surface hover:text-primary',
 }
 
 export function Link({

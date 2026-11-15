@@ -1,0 +1,60 @@
+{
+  "title": "Home",
+  "heading": "Today",
+  "description": "A calm overview of your day.",
+  "today": "Today",
+  "tasks": {
+    "heading": "Tasks",
+    "pending": "{{count}} pending",
+    "completed": "{{count}} completed",
+    "emptyHeading": "No tasks yet",
+    "emptyDescription": "Add a task to see it on your day.",
+    "emptyAction": "Go to Tasks",
+    "viewAll": "View all tasks"
+  },
+  "commitments": {
+    "heading": "Today's commitments",
+    "emptyHeading": "Nothing scheduled",
+    "emptyDescription": "There are no commitments for today.",
+    "emptyAction": "Go to Commitments",
+    "viewAll": "View commitments"
+  },
+  "storageNotice": {
+    "heading": "Storage notice",
+    "description": "Some changes may not be saved in this session. Your existing data is still shown.",
+    "tasksLink": "Review Tasks",
+    "commitmentsLink": "Review Commitments"
+  },
+  "weather": {
+    "heading": "Weather",
+    "loading": "Loading weather",
+    "noLocationHeading": "Weather needs a location",
+    "noLocationDescription": "Add a location in Settings to see local weather.",
+    "noLocationAction": "Choose a location",
+    "ready": "Current weather",
+    "stale": "Showing the last available weather",
+    "unavailable": "Weather is unavailable right now.",
+    "error": "Weather could not be loaded.",
+    "retry": "Try again",
+    "high": "High",
+    "low": "Low",
+    "precipitation": "Precipitation",
+    "wind": "Wind",
+    "updated": "Updated {{time}}",
+    "conditions": {
+      "clear": "Clear",
+      "partlyCloudy": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "rain": "Rain",
+      "snow": "Snow",
+      "storm": "Storm",
+      "fog": "Fog"
+    }
+  },
+  "suggestions": {
+    "heading": "Smart Suggestions",
+    "loading": "Loading suggestions",
+    "error": "Suggestions are unavailable right now.",
+    "why": "Why this suggestion"
+  }
+}

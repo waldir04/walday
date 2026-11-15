@@ -27,7 +27,10 @@ export function RouteError() {
     : t('error.routeDescription')
 
   return (
-    <section role="alert" className="mx-auto max-w-2xl px-page py-section">
+    <section
+      role="alert"
+      className="mx-auto min-h-screen max-w-2xl bg-canvas px-page py-section"
+    >
       <h1
         ref={headingRef}
         tabIndex={-1}

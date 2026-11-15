@@ -1,25 +1,37 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Semantic colors (WCAG AA pairs on surface) */
-  --color-primary: #1d4ed8;
-  --color-primary-hover: #1e40af;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #f8fafc;
-  --color-muted: #4b5563;
-  --color-border: #6b7280;
-  --color-danger: #b91c1c;
-  --color-success: #15803d;
-  --color-warning: #92400e;
-  --color-focus: #1e40af;
-  --color-text: #111827;
-  --color-text-muted: #4b5563;
-  --color-text-inverse: #ffffff;
+  /* Canonical Calm Tech Dark palette. No raw hex belongs in components. */
+  --color-canvas: #0b1215;
+  --color-surface: #131d22;
+  --color-surface-raised: #152026;
+  --color-surface-subtle: #152026;
+  --color-border: #23323a;
+  --color-border-strong: #5b6b73;
+  --color-text: #f3f4f6;
+  --color-text-muted: #8b9ba3;
+  --color-text-inverse: #0b1215;
+  --color-primary: #34d399;
+  --color-primary-hover: #10b981;
+  --color-primary-strong: #10b981;
+  --color-muted: #8b9ba3;
+  --color-danger: #f87171;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-focus: #34d399;
+  --color-warm: #fbbf24;
+  --color-cool: #38bdf8;
+  --color-suggestion-surface: #a7f3d0;
+  --color-suggestion-surface-strong: #6ee7b7;
+  --color-suggestion-text: #064e3b;
+  --color-suggestion-cta: #0f172a;
+  --color-tag-border: #2a3b44;
+  --color-tag-text: #9ca3af;
 
   /* Typography hierarchy */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica,
-    Arial, sans-serif;
+    'Inter Variable', Inter, system-ui, ui-sans-serif, -apple-system,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --text-display: 2.25rem;
   --text-display--line-height: 2.5rem;
   --text-display--font-weight: 700;
@@ -44,20 +56,20 @@
   --spacing-density-roomy: 0.75rem;
 
   /* Radius */
-  --radius-card: 0.75rem;
+  --radius-card: 1rem;
   --radius-control: 0.5rem;
 
   /* Shadows */
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.08), 0 1px 3px rgb(15 23 42 / 0.12);
-  --shadow-focus: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-focus);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.3);
+  --shadow-focus: 0 0 0 2px var(--color-canvas), 0 0 0 4px var(--color-focus);
 }
 
 html {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-surface);
+  background-color: var(--color-canvas);
   color: var(--color-text);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
@@ -66,6 +78,44 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
+}
+
+@keyframes drawer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.drawer-panel {
+  animation: drawer-in 160ms ease-out;
+}
+
+/*
+ * Row action reveal modes. Wide, fine-pointer screens fade actions in on
+ * hover/focus without shifting layout. Narrow or coarse-pointer contexts keep
+ * a persistent compact disclosure instead.
+ */
+.row-actions-inline {
+  display: none;
+}
+
+.row-actions-compact {
+  display: flex;
+}
+
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .row-actions-inline {
+    display: flex;
+  }
+
+  .row-actions-compact {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

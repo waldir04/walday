@@ -14,7 +14,7 @@ export function Container({
   const Element = as
   return (
     <Element
-      className={`mx-auto w-full max-w-5xl px-page sm:px-page-wide ${className}`}
+      className={`mx-auto w-full max-w-6xl px-page sm:px-page-wide ${className}`}
     >
       {children}
     </Element>

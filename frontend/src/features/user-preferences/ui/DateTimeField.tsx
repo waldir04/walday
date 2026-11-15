@@ -18,7 +18,7 @@ export function DateTimeField({
   const { t } = useTranslation('preferences')
 
   return (
-    <fieldset className="space-y-2">
+    <fieldset className="space-y-2 rounded-2xl border border-border bg-surface p-5">
       <legend className="text-body font-medium text-text">
         {t('dateTime.legend')}
       </legend>
@@ -37,7 +37,7 @@ export function DateTimeField({
               onChange={() => onChange(option)}
               disabled={disabled}
               aria-describedby="pref-datetime-help"
-              className="h-6 w-6 border-border text-primary"
+              className="h-6 w-6 border-border-strong text-primary"
             />
             <label
               htmlFor={`pref-datetime-${option}`}

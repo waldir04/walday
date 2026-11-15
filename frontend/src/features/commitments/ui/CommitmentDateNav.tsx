@@ -49,7 +49,7 @@ export function CommitmentDateNav({ date, onChange }: CommitmentDateNavProps) {
           type="date"
           value={date}
           onChange={(event) => onChange(event.target.value)}
-          className="rounded-control border border-border bg-surface px-control py-2 text-body text-text"
+          className="min-h-11 rounded-control border border-border-strong bg-surface px-control py-2 text-body text-text"
         />
       </label>
     </section>

@@ -6,10 +6,12 @@
   "nav": {
     "ariaLabel": "Navegación principal",
     "home": "Inicio",
-    "foundation": "Base",
     "tasks": "Tareas",
     "settings": "Configuración",
-    "commitments": "Compromisos"
+    "commitments": "Compromisos",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "drawerTitle": "Menú principal"
   },
   "foundation": {
     "title": "Base",
@@ -52,7 +54,8 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "yes": "Sí",
-    "back": "Volver"
+    "back": "Volver",
+    "menuLabel": "Acciones para {{title}}"
   },
   "a11y": {
     "skipToContent": "Saltar al contenido principal",

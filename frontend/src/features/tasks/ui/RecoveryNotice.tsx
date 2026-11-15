@@ -29,7 +29,7 @@ export function RecoveryNotice({
       <section
         role="alert"
         aria-labelledby="recovery-heading"
-        className="rounded-card border border-warning bg-surface p-section"
+        className="rounded-2xl border border-warning bg-surface p-5"
       >
         <h2
           id="recovery-heading"
@@ -61,7 +61,7 @@ export function RecoveryNotice({
     <section
       role="alert"
       aria-labelledby="recovery-heading"
-      className="rounded-card border border-warning bg-surface p-section"
+      className="rounded-2xl border border-warning bg-surface p-5"
     >
       <h2
         id="recovery-heading"

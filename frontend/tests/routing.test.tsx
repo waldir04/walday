@@ -42,7 +42,7 @@ describe('routing (US2)', () => {
 
     await router.navigate(-1)
     expect(
-      await screen.findByRole('heading', { level: 1, name: /^Walday$/i }),
+      await screen.findByRole('heading', { level: 1, name: /^(today|hoy)$/i }),
     ).toBeInTheDocument()
   })
 

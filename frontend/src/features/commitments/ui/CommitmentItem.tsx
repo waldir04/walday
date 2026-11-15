@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { findOverlaps, type Commitment } from '@/entities/commitment'
 import { formatLocalDate, formatLocalTime } from '@/shared/lib/localDateTime'
-import { Button } from '@/shared/ui/Button'
+import { RowActions, type RowActionView } from '@/shared/ui/RowActions'
 
 export interface CommitmentItemProps {
   commitment: Commitment
@@ -28,24 +28,44 @@ export function CommitmentItem({
     .map((item) => item.title)
     .join(', ')
 
+  const actions: RowActionView[] = [
+    {
+      id: 'edit',
+      label: `${t('commitments.edit')}: ${commitment.title}`,
+      onSelect: () => {
+        if (!disabled) onEdit(commitment)
+      },
+    },
+    {
+      id: 'delete',
+      label: `${t('commitments.delete')}: ${commitment.title}`,
+      onSelect: () => {
+        if (!disabled) onDelete(commitment)
+      },
+      tone: 'danger',
+    },
+  ]
+
   return (
     <li
       data-commitment-id={commitment.id}
       tabIndex={-1}
-      className="rounded-card border border-border bg-surface p-section shadow-card"
+      className="group rounded-2xl border border-border bg-surface p-5"
     >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <h3 className="text-body font-semibold text-text">
+        <div className="min-w-0">
+          <h3 className="break-words text-body font-semibold text-text">
             {commitment.title}
           </h3>
           <p className="mt-1 text-caption text-text-muted">
             {formatLocalDate(commitment.date, formattingLocale, dateStyle)} ·{' '}
-            {formatLocalTime(commitment.startTime, formattingLocale)}–
-            {formatLocalTime(commitment.endTime, formattingLocale)}
+            <span className="tabular-nums">
+              {formatLocalTime(commitment.startTime, formattingLocale)}–
+              {formatLocalTime(commitment.endTime, formattingLocale)}
+            </span>
           </p>
           <p className="mt-1 text-caption text-text">
-            <span className="font-medium">
+            <span className="inline-flex items-center rounded-full border border-tag-border px-2 py-0.5 font-medium text-tag-text">
               {commitment.type === 'fixed'
                 ? t('commitments.form.typeFixed')
                 : t('commitments.form.typeFlexible')}
@@ -66,24 +86,13 @@ export function CommitmentItem({
             </p>
           ) : null}
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            disabled={disabled}
-            aria-label={`${t('commitments.edit')}: ${commitment.title}`}
-            onClick={() => onEdit(commitment)}
-          >
-            {t('commitments.edit')}
-          </Button>
-          <Button
-            variant="danger"
-            disabled={disabled}
-            aria-label={`${t('commitments.delete')}: ${commitment.title}`}
-            onClick={() => onDelete(commitment)}
-          >
-            {t('commitments.delete')}
-          </Button>
-        </div>
+        <RowActions
+          menuLabel={t('actions.menuLabel', {
+            title: commitment.title,
+            ns: 'common',
+          })}
+          actions={actions}
+        />
       </div>
     </li>
   )

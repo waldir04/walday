@@ -99,7 +99,7 @@ export function PreferencesForm() {
           <div
             role="alert"
             tabIndex={-1}
-            className="rounded-card border border-danger bg-surface p-3"
+            className="rounded-2xl border border-danger bg-surface-raised p-5"
           >
             <h2 className="text-body font-semibold text-danger">
               {t('validation.summaryHeading')}

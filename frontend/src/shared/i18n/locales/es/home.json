@@ -1,0 +1,60 @@
+{
+  "title": "Inicio",
+  "heading": "Hoy",
+  "description": "Una vista tranquila de tu día.",
+  "today": "Hoy",
+  "tasks": {
+    "heading": "Tareas",
+    "pending": "{{count}} pendientes",
+    "completed": "{{count}} completadas",
+    "emptyHeading": "Aún no hay tareas",
+    "emptyDescription": "Agrega una tarea para verla en tu día.",
+    "emptyAction": "Ir a Tareas",
+    "viewAll": "Ver todas las tareas"
+  },
+  "commitments": {
+    "heading": "Compromisos de hoy",
+    "emptyHeading": "Nada programado",
+    "emptyDescription": "No hay compromisos para hoy.",
+    "emptyAction": "Ir a Compromisos",
+    "viewAll": "Ver compromisos"
+  },
+  "storageNotice": {
+    "heading": "Aviso de almacenamiento",
+    "description": "Es posible que algunos cambios no se guarden en esta sesión. Tus datos existentes siguen visibles.",
+    "tasksLink": "Revisar Tareas",
+    "commitmentsLink": "Revisar Compromisos"
+  },
+  "weather": {
+    "heading": "Clima",
+    "loading": "Cargando el clima",
+    "noLocationHeading": "El clima necesita una ubicación",
+    "noLocationDescription": "Agrega una ubicación en Configuración para ver el clima local.",
+    "noLocationAction": "Elegir una ubicación",
+    "ready": "Clima actual",
+    "stale": "Mostrando el último clima disponible",
+    "unavailable": "El clima no está disponible en este momento.",
+    "error": "No se pudo cargar el clima.",
+    "retry": "Intentar de nuevo",
+    "high": "Máxima",
+    "low": "Mínima",
+    "precipitation": "Precipitación",
+    "wind": "Viento",
+    "updated": "Actualizado {{time}}",
+    "conditions": {
+      "clear": "Despejado",
+      "partlyCloudy": "Parcialmente nublado",
+      "cloudy": "Nublado",
+      "rain": "Lluvia",
+      "snow": "Nieve",
+      "storm": "Tormenta",
+      "fog": "Niebla"
+    }
+  },
+  "suggestions": {
+    "heading": "Sugerencias inteligentes",
+    "loading": "Cargando sugerencias",
+    "error": "Las sugerencias no están disponibles en este momento.",
+    "why": "Por qué esta sugerencia"
+  }
+}

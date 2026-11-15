@@ -40,7 +40,7 @@ const FIELD_IDS: Record<CommitmentField, string> = {
 }
 
 const INPUT_CLASS =
-  'rounded-control border border-border bg-surface px-control py-2 text-body text-text'
+  'min-h-11 rounded-control border border-border-strong bg-surface px-control py-2 text-body text-text'
 
 export function CommitmentForm({
   draft,
@@ -86,7 +86,7 @@ export function CommitmentForm({
         onSave()
       }}
       aria-labelledby="commitment-form-heading"
-      className="rounded-card border border-border bg-surface p-section shadow-card"
+      className="rounded-2xl border border-border bg-surface p-5 shadow-card"
     >
       <h2
         id="commitment-form-heading"
@@ -102,7 +102,7 @@ export function CommitmentForm({
           ref={summaryRef}
           tabIndex={-1}
           role="alert"
-          className="mt-4 rounded-control border border-danger bg-surface p-control text-body text-danger"
+          className="mt-4 rounded-2xl border border-danger bg-surface-raised p-3 text-body text-danger"
         >
           <p className="font-semibold">{t('commitments.validation.summary')}</p>
           <ul className="mt-1 list-inside list-disc">
@@ -246,7 +246,7 @@ export function CommitmentForm({
               checked={draft.type === 'fixed'}
               onChange={() => onFieldChange('type', 'fixed')}
               disabled={pending || disabled}
-              className="mt-1"
+              className="mt-1 h-5 w-5 border border-border-strong"
             />
             <span>
               <span className="font-medium">
@@ -265,7 +265,7 @@ export function CommitmentForm({
               checked={draft.type === 'flexible'}
               onChange={() => onFieldChange('type', 'flexible')}
               disabled={pending || disabled}
-              className="mt-1"
+              className="mt-1 h-5 w-5 border border-border-strong"
             />
             <span>
               <span className="font-medium">
@@ -282,7 +282,7 @@ export function CommitmentForm({
         {requiresAck ? (
           <section
             aria-labelledby="commitment-overlap-heading"
-            className="rounded-control border border-warning bg-surface-subtle p-control"
+            className="rounded-2xl border border-warning bg-surface-raised p-5"
           >
             <h3
               id="commitment-overlap-heading"
@@ -314,7 +314,7 @@ export function CommitmentForm({
                 type="checkbox"
                 checked={acknowledged}
                 onChange={(event) => onAcknowledgedChange(event.target.checked)}
-                className="mt-1"
+                className="mt-1 h-5 w-5 border border-border-strong"
               />
               <span>
                 {t('commitments.overlap.acknowledge')}

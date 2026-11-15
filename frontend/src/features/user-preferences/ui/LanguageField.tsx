@@ -37,7 +37,7 @@ export function LanguageField({
   ]
 
   return (
-    <fieldset className="space-y-2">
+    <fieldset className="space-y-2 rounded-2xl border border-border bg-surface p-5">
       <legend className="text-body font-medium text-text">
         {t('language.legend')}
       </legend>
@@ -56,7 +56,7 @@ export function LanguageField({
               onChange={() => onChange(option.value)}
               disabled={disabled}
               aria-describedby="pref-language-help"
-              className="h-6 w-6 border-border text-primary"
+              className="h-6 w-6 border-border-strong text-primary"
             />
             <label htmlFor={option.id} className="text-body text-text">
               {option.label}

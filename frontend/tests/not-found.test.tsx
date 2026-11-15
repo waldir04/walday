@@ -17,7 +17,7 @@ describe('not-found recovery (US2)', () => {
 
     fireEvent.click(screen.getByRole('link', { name: /go to the home page/i }))
     expect(
-      await screen.findByRole('heading', { level: 1, name: /^Walday$/i }),
+      await screen.findByRole('heading', { level: 1, name: /^(today|hoy)$/i }),
     ).toBeInTheDocument()
     await waitFor(() => expect(router.state.location.pathname).toBe('/'))
   })

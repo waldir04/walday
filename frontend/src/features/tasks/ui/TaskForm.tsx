@@ -22,7 +22,7 @@ export interface TaskFormProps {
 }
 
 const FIELD_CLASSES =
-  'mt-1 min-h-11 w-full rounded-control border border-border bg-surface px-3 py-2 text-body text-text'
+  'mt-1 min-h-11 w-full rounded-control border border-border-strong bg-surface px-3 py-2 text-body text-text'
 
 export function TaskForm({
   onSubmit,
@@ -82,13 +82,13 @@ export function TaskForm({
       onSubmit={handleSubmit}
       aria-label={t('form.heading')}
       aria-busy={pending || undefined}
-      className="space-y-stack rounded-card border border-border bg-surface p-section"
+      className="space-y-stack rounded-2xl border border-border bg-surface p-5"
       noValidate
     >
       {showSummary ? (
         <div
           role="alert"
-          className="rounded-card border border-danger bg-surface-subtle p-3"
+          className="rounded-2xl border border-danger bg-surface-raised p-3"
         >
           <p className="font-medium text-danger">{t('validation.summary')}</p>
           <ul className="mt-1 list-disc pl-5 text-caption text-text">

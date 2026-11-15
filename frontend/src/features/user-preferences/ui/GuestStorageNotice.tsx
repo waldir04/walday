@@ -4,7 +4,7 @@ export function GuestStorageNotice() {
   const { t } = useTranslation('preferences')
 
   return (
-    <aside className="rounded-card border border-border bg-surface-subtle p-3">
+    <aside className="rounded-2xl border border-border bg-surface p-5">
       <h2 className="text-body font-semibold text-text">
         {t('guestNotice.heading')}
       </h2>

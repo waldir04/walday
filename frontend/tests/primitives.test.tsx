@@ -42,7 +42,7 @@ describe('shared UI primitives (US3)', () => {
       </Container>,
     )
     const content = screen.getByText('Content')
-    expect(content.parentElement?.className).toContain('max-w-5xl')
+    expect(content.parentElement?.className).toContain('max-w-6xl')
     expect(content.parentElement?.className).toContain('px-page')
   })
 

@@ -20,7 +20,7 @@ function ErrorFallback({ onReset }: { onReset: () => void }) {
   }, [])
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-page py-section">
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center bg-canvas px-page py-section">
       <div role="alert">
         <h1
           ref={headingRef}
@@ -37,7 +37,7 @@ function ErrorFallback({ onReset }: { onReset: () => void }) {
           </Button>
           <a
             href="/"
-            className="self-center text-primary underline underline-offset-2"
+            className="self-center text-primary underline underline-offset-2 hover:text-primary-hover"
           >
             {t('error.home')}
           </a>

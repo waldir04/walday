@@ -10,7 +10,7 @@ export function ErrorState({ heading, description, action }: ErrorStateProps) {
   return (
     <section
       role="alert"
-      className="rounded-card border border-danger bg-surface p-section"
+      className="rounded-2xl border border-danger bg-surface p-5"
     >
       <h2 className="text-title font-semibold text-danger">{heading}</h2>
       {description ? (

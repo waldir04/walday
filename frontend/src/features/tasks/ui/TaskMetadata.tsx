@@ -22,13 +22,13 @@ export function TaskMetadata({
   const locale = formattingLocale ?? i18n.language
 
   return (
-    <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-caption text-text-muted">
-      <span>
+    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-text-muted">
+      <span className="inline-flex items-center rounded-full border border-tag-border px-2 py-0.5 text-tag-text">
         {t('item.priority', {
           priority: t(`form.priorityOptions.${task.priority}`),
         })}
       </span>
-      <span>
+      <span className="inline-flex items-center rounded-full border border-tag-border px-2 py-0.5 text-tag-text">
         {task.status === 'completed'
           ? t('item.statusCompleted')
           : t('item.statusPending')}

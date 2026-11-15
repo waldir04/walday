@@ -6,10 +6,12 @@
   "nav": {
     "ariaLabel": "Main navigation",
     "home": "Home",
-    "foundation": "Foundation",
     "tasks": "Tasks",
     "settings": "Settings",
-    "commitments": "Commitments"
+    "commitments": "Commitments",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "drawerTitle": "Main menu"
   },
   "foundation": {
     "title": "Foundation",
@@ -52,7 +54,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "yes": "Yes",
-    "back": "Back"
+    "back": "Back",
+    "menuLabel": "Actions for {{title}}"
   },
   "a11y": {
     "skipToContent": "Skip to main content",

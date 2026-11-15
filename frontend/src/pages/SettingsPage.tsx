@@ -14,7 +14,7 @@ export function SettingsPage() {
         <h1
           id="preferences-heading"
           tabIndex={-1}
-          className="text-title font-semibold"
+          className="text-title font-semibold text-text"
         >
           {t('title')}
         </h1>

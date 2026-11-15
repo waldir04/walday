@@ -4,7 +4,7 @@ import { Link } from '@/shared/ui/Link'
 export function NotFoundPage() {
   const { t } = useTranslation()
   return (
-    <section>
+    <section className="rounded-2xl border border-border bg-surface p-5">
       <h1 tabIndex={-1} className="text-title font-semibold text-text">
         {t('notFound.heading')}
       </h1>

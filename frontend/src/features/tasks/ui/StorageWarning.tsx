@@ -57,7 +57,7 @@ export function StorageWarning({
     <section
       role="alert"
       aria-labelledby="storage-warning-heading"
-      className="rounded-card border border-warning bg-surface p-section"
+      className="rounded-2xl border border-warning bg-surface p-5"
     >
       <h2
         id="storage-warning-heading"
@@ -68,7 +68,7 @@ export function StorageWarning({
       <p className="mt-1 text-body text-text">{copy.description}</p>
       {mode === 'memory-only' ? (
         <div className="mt-3">
-          <Button variant="secondary" disabled={pending} onClick={onRetry}>
+          <Button variant="primary" disabled={pending} onClick={onRetry}>
             {pending ? t('storage.retrying') : t('storage.retry')}
           </Button>
         </div>

@@ -205,3 +205,37 @@ Expected: all existing behavior is unchanged; only presentation differs.
 2. With representative suggestion content, run the SC-011 design review: ask reviewers to classify the card as system-generated guidance versus user-owned content. Target is 100% correct classification.
 3. Record both outcomes in this file or the feature notes before considering the feature complete.
 
+
+## Validation Record — 2026-11-13
+
+Automated and static checks executed in this environment:
+
+| Check | Result |
+|---|---|
+| `npm run typecheck` | PASS |
+| `npm run lint` | PASS (no errors or warnings) |
+| `npm run test` | PASS — 77 files, 495 tests |
+| `npm run build` | PASS — 2382 modules transformed |
+| `npm run format:check` | PASS |
+| Raw hex scan (`src`, excluding `index.css`) | PASS — no matches |
+| Arbitrary color class scan (`bg-[#`, `text-[#`, `border-[#`) | PASS — no matches |
+| Forbidden light token scan (`bg-white`, `text-black`, `color-scheme: light`) | PASS — no matches |
+| Remote font request scan (`dist`) | PASS — none; 7 self-hosted Inter subsets emitted |
+| Route chunk review | PASS — separate `TasksPage`, `CommitmentsPage`, and `SettingsPage` chunks; Home stays in the initial chunk through the narrow controller entries |
+| Interactive boundary audit | PASS — inputs, selects, textareas, checkboxes, radios, secondary buttons, and the compact disclosure use `border-border-strong`; decorative card borders keep `border-border` |
+
+### Manual browser matrix (section 1–12 above)
+
+Not executed in this environment: it requires a real browser at 360/768/1024/1440 px, 200% zoom, reduced-motion emulation, touch and screen-reader spot checks. The DOM-level equivalents covered by the automated suite are:
+
+- Sticky header, four destinations, `aria-current` plus a non-color indicator: `tests/shell.test.tsx`, `tests/shell-responsive.test.tsx`
+- Drawer open/close, focus entry/return, Escape, route change, resize, scroll lock, no duplicated navigation: `tests/navigation-drawer.test.tsx`
+- Dark canvas, surfaces, one heading, one main landmark per route: `tests/dark-surfaces.test.tsx`
+- Home read-only rows, counts, today-only commitments, empty CTAs, storage notice, no-location action: `tests/home-dashboard.test.tsx`
+- Weather states, units, tabular numerals, error retry: `tests/weather-card.test.tsx`
+- Suggestion states, empty omission, mint treatment, no action controls: `tests/smart-suggestions.test.tsx`
+- Row-action reveal, compact disclosure, exact accessible names: `tests/row-actions.test.tsx`
+
+### SC-009 usability check and SC-011 design review
+
+Not executed. Both require human participants or a facilitated design review (at least five participants locating Commitments and Settings within two taps on mobile, and representative suggestion content being identified as system-generated), which cannot be run in this automated environment. They remain open follow-ups for the product/design review.

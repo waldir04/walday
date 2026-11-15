@@ -8,12 +8,12 @@ export function TasksPageSkeleton() {
     <div aria-busy="true" aria-live="polite" className="space-y-section">
       <p className="sr-only">{t('skeletonLabel')}</p>
       <div aria-hidden="true" className="space-y-2">
-        <div className="h-8 w-40 animate-pulse rounded-control bg-surface-subtle" />
-        <div className="h-4 w-full max-w-xl animate-pulse rounded-control bg-surface-subtle" />
+        <div className="h-8 w-40 animate-pulse rounded-control bg-surface-raised" />
+        <div className="h-4 w-full max-w-xl animate-pulse rounded-control bg-surface-raised" />
       </div>
       <div
         aria-hidden="true"
-        className="space-y-stack rounded-card border border-border bg-surface p-section"
+        className="space-y-stack rounded-2xl border border-border bg-surface p-5"
       >
         <Skeleton lines={1} />
         <Skeleton lines={1} />
@@ -22,10 +22,10 @@ export function TasksPageSkeleton() {
           <Skeleton lines={1} />
           <Skeleton lines={1} />
         </div>
-        <div className="h-11 w-32 animate-pulse rounded-control bg-surface-subtle" />
+        <div className="h-11 w-32 animate-pulse rounded-control bg-surface-raised" />
       </div>
       <div aria-hidden="true" className="space-y-stack">
-        <div className="h-6 w-32 animate-pulse rounded-control bg-surface-subtle" />
+        <div className="h-6 w-32 animate-pulse rounded-control bg-surface-raised" />
         <Skeleton lines={2} />
         <Skeleton lines={2} />
       </div>

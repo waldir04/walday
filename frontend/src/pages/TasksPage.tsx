@@ -65,7 +65,7 @@ export function TasksPage() {
   return (
     <div className="space-y-section">
       <div className="space-y-2">
-        <h1 tabIndex={-1} className="text-2xl font-semibold text-text">
+        <h1 tabIndex={-1} className="text-title font-semibold text-text">
           {t('title')}
         </h1>
         <GuestStorageNotice />
