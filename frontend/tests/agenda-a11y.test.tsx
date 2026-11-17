@@ -1,11 +1,12 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { TASKS_STORAGE_KEY } from '../src/shared/config/tasks'
 import { COMMITMENTS_STORAGE_KEY } from '../src/shared/config/commitments'
 import { getLocalToday } from '../src/shared/lib/localDateTime'
 import { applyLanguage } from '../src/shared/i18n'
 import { checkA11y, seriousViolations } from '../src/test/axe'
 import {
+  FIXED_NOW,
   makeEnvelope as makeTaskEnvelope,
   makeStoredTask,
 } from './helpers/taskFixtures'
@@ -15,9 +16,14 @@ import {
 } from './helpers/commitmentFixtures'
 import { renderApp } from './helpers/renderApp'
 
-const today = getLocalToday()
+// Today's availability window is trimmed to the current minute, so a real clock
+// makes the seeded 09:00 periods vanish when the suite runs late. Pin the clock;
+// faking only `Date` keeps timers real so Testing Library's `waitFor` still works.
+const today = getLocalToday(FIXED_NOW)
 
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(FIXED_NOW)
   localStorage.clear()
   applyLanguage('en')
 })
