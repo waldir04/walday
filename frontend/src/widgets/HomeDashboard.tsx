@@ -15,6 +15,9 @@ export interface HomeDashboardProps {
   suggestions: SmartSuggestionsState
   formattingLocale: string
   weatherUnit: WeatherUnit
+  weatherAnnouncement?: string | null
+  onRefreshWeather?: () => void
+  onRetryWeather?: () => void
 }
 
 export function HomeDashboard({
@@ -25,6 +28,9 @@ export function HomeDashboard({
   suggestions,
   formattingLocale,
   weatherUnit,
+  weatherAnnouncement,
+  onRefreshWeather,
+  onRetryWeather,
 }: HomeDashboardProps) {
   const { t } = useTranslation('home')
 
@@ -46,6 +52,9 @@ export function HomeDashboard({
             state={weather}
             unit={weatherUnit}
             locale={formattingLocale}
+            announcement={weatherAnnouncement}
+            onRefresh={onRefreshWeather}
+            onRetry={onRetryWeather}
           />
           <SmartSuggestions state={suggestions} />
         </>

@@ -12,4 +12,11 @@ export const queryKeys = {
     [...queryKeys.scope(scope), resource] as const,
   detail: (scope: string, resource: string, id: string) =>
     [...queryKeys.resource(scope, resource), id] as const,
+  weather: (providerPlaceId: string, localDate: string) =>
+    [
+      ...queryKeys.scope('weather'),
+      'snapshot',
+      providerPlaceId,
+      localDate,
+    ] as const,
 }

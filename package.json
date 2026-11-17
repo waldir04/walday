@@ -8,13 +8,23 @@
     "npm": ">=11"
   },
   "scripts": {
-    "dev": "npm --prefix frontend run dev",
-    "lint": "npm --prefix frontend run lint",
-    "format:check": "npm --prefix frontend run format:check",
-    "typecheck": "npm --prefix frontend run typecheck",
-    "test": "npm --prefix frontend run test",
-    "test:coverage": "npm --prefix frontend run test:coverage",
-    "build": "npm --prefix frontend run build",
+    "dev": "npm run dev:backend & npm run dev:frontend",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "lint:backend": "npm --prefix backend run lint",
+    "format:check": "npm --prefix frontend run format:check && npm --prefix backend run format:check",
+    "typecheck": "npm --prefix frontend run typecheck && npm --prefix backend run typecheck",
+    "typecheck:frontend": "npm --prefix frontend run typecheck",
+    "typecheck:backend": "npm --prefix backend run typecheck",
+    "test": "npm --prefix frontend run test && npm --prefix backend run test",
+    "test:frontend": "npm --prefix frontend run test",
+    "test:backend": "npm --prefix backend run test",
+    "test:coverage": "npm --prefix frontend run test:coverage && npm --prefix backend run test:coverage",
+    "build": "npm --prefix frontend run build && npm --prefix backend run build",
+    "build:frontend": "npm --prefix frontend run build",
+    "build:backend": "npm --prefix backend run build",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -27,6 +37,12 @@
     ],
     "frontend/**/*.{ts,tsx}": [
       "npm --prefix frontend exec -- eslint --fix"
+    ],
+    "backend/**/*.{ts,json,md}": [
+      "npm --prefix backend exec -- prettier --write"
+    ],
+    "backend/**/*.ts": [
+      "npm --prefix backend exec -- eslint --fix"
     ]
   }
 }

@@ -131,7 +131,9 @@ describe('agenda accessibility', () => {
     renderApp(['/'])
     await ready()
 
-    const regions = within(screen.getByRole('main')).getAllByRole('status')
+    const regions = within(screen.getByRole('main'))
+      .getAllByRole('status')
+      .filter((region) => region.getAttribute('aria-atomic') === 'true')
     expect(regions).toHaveLength(1)
     expect(regions[0]).toHaveAttribute('aria-live', 'polite')
     expect(regions[0]).toHaveAttribute('aria-atomic', 'true')

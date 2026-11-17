@@ -27,9 +27,9 @@ import { RecoveryNotice, StorageWarning } from '@/features/tasks'
 // eslint-disable-next-line no-restricted-imports -- narrow controller entry keeps commitment UI out of the initial bundle.
 import { useCommitments } from '@/features/commitments/controller'
 import { Link } from '@/shared/ui/Link'
+import { useWeather, useWeatherAnnouncements } from '@/features/weather'
 import { HomeDashboard } from '@/widgets/HomeDashboard'
 import type { SmartSuggestionsState } from '@/widgets/SmartSuggestions'
-import type { WeatherCardState } from '@/widgets/WeatherCard'
 
 const COMMITMENT_NOTICE_MODES = new Set(['recovery-blocked', 'unsupported'])
 
@@ -42,7 +42,7 @@ export function HomePage() {
   const { t } = useTranslation('home')
   const { t: tAgenda } = useTranslation('agenda')
   const navigate = useNavigate()
-  const { preferences, formattingLocale } = usePreferences()
+  const { preferences, formattingLocale, timeZone } = usePreferences()
   const tasks = useTasks()
   const commitments = useCommitments()
   const { date: selectedDate, today, selectDate } = useAgendaDate()
@@ -133,9 +133,17 @@ export function HomePage() {
     ? tasks.tasks.find((task) => task.id === removeTarget)
     : undefined
 
-  const weather: WeatherCardState = preferences.weatherLocation
-    ? { status: 'unavailable' }
-    : { status: 'no-location' }
+  const weather = useWeather({
+    location: preferences.weatherLocation,
+    locale: formattingLocale,
+    timeZone,
+  })
+  const weatherAnnouncement = useWeatherAnnouncements({
+    state: weather.state,
+    isManualRefreshing: weather.isManualRefreshing,
+    manualRefreshOutcome: weather.manualRefreshOutcome,
+    locale: formattingLocale,
+  })
   const suggestions: SmartSuggestionsState = {
     status: 'ready',
     suggestions: [],
@@ -272,10 +280,13 @@ export function HomePage() {
         }
         selectedDateLabel={selectedDateLabel}
         showTodaySurfaces={selectedDate === today}
-        weather={weather}
+        weather={weather.state}
         suggestions={suggestions}
         formattingLocale={formattingLocale}
         weatherUnit={preferences.weatherUnits}
+        weatherAnnouncement={weatherAnnouncement}
+        onRefreshWeather={weather.refresh}
+        onRetryWeather={weather.refresh}
       />
 
       {dialog && dialogTask ? (

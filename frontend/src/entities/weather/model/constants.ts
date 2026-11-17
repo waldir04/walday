@@ -1,0 +1,6 @@
+export const WEATHER_STORAGE_KEY = 'walday:weather'
+export const WEATHER_STORAGE_VERSION = 1
+export const PROVIDER_PLACE_ID_MIN_LENGTH = 1
+export const PROVIDER_PLACE_ID_MAX_LENGTH = 128
+export const WEATHER_STORAGE_FUTURE_CLOCK_TOLERANCE_MS = 60_000
+export const WEATHER_LOCAL_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/

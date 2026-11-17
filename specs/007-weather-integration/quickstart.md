@@ -9,7 +9,7 @@ Runnable validation guide. It proves the feature end-to-end; implementation deta
 
 - Node.js 24 LTS (`.nvmrc` at the repository root).
 - Repository dependencies installed: `npm install` at the root, then `npm --prefix frontend install`
-  and `npm --prefix backend install` once the backend app exists.
+  and `npm --prefix backend install`.
 - An Open-Meteo endpoint reachable from this machine. The free API requires attribution and is
   non-commercial; see [research.md](./research.md) R14 before any paid/commercial deployment.
 - No API key is required for development.
@@ -45,9 +45,16 @@ with a clear error.
 ## Run
 
 ```bash
-npm --prefix backend run build
-npm --prefix backend run dev        # terminal 1 — API on :8787
-npm --prefix frontend run dev       # terminal 2 — SPA on :5173
+npm install                           # root tooling (Husky, lint-staged)
+npm --prefix frontend install
+npm --prefix backend install
+
+npm --prefix backend run build        # produces backend/dist
+npm --prefix backend run dev          # terminal 1 — API on :8787
+npm --prefix frontend run dev         # terminal 2 — SPA on :5173
+
+# or both at once from the repository root
+npm run dev
 ```
 
 Open `http://localhost:5173` (Home).
@@ -174,6 +181,11 @@ npm run build
 
 Also run coverage: `npm run test:coverage` (global ≥ 80 %; critical weather mapping/freshness/day
 slicing ≥ 90 %). The backend must pass the same four scripts from `backend/`.
+
+The scenario-to-suite mapping and the automated gate results are recorded in
+[validation-notes.md](./validation-notes.md). Manual evidence that jsdom cannot produce (SC-009,
+SC-010, SC-012, SC-013, FR-059, real-browser keyboard/zoom traversal) is tracked there and must be
+completed and dated before release.
 
 ## Done criteria
 
