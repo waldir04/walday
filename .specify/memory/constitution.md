@@ -791,6 +791,20 @@ The constitution is the authoritative source of project-wide engineering princip
 - Changes to the constitution MUST be intentional and reviewed.
 - Do not weaken an existing principle merely to accommodate a shortcut or temporary implementation convenience.
 
+### Recorded exceptions
+
+These are narrow, explicitly accepted deviations from a principle's default rule. They do not amend
+or weaken the principle for any other area and MUST NOT be cited as precedent.
+
+- **Contained forecast-only horizontal scroll (2026-11-17, specification 008)**: the hourly forecast
+  row on Home may scroll horizontally inside its own contained box. This is accepted as a narrowly
+  scoped exception to the Principle VI layout rule "No horizontal scrolling may be introduced at
+  supported widths" and to the Visual Identity §6 verification expectation of "no horizontal
+  scrolling". Conditions: the page must never overflow horizontally at 360, 768, 1024, and 1440 px
+  or at 200 % zoom; the row is the single keyboard tab stop with arrow/Home/End scrolling, a visible
+  focus indicator, and no keyboard trap; cards stay display-only and non-focusable. Scope, evidence,
+  and remediation intent are recorded in `docs/adr/0012-hourly-forecast-contained-horizontal-scroll.md`.
+
 ### Amendments
 
 1. Propose the change with its rationale and affected principles.

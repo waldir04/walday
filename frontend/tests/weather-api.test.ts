@@ -103,7 +103,9 @@ describe('weather HTTP adapter', () => {
   })
 
   it('fails as unavailable when no base URL is configured', async () => {
-    const api = createWeatherApi({ baseUrl: undefined, fetchImpl: fetch })
+    // An empty string forces the unconfigured path even when the environment
+    // defines VITE_API_BASE_URL; `undefined` would fall back to it.
+    const api = createWeatherApi({ baseUrl: '', fetchImpl: fetch })
     await expect(api.fetchSnapshot(1, 1)).rejects.toMatchObject({
       code: 'WEATHER_UNAVAILABLE',
     })

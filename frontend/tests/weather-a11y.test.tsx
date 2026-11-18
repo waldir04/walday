@@ -62,6 +62,29 @@ describe('weather accessibility (US4)', () => {
         .querySelector('.animate-pulse')
         ?.closest('[aria-hidden="true"]'),
     ).not.toBeNull()
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
+    const placeholders = container.querySelectorAll(
+      '[aria-hidden="true"] .w-forecast-card',
+    )
+    expect(placeholders.length).toBeGreaterThanOrEqual(3)
+    placeholders.forEach((placeholder) => {
+      expect(placeholder.tagName).not.toBe('LI')
+      expect(screen.queryByRole('listitem')).toBeNull()
+    })
+  })
+
+  it('reports no serious axe violations while loading', async () => {
+    const { container } = render(
+      <MemoryRouter>
+        <WeatherCard
+          state={{ status: 'loading' }}
+          unit="metric"
+          locale="en-US"
+        />
+      </MemoryRouter>,
+    )
+    expect(seriousViolations(await checkA11y(container))).toEqual([])
   })
 
   it('keeps retry and refresh keyboard operable with visible focus classes', () => {
@@ -100,6 +123,25 @@ describe('weather accessibility (US4)', () => {
     expect(onRefresh).toHaveBeenCalledTimes(1)
   })
 
+  it('exposes the forecast row as a named, focusable scroll region', async () => {
+    const { container } = render(
+      <MemoryRouter>
+        <WeatherCard state={makeReadyState()} unit="metric" locale="en-US" />
+      </MemoryRouter>,
+    )
+
+    const row = screen.getByRole('list', { name: 'Hourly forecast' })
+    expect(row).toHaveAttribute('tabindex', '0')
+    expect(row).toHaveClass('overflow-x-auto')
+    expect(row).toHaveClass('overscroll-x-contain')
+    expect(row).toHaveClass('focus-visible:ring-2')
+
+    const results = await checkA11y(container)
+    expect(
+      seriousViolations(results).map((violation) => violation.id),
+    ).not.toContain('scrollable-region-focusable')
+  })
+
   it('exposes condition and values in text, in hour → temperature → condition → probability order', () => {
     render(
       <MemoryRouter>
@@ -108,9 +150,21 @@ describe('weather accessibility (US4)', () => {
     )
     const row = screen.getAllByRole('listitem')[0]
     const text = row?.textContent ?? ''
+    expect(text.indexOf('Hour')).toBeLessThan(text.indexOf('Now'))
     expect(text.indexOf('Now')).toBeLessThan(text.indexOf('12'))
-    expect(text.indexOf('12')).toBeLessThan(text.indexOf('Partly cloudy'))
+    expect(text.indexOf('Temperature')).toBeLessThan(text.indexOf('12'))
+    expect(text.indexOf('12')).toBeLessThan(text.indexOf('Condition'))
+    expect(text.indexOf('Condition')).toBeLessThan(
+      text.indexOf('Partly cloudy'),
+    )
     expect(text.indexOf('Partly cloudy')).toBeLessThan(text.indexOf('5%'))
+    expect(text).toContain('5% chance of precipitation')
+    expect(
+      row?.querySelector('span[aria-hidden="true"].tabular-nums'),
+    ).toHaveTextContent(/^5\s?%$/)
+    expect(screen.getByText('5% chance of precipitation')).toHaveClass(
+      'sr-only',
+    )
     expect(screen.getAllByText('Partly cloudy').length).toBeGreaterThan(0)
   })
 })

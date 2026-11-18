@@ -1,26 +1,17 @@
 import { useTranslation } from 'react-i18next'
-import {
-  Cloud,
-  CloudFog,
-  CloudLightning,
-  CloudRain,
-  CloudSnow,
-  CloudSun,
-  MapPin,
-  Sun,
-} from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { formatMeasurement, type WeatherUnit } from '@/entities/preferences'
 import {
   conditionLabelKey,
   temperatureMeasurement,
   precipitationMeasurement,
   windSpeedMeasurement,
-  type Conditions,
 } from '@/entities/weather'
 import type { WeatherCardState } from '@/features/weather'
+import { formatWholePercent } from '@/shared/lib/numberFormat'
 import { Link } from '@/shared/ui/Link'
 import { Button } from '@/shared/ui/Button'
-import { Skeleton } from '@/shared/ui/Skeleton'
+import { CONDITION_ICONS, conditionBadgeTone } from './conditionPresentation'
 import { WeatherForecastList } from './WeatherForecastList'
 
 export type { WeatherCardState } from '@/features/weather'
@@ -32,32 +23,6 @@ export interface WeatherCardProps {
   announcement?: string | null
   onRefresh?: () => void
   onRetry?: () => void
-}
-
-const CONDITION_ICONS: Record<Conditions, typeof Sun> = {
-  clear: Sun,
-  'partly-cloudy': CloudSun,
-  cloudy: Cloud,
-  rain: CloudRain,
-  snow: CloudSnow,
-  storm: CloudLightning,
-  fog: CloudFog,
-  unknown: Cloud,
-}
-
-function badgeTone(condition: Conditions): string {
-  switch (condition) {
-    case 'clear':
-    case 'partly-cloudy':
-      return 'border-warm/50 text-warm'
-    case 'rain':
-    case 'snow':
-    case 'storm':
-    case 'fog':
-      return 'border-cool/50 text-cool'
-    default:
-      return 'border-border-strong text-text-muted'
-  }
 }
 
 function formatTime(date: Date, locale: string): string | null {
@@ -77,17 +42,6 @@ function formatAge(milliseconds: number, locale: string): string | null {
     return formatter.format(-Math.round(minutes / 60), 'hour')
   } catch {
     return null
-  }
-}
-
-function formatPercent(value: number, locale: string): string {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'percent',
-      maximumFractionDigits: 0,
-    }).format(value / 100)
-  } catch {
-    return `${value}%`
   }
 }
 
@@ -123,8 +77,14 @@ export function WeatherCard({
         {heading}
         {liveRegion}
         <p className="sr-only">{t('weather.loading')}</p>
-        <Skeleton lines={1} className="max-w-xs" />
-        <Skeleton lines={3} />
+        <div aria-hidden="true" className="flex gap-2 overflow-hidden">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div
+              key={index}
+              className="h-24 w-forecast-card shrink-0 animate-pulse rounded-2xl bg-surface-subtle"
+            />
+          ))}
+        </div>
       </section>
     )
   }
@@ -273,7 +233,7 @@ export function WeatherCard({
                 </p>
               )}
               <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-caption ${badgeTone(
+                className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-caption ${conditionBadgeTone(
                   current.condition,
                 )}`}
               >
@@ -300,7 +260,10 @@ export function WeatherCard({
                 <div className="flex gap-1">
                   <dt>{t('weather.humidity')}</dt>
                   <dd className="tabular-nums">
-                    {formatPercent(current.relativeHumidityPercent, locale)}
+                    {formatWholePercent(
+                      current.relativeHumidityPercent,
+                      locale,
+                    )}
                   </dd>
                 </div>
               ) : null}

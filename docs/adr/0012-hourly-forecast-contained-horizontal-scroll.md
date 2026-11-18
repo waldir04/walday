@@ -31,6 +31,15 @@ component rather than page-level overflow.
 - No scroll snap and no new interactive controls (no arrows, paging, drag-handlers, or buttons).
   Touch, trackpad, and wheel scrolling use native behavior.
 
+### Compact-card geometry exception
+
+- Walday Dark UI §4 requires card padding of 20–24 px for main cards. Forecast cards are a compact
+  data strip, not a main card: they use a 96 px (`--spacing-forecast-card: 6rem`) fixed width with
+  `p-3` (12 px) padding, a 16 px card radius, and `text-caption`. The exception is limited to these
+  forecast cards and does not authorize reduced padding on main cards, task/commitment rows, or any
+  other surface. It is recorded here so reviews do not treat the compact strip as a padding
+  regression.
+
 ### Accessible by construction
 
 - The `<ol>` is the single tab stop (`tabIndex={0}`), labelled by the section heading, with a
@@ -87,3 +96,35 @@ component rather than page-level overflow.
   state, plus loading-placeholder exposure.
 - Manual: `specs/008-hourly-forecast-cards/quickstart.md` responsive, keyboard, screen-reader,
   reduced-motion, and page-overflow checks.
+
+### Final evidence (2026-11-17)
+
+- Quality gates: `npm --prefix frontend run lint`, `typecheck`, `test`, and `build` all pass;
+  108 test files / 745 tests green.
+- Real-browser verification (headless Chrome via DevTools Protocol, seeded last-known-good snapshot,
+  desktop metrics at exactly 360, 640, 768, 1024, and 1440 CSS px):
+  - `document.documentElement.scrollWidth` equals the viewport width at every tested width; page
+    horizontal overflow measures zero.
+  - Every card measures 96 px at every width; no card content is clipped
+    (`scrollWidth <= clientWidth + 1` on each card and on every text node).
+  - Exactly one `overflow-x: auto` scroller exists. The hint renders only at 360 px; it is absent
+    at and above 640 px where all five test hours fit.
+  - A horizontal wheel gesture over the row scrolls the row (`scrollLeft` 0 → 160) while
+    `window.scrollX` stays 0.
+- Defect found and fixed during verification: the absolutely positioned `sr-only` spans inside each
+  card were laid out against the initial containing block and escaped the scroller's clipping,
+  extending the document to 486 px at a 360 px viewport. Adding `relative` to the card makes it the
+  containing block, restoring zero page overflow. The card geometry test now asserts the `relative`
+  class so the fix cannot regress silently.
+- 200 % zoom: at 360 and 640 CSS px (200 % of 720/1280 px windows) the page overflow is zero and the
+  forecast keeps its uniform 96 px cards. Below 360 CSS px (for example a 180 CSS px layout
+  viewport), the pre-existing application header and settings input overflow the page independently
+  of the forecast; the forecast row itself remains contained. That shell behavior is outside
+  specification 008's scope and is not introduced by this change.
+- No dependency, lockfile, endpoint, or weather request change (T052); the exception acceptance
+  decision from T003 is recorded in the constitution's Governance exceptions register.
+- Compact probability clarification (2026-11-18): at 360 and 1440 CSS px every card shows the
+  probability on a single 20 px line (droplet icon + `0 %`, `N/A`, or `N %`), with the full phrase
+  announced once through the sr-only text; page overflow remains zero and all cards share one
+  height because the row's `items-stretch` equalizes them (`h-full` was removed: percentage height
+  resolved against content and left a ragged first card).

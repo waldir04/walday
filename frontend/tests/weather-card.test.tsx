@@ -30,7 +30,7 @@ describe('WeatherCard', () => {
     expect(screen.queryByText(/°/)).not.toBeInTheDocument()
   })
 
-  it('announces loading with an aria-busy skeleton region', () => {
+  it('announces loading with one aria-busy region and card-shaped placeholders hidden from AT', () => {
     const { container } = renderCard(
       <WeatherCard
         state={{ status: 'loading' }}
@@ -39,8 +39,23 @@ describe('WeatherCard', () => {
       />,
     )
 
-    expect(container.querySelector('[aria-busy="true"]')).not.toBeNull()
+    expect(container.querySelectorAll('[aria-busy="true"]')).toHaveLength(1)
     expect(screen.getByText('Loading weather')).toBeInTheDocument()
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
+
+    const hidden = container.querySelector('[aria-hidden="true"]')
+    expect(hidden).not.toBeNull()
+    expect(
+      hidden?.querySelectorAll('.animate-pulse').length,
+    ).toBeGreaterThanOrEqual(3)
+    expect(hidden).toHaveClass('overflow-hidden')
+    const placeholders = hidden?.querySelectorAll('.w-forecast-card') ?? []
+    expect(placeholders.length).toBeGreaterThanOrEqual(3)
+    placeholders.forEach((placeholder) => {
+      expect(placeholder).toHaveClass('rounded-2xl')
+      expect(placeholder).toHaveClass('bg-surface-subtle')
+    })
   })
 
   it('renders current conditions with a localized condition, attribution, and freshness', () => {
@@ -172,10 +187,15 @@ describe('WeatherCard', () => {
     const firstRow = within(list).getAllByRole('listitem')[0]
     expect(firstRow).not.toBeUndefined()
     if (!firstRow) throw new Error('missing first row')
+    expect(firstRow).toHaveClass('w-forecast-card')
     const rowText = firstRow.textContent ?? ''
+    expect(rowText).toContain('Hour')
     expect(rowText.indexOf('Now')).toBeLessThan(rowText.indexOf('12'))
     expect(rowText.indexOf('12')).toBeLessThan(rowText.indexOf('Partly cloudy'))
     expect(rowText.indexOf('Partly cloudy')).toBeLessThan(rowText.indexOf('5%'))
+    expect(
+      firstRow.querySelector('span[aria-hidden="true"].tabular-nums'),
+    ).toHaveTextContent(/^5\s?%$/)
     expect(screen.getByText(/0% chance/)).toBeInTheDocument()
     expect(
       screen.getByText('Precipitation probability unavailable'),

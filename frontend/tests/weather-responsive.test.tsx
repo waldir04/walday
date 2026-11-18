@@ -12,44 +12,87 @@ beforeEach(() => {
 
 const WIDTHS = [360, 768, 1024, 1440]
 
-describe('weather responsiveness (Polish)', () => {
+function hours() {
+  return Array.from({ length: 16 }, (_, index) =>
+    makeForecastHour({
+      timeMs: Date.parse('2026-11-16T05:00:00Z') + index * 3_600_000,
+      hourLabel: `${index + 5}:00`,
+      isCurrentHour: index === 0,
+      precipitationProbability: index % 3 === 0 ? null : index,
+    }),
+  )
+}
+
+describe('weather responsiveness (US2)', () => {
   it.each(WIDTHS)('keeps every forecast hour reachable at %ipx', (width) => {
     Object.defineProperty(window, 'innerWidth', {
       writable: true,
       configurable: true,
       value: width,
     })
-    const hours = Array.from({ length: 16 }, (_, index) =>
-      makeForecastHour({
-        timeMs: Date.parse('2026-11-16T05:00:00Z') + index * 3_600_000,
-        hourLabel: `${index + 5}:00`,
-        isCurrentHour: index === 0,
-        precipitationProbability: index % 3 === 0 ? null : index,
-      }),
-    )
     const { container } = render(
       <MemoryRouter>
         <WeatherCard
-          state={makeReadyState({ hours, coverage: 'complete' })}
+          state={makeReadyState({ hours: hours(), coverage: 'complete' })}
           unit="metric"
           locale="en-US"
         />
       </MemoryRouter>,
     )
+
     expect(screen.getAllByRole('listitem')).toHaveLength(16)
-    const fixedWidth = container.querySelector('[style*="width"]')
-    expect(fixedWidth).toBeNull()
-    const list = screen.getByRole('list')
-    expect(within(list).getAllByRole('listitem')).toHaveLength(16)
+    expect(
+      within(screen.getByRole('list')).getAllByRole('listitem'),
+    ).toHaveLength(16)
+    expect(container.querySelector('[style*="width"]')).toBeNull()
   })
 
-  it('uses vertical rows rather than a horizontal scroller', () => {
+  it('exposes exactly one contained scroller and no drag or pointer handlers', () => {
     const { container } = render(
       <MemoryRouter>
-        <WeatherCard state={makeReadyState()} unit="metric" locale="en-US" />
+        <WeatherCard
+          state={makeReadyState({ hours: hours() })}
+          unit="metric"
+          locale="en-US"
+        />
       </MemoryRouter>,
     )
-    expect(container.querySelector('.overflow-x-auto')).toBeNull()
-    expect(container.querySelector('ol')).not.toBeNull()
+
+    const scrollers = container.querySelectorAll('.overflow-x-auto')
+    expect(scrollers).toHaveLength(1)
+
+    const list = screen.getByRole('list')
+    expect(list).toHaveClass('overflow-x-auto')
+    expect(list).toHaveClass('overscroll-x-contain')
+    expect(list).toHaveClass('min-w-0')
+    expect(list).toHaveClass('max-w-full')
+    expect(list).toHaveClass('items-stretch')
+    expect(list.getAttribute('style')).toBeNull()
+
+    expect(list.onpointerdown).toBeNull()
+    expect(list.onpointermove).toBeNull()
+    expect(list.onmousedown).toBeNull()
+    expect(list.onmousemove).toBeNull()
+    expect(list.ontouchstart).toBeNull()
+    expect(list.ontouchmove).toBeNull()
+  })
+
+  it('does not let any ancestor introduce horizontal overflow', () => {
+    const { container } = render(
+      <MemoryRouter>
+        <WeatherCard
+          state={makeReadyState({ hours: hours() })}
+          unit="metric"
+          locale="en-US"
+        />
+      </MemoryRouter>,
+    )
+
+    let node: HTMLElement | null = screen.getByRole('list').parentElement
+    while (node && node !== container) {
+      expect(node.className).not.toMatch(/overflow-x-(auto|scroll)/)
+      node = node.parentElement
+    }
+    expect(node).toBe(container)
   })
 })

@@ -29,6 +29,22 @@ describe('weather i18n parity (US4/Polish)', () => {
     expect(en.unknown).toBeTruthy()
   })
 
+  it('defines both new forecast keys truthfully in English and Spanish', () => {
+    const en = resources.en.home.weather
+    const es = resources.es.home.weather
+    expect(en.hourLabel).toBeTruthy()
+    expect(es.hourLabel).toBeTruthy()
+    expect(es.hourLabel).not.toBe(en.hourLabel)
+    expect(en.forecastScrollHint).toBeTruthy()
+    expect(es.forecastScrollHint).toBeTruthy()
+    expect(es.forecastScrollHint).not.toBe(en.forecastScrollHint)
+    expect(en.precipitationProbabilityUnavailableShort).toBeTruthy()
+    expect(es.precipitationProbabilityUnavailableShort).toBeTruthy()
+    expect(es.precipitationProbabilityUnavailableShort).not.toBe(
+      en.precipitationProbabilityUnavailableShort,
+    )
+  })
+
   it('localizes states, announcements, units, and attribution', () => {
     const en = resources.en.home.weather
     const es = resources.es.home.weather

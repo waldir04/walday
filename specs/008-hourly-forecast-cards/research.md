@@ -36,7 +36,7 @@ uses Tailwind utilities exclusively (Principle VI).
 
 **Decision**: Add one theme token, `--spacing-forecast-card: 6rem` (96 px), to the `@theme` block in
 `frontend/src/index.css`, used as `w-forecast-card` on every card. Card gap stays on the existing
-`gap-2` (8 px). Cards use `shrink-0`, `h-full`, and internal `p-3`.
+`gap-2` (8 px). Cards use `shrink-0`, the row's `items-stretch` equalizes heights, and internal `p-3`.
 
 Geometry at 360 px: viewport minus `px-page` (16 px × 2) = 328 px, minus surface `p-5` (20 px × 2)
 = 288 px of row. Two complete cards + two gaps = 208 px; the third card starts at 208 px and shows
@@ -46,7 +46,7 @@ always with the static hint when any hour remains off-screen.
 **Rationale**: FR-011 requires one identical compact width at every viewport, so a responsive or
 `flex-1` card is forbidden. A 96 px card fits the widest required value (`"Partly cloudy"`,
 `"No disponible"`, `"100 %"`) in 2–3 wrapped lines at caption size without clipping; the list uses
-`items-stretch` and the card `h-full` so unequal label lengths do not create ragged heights. The
+`items-stretch` so unequal label lengths do not create ragged heights. The
 token satisfies Principle VI's ban on arbitrary values and Principle XI's single source of truth.
 
 **Alternatives considered**:

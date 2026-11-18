@@ -48,10 +48,13 @@ Derived, per card render:
 | Condition icon | `CONDITION_ICONS[condition]` | Decorative: `aria-hidden="true"`; size fixed; neutral styling for `unknown`. |
 | Temperature text | `formatMeasurement(temperature ?? undefined, unit, locale)` | Whole degrees in both units (`MEASUREMENT_PRECISION.temperature = 0`), localized unit label, `tabular-nums`. |
 | Temperature fallback | `t('weather.unavailableValue')` | When text is `null`. No zero, dash-only, or blank. |
-| Probability text | `hour.precipitationProbability === null ? null : formatWholePercent(value, locale)` | Whole percent, localized, `0` → explicit `0 %`. `null` → localized unavailable label, never `0 %`. |
+| Probability text (visible) | `hour.precipitationProbability === null ? t('weather.precipitationProbabilityUnavailableShort') : formatWholePercent(value, locale)` | Compact single line with a decorative precipitation icon. Whole percent, localized, `0` → explicit `0 %`. `null` → compact localized abbreviation (`N/A` / `N/D`), never `0 %`. |
+| Probability text (accessible) | `t('weather.precipitationProbability', { value })` or `t('weather.precipitationProbabilityUnavailable')` | sr-only full phrase; the compact visible value is `aria-hidden` so the probability is announced exactly once. |
 
 Accessible-name contract per card: hour → temperature label + value or unavailable → condition label
 + text → precipitation label + value or unavailable. Each of the four data points is announced once.
+The compact visible probability value is `aria-hidden`; the sr-only full phrase supplies that single
+announcement.
 
 ---
 

@@ -18,8 +18,8 @@ function renderCard(state: Parameters<typeof WeatherCard>[0]['state']) {
   )
 }
 
-describe('hourly forecast presentation (US2)', () => {
-  it('renders chronological rows with the current hour marked once', () => {
+describe('hourly forecast cards (US1)', () => {
+  it('renders one chronological card per hour with the current hour marked once', () => {
     renderCard(
       makeReadyState({
         hours: [
@@ -43,6 +43,10 @@ describe('hourly forecast presentation (US2)', () => {
     const list = screen.getByRole('list')
     const items = within(list).getAllByRole('listitem')
     expect(items).toHaveLength(3)
+    items.forEach((item) => {
+      expect(item).toHaveClass('w-forecast-card')
+      expect(item).toHaveClass('shrink-0')
+    })
     expect(items[0]).toHaveTextContent('Now')
     expect(items[1]).toHaveTextContent('6:00 AM')
     expect(items[2]).toHaveTextContent('7:00 AM')
@@ -63,10 +67,18 @@ describe('hourly forecast presentation (US2)', () => {
         ],
       }),
     )
+    const list = screen.getByRole('list')
     expect(screen.getByText(/0% chance/)).toBeInTheDocument()
     expect(
       screen.getByText('Precipitation probability unavailable'),
     ).toBeInTheDocument()
+    const items = within(list).getAllByRole('listitem')
+    expect(
+      items[0]?.querySelector('span[aria-hidden="true"].tabular-nums'),
+    ).toHaveTextContent(/^0\s?%$/)
+    expect(
+      items[1]?.querySelector('span[aria-hidden="true"].tabular-nums'),
+    ).toHaveTextContent('N/A')
   })
 
   it('states partial coverage without filling gaps', () => {
@@ -77,12 +89,15 @@ describe('hourly forecast presentation (US2)', () => {
       }),
     )
     expect(
+      screen.getByRole('heading', { name: 'Hourly forecast' }),
+    ).toBeInTheDocument()
+    expect(
       screen.getByText('Some hours later today have no forecast.'),
     ).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(1)
   })
 
-  it('keeps current conditions visible when hourly data is empty', () => {
+  it('keeps current conditions visible and renders no row when hourly data is empty', () => {
     renderCard(
       makeReadyState({
         hours: [],
@@ -91,6 +106,9 @@ describe('hourly forecast presentation (US2)', () => {
     )
     expect(screen.getByRole('heading', { name: 'Current' })).toBeInTheDocument()
     expect(screen.queryByRole('list')).toBeNull()
+    expect(
+      screen.queryByRole('heading', { name: 'Hourly forecast' }),
+    ).toBeNull()
     expect(
       screen.getByText(
         'No hourly forecast is available for the rest of today.',

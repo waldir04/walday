@@ -23,10 +23,13 @@ interface HourlyForecastCardProps {
 Guarantees:
 - Renders exactly one `<li>`; no focusable element, no click handler, no state, no effects.
 - Renders hour text, condition icon (`aria-hidden`) + condition text, temperature with unit or
-  localized unavailable text, and probability value or localized unavailable text.
+  localized unavailable text, and a compact single-line probability (decorative droplet icon +
+  whole-number percentage, or compact unavailable abbreviation). The full localized probability
+  phrase is exposed to assistive technology as the accessible name.
 - Never renders `0`, a dash, or a blank for missing temperature; never renders `0 %` for a missing
   probability.
-- Uses only semantic tokens; the `<li>` is `shrink-0 w-forecast-card h-full`.
+- Uses only semantic tokens; the `<li>` is `shrink-0 w-forecast-card` and the row's `items-stretch`
+  equalizes card heights.
 
 ### 1.2 `WeatherForecastList` (REWRITTEN, same file and export name)
 
@@ -70,7 +73,9 @@ Guarantees:
       <svg aria-hidden="true">             condition icon, decorative
       <span> condition text                always present
       <span> temperature                   tabular-nums, unit label; or "Unavailable"
-      <span> probability                   tabular-nums; or unavailable text
+      <svg aria-hidden="true">             precipitation icon, decorative
+      <span aria-hidden="true">           compact probability value, aria-hidden
+      <span class="sr-only">               full probability phrase (single announcement)
 ```
 
 | Element | Role / attribute | Rule |
@@ -131,8 +136,9 @@ set (enforced by `weather-i18n.test.ts`).
 | `weather.now` (existing) | Now | Ahora | Current-hour text |
 | `weather.temperatureLabel` (existing) | Temperature | Temperatura | sr-only label |
 | `weather.conditionLabel` (existing) | Condition | Condición | sr-only label |
-| `weather.precipitationProbability` (existing) | {{value}} chance of precipitation | {{value}} de probabilidad de precipitación | Probability value |
-| `weather.precipitationProbabilityUnavailable` (existing) | Precipitation probability unavailable | Probabilidad de precipitación no disponible | Missing probability |
+| `weather.precipitationProbability` (existing) | {{value}} chance of precipitation | {{value}} de probabilidad de precipitación | Accessible probability phrase (sr-only) |
+| `weather.precipitationProbabilityUnavailable` (existing) | Precipitation probability unavailable | Probabilidad de precipitación no disponible | Accessible missing-probability phrase (sr-only) |
+| `weather.precipitationProbabilityUnavailableShort` (NEW) | N/A | N/D | Compact visible missing-probability abbreviation |
 | `weather.unavailableValue` (existing) | Unavailable | No disponible | Missing temperature/condition |
 | `weather.conditions.*` (existing) | Clear … Conditions unavailable | Despejado … Condiciones no disponibles | Condition text |
 | `weather.coveragePartial` (existing) | Some hours later today have no forecast. | Algunas horas más tarde hoy no tienen pronóstico. | Partial coverage |
@@ -184,9 +190,10 @@ Page-level horizontal overflow must measure zero at all widths (`document.docume
 | Ready, complete hours | one per hour | only if overflow | no | unchanged |
 | Ready, partial hours | one per covered hour | only if overflow | `coveragePartial` | unchanged |
 | Ready, zero hours | none | no | `coverageUnavailableForecast` | unchanged |
-| Ready, outdated | one per hour, not labeled current | only if overflow | `outdatedDescription` at surface | unchanged |
+| Ready, outdated | one per hour; the device clock hour keeps the `weather.now` marker, no card-level stale label | only if overflow | `outdatedDescription` at surface | unchanged |
 | Missing temperature | unavailable text | per overflow | not a coverage gap | unchanged |
-| Missing probability | unavailable text | per overflow | not a coverage gap | unchanged |
+| Probability 0 % | compact `0 %` visible; full phrase as accessible name | per overflow | not a coverage gap | unchanged |
+| Missing probability | compact unavailable abbreviation (N/A · N/D) with the full unavailable phrase as accessible name | per overflow | not a coverage gap | unchanged |
 | Unknown condition | neutral + "Conditions unavailable" | per overflow | not a coverage gap | unchanged |
 | Unavailable / no location / invalid location | none | no | existing surface text/action | unchanged |
 

@@ -42,6 +42,11 @@ npm --prefix frontend exec -- vitest run tests/weather-i18n.test.ts
 Expected: all pass; i18n parity includes the two new `home.weather` keys; axe reports no serious
 violations in every weather state including loading.
 
+**Not automated**: SC-003 (≥ 90 % of users locate the hourly temperature, condition, and
+precipitation probability within 10 seconds) is a post-implementation usability validation. The
+automated gates and this task list do not verify it; record that manual usability outcome
+separately.
+
 ---
 
 ## 2. Run the app
@@ -81,8 +86,9 @@ Use fixture-backed data where possible; otherwise pick a day/hour producing each
 | Scenario | Steps | Expected |
 |---|---|---|
 | Unit preference | Switch Settings units between metric and imperial while Home is open | Every card updates to °C/°F together, with localized unit labels, whole degrees, no mixed units, no reload |
-| Zero probability | Find an hour with 0 % probability | Card shows an explicit localized `0 %`; it is not hidden and not treated as unavailable |
-| Missing probability | Use a fixture/test snapshot with `precipitationProbability: null` | Card shows the localized unavailable probability text, never `0 %` |
+| Zero probability | Find an hour with 0 % probability | Card shows a compact single-line `0 %` next to the droplet icon; it is not hidden and not treated as unavailable; assistive technology announces the full phrase |
+| Missing probability | Use a fixture/test snapshot with `precipitationProbability: null` | Card shows the compact localized unavailable abbreviation (`N/A` / `N/D`) on one line, never `0 %`; assistive technology announces the full unavailable phrase |
+| Probability on one line | Inspect any card at 360 px and in Spanish | Icon plus percentage stay on a single line and never wrap to multiple lines |
 | Missing temperature | Fixture with `temperatureCelsius: null` | Temperature area shows localized "Unavailable"; no `0`, dash, blank, or invented value |
 | Unknown condition | Fixture with `condition: 'unknown'` | Card shows the localized unknown condition text with a neutral icon/tone; meaning is in text |
 | Fractional values | Fixture with e.g. `21.4 °C` and `12.5 %` | Card shows `21 °C` and `13 %`-style whole values consistent with the summary's rounding; never decimals |

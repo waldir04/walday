@@ -1,7 +1,11 @@
+import { useRef } from 'react'
+import type { KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
-import { conditionLabelKey } from '@/entities/weather'
-import { formatMeasurement, type WeatherUnit } from '@/entities/preferences'
+import type { WeatherUnit } from '@/entities/preferences'
 import type { ForecastHour } from '@/features/weather'
+import { useHorizontalOverflow } from '@/shared/lib/useHorizontalOverflow'
+import { usePrefersReducedMotion } from '@/shared/lib/usePrefersReducedMotion'
+import { HourlyForecastCard } from './HourlyForecastCard'
 
 export interface WeatherForecastListProps {
   hours: readonly ForecastHour[]
@@ -9,15 +13,20 @@ export interface WeatherForecastListProps {
   locale: string
 }
 
-function percentage(value: number, locale: string): string {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'percent',
-      maximumFractionDigits: 0,
-    }).format(value / 100)
-  } catch {
-    return `${value}%`
-  }
+/** Used when layout metrics are unavailable (for example in jsdom). */
+const FALLBACK_SCROLL_STEP_PX = 96
+/** Matches the row's `gap-2` when computed styles are unavailable. */
+const FALLBACK_GAP_PX = 8
+
+function measureScrollStep(list: HTMLOListElement): number {
+  const firstCard = list.querySelector<HTMLElement>('li')
+  const cardWidth = firstCard?.offsetWidth ?? 0
+  if (!firstCard || cardWidth <= 0) return FALLBACK_SCROLL_STEP_PX
+
+  const styles = window.getComputedStyle(list)
+  const parsedGap = Number.parseFloat(styles.columnGap || styles.gap)
+  const gap = Number.isFinite(parsedGap) ? parsedGap : FALLBACK_GAP_PX
+  return cardWidth + gap
 }
 
 export function WeatherForecastList({
@@ -26,52 +35,82 @@ export function WeatherForecastList({
   locale,
 }: WeatherForecastListProps) {
   const { t } = useTranslation('home')
+  const rowRef = useRef<HTMLOListElement>(null)
+  const isOverflowing = useHorizontalOverflow(
+    rowRef,
+    hours.length,
+    locale,
+    unit,
+  )
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth'
 
   if (hours.length === 0) return null
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLOListElement>) => {
+    const list = event.currentTarget
+    switch (event.key) {
+      case 'ArrowRight':
+        event.preventDefault()
+        list.scrollBy({
+          left: measureScrollStep(list),
+          behavior: scrollBehavior,
+        })
+        break
+      case 'ArrowLeft':
+        event.preventDefault()
+        list.scrollBy({
+          left: -measureScrollStep(list),
+          behavior: scrollBehavior,
+        })
+        break
+      case 'Home':
+        event.preventDefault()
+        list.scrollTo({ left: 0, behavior: scrollBehavior })
+        break
+      case 'End':
+        event.preventDefault()
+        list.scrollTo({ left: list.scrollWidth, behavior: scrollBehavior })
+        break
+      default:
+        break
+    }
+  }
+
+  const hintId = 'hourly-forecast-hint'
+
   return (
-    <div className="space-y-2">
-      <h3 className="text-body font-semibold text-text">
+    <section aria-labelledby="hourly-forecast-heading" className="space-y-2">
+      <h3
+        id="hourly-forecast-heading"
+        className="text-body font-semibold text-text"
+      >
         {t('weather.forecastHeading')}
       </h3>
-      <ol className="space-y-2">
-        {hours.map((hour) => {
-          const temperature = formatMeasurement(
-            hour.temperature ?? undefined,
-            unit,
-            locale,
-          )
-          const probability =
-            hour.precipitationProbability === null
-              ? t('weather.precipitationProbabilityUnavailable')
-              : t('weather.precipitationProbability', {
-                  value: percentage(hour.precipitationProbability, locale),
-                })
-          return (
-            <li
-              key={hour.timeMs}
-              className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-control bg-surface-raised px-3 py-2 text-caption"
-            >
-              <span className="min-w-16 font-medium tabular-nums text-text">
-                {hour.isCurrentHour ? t('weather.now') : hour.hourLabel}
-              </span>
-              <span className="tabular-nums text-text">
-                <span className="sr-only">
-                  {t('weather.temperatureLabel')}:{' '}
-                </span>
-                {temperature ?? t('weather.unavailableValue')}
-              </span>
-              <span className="text-text-muted">
-                <span className="sr-only">{t('weather.conditionLabel')}: </span>
-                {t(`weather.conditions.${conditionLabelKey(hour.condition)}`)}
-              </span>
-              <span className="tabular-nums text-text-muted">
-                {probability}
-              </span>
-            </li>
-          )
-        })}
+
+      {isOverflowing ? (
+        <p id={hintId} className="text-caption text-text-muted">
+          {t('weather.forecastScrollHint')}
+        </p>
+      ) : null}
+
+      <ol
+        ref={rowRef}
+        tabIndex={0}
+        aria-labelledby="hourly-forecast-heading"
+        aria-describedby={isOverflowing ? hintId : undefined}
+        onKeyDown={handleKeyDown}
+        className="flex min-w-0 max-w-full items-stretch gap-2 overflow-x-auto overscroll-x-contain rounded-control outline-none ring-focus ring-offset-2 ring-offset-surface focus-visible:ring-2"
+      >
+        {hours.map((hour) => (
+          <HourlyForecastCard
+            key={hour.timeMs}
+            hour={hour}
+            unit={unit}
+            locale={locale}
+          />
+        ))}
       </ol>
-    </div>
+    </section>
   )
 }
