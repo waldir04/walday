@@ -101,9 +101,26 @@ describe('current conditions (US1)', () => {
         selectedDateLabel="Yesterday"
         showTodaySurfaces={false}
         weather={{ status: 'no-location' }}
-        suggestions={{ status: 'ready', suggestions: [] }}
+        suggestions={{
+          status: 'ready',
+          suggestions: [],
+          dismissed: [],
+          noSuggestionReason: null,
+          applyingId: null,
+          applyError: null,
+          announcement: null,
+        }}
         formattingLocale="en-US"
+        dateStyle="medium"
         weatherUnit="metric"
+        onAcceptSuggestion={async () => undefined}
+        onAdjustSuggestion={async () => ({
+          ok: true,
+          appliedId: 'none',
+        })}
+        onDismissSuggestion={async () => undefined}
+        onRestoreSuggestion={async () => undefined}
+        onRetrySuggestions={() => undefined}
       />,
     )
     expect(

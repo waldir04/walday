@@ -77,6 +77,32 @@ export function minuteOfDayRoundedUp(now: Date): number {
   return Math.min(1440, Math.max(0, elapsed + (partialMinute ? 1 : 0)))
 }
 
+/**
+ * Map an epoch range to device-local minute bounds. `startMinutes` is in
+ * 0..1439 and `endMinutes` in 1..1440; a range that ends on the following
+ * local date reports 1440 so the day boundary is never crossed.
+ */
+export function deviceMinuteRange(
+  startEpochMs: number,
+  endEpochMs: number,
+): { startMinutes: number; endMinutes: number } {
+  const start = new Date(startEpochMs)
+  const end = new Date(endEpochMs)
+  const startMinutes = start.getHours() * 60 + start.getMinutes()
+
+  const sameLocalDate =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate()
+
+  if (!sameLocalDate) {
+    return { startMinutes, endMinutes: 1440 }
+  }
+
+  const rawEnd = end.getHours() * 60 + end.getMinutes()
+  return { startMinutes, endMinutes: Math.max(startMinutes + 1, rawEnd) }
+}
+
 export function compareLocalTimes(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }

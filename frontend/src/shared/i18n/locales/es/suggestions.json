@@ -1,0 +1,125 @@
+{
+  "heading": "Sugerencias inteligentes",
+  "loading": "Cargando sugerencias",
+  "error": "Las sugerencias no están disponibles en este momento.",
+  "incomplete": "Las recomendaciones no están disponibles porque el plan de hoy está incompleto.",
+  "time": {
+    "endOfDay": "fin del día"
+  },
+  "categories": {
+    "conflict": "Conflicto",
+    "slot": "Buscar hora",
+    "flexible": "Ajustar hora flexible"
+  },
+  "actions": {
+    "accept": "Aceptar",
+    "acceptLabel": "Aceptar: mover {{title}} a las {{time}}",
+    "acceptScheduleLabel": "Aceptar: programar {{title}} a las {{time}}",
+    "adjust": "Ajustar",
+    "adjustLabel": "Ajustar la hora de {{title}}",
+    "dismiss": "Descartar",
+    "dismissLabel": "Descartar la sugerencia de {{title}}",
+    "restore": "Restaurar",
+    "restoreLabel": "Restaurar la sugerencia de {{title}}",
+    "retry": "Intentar de nuevo",
+    "reviewDismissed": "Revisar sugerencias descartadas",
+    "hideDismissed": "Ocultar sugerencias descartadas",
+    "pending": "Aplicando…",
+    "cancel": "Cancelar",
+    "confirm": "Aplicar cambio",
+    "close": "Cerrar"
+  },
+  "card": {
+    "moveHeading": "Mover {{title}}",
+    "scheduleHeading": "Programar {{title}}",
+    "adjustCommitmentHeading": "Ajustar {{title}}",
+    "current": "Actual: {{time}}",
+    "proposed": "Propuesta: {{time}}",
+    "duration": "Duración: {{duration}}",
+    "unscheduled": "Aún sin programar",
+    "reasonLabel": "Por qué esta sugerencia"
+  },
+  "states": {
+    "noSuggestions": {
+      "heading": "No hay recomendaciones en este momento",
+      "allDismissed": "Descartaste todas las sugerencias de hoy. Revísalas para recuperar una.",
+      "dayAlreadyPlanned": "El día ya está planificado. Agrega una tarea o un compromiso si algo cambia.",
+      "missingDurations": "Algunas tareas no tienen duración, así que no se puede sugerir una hora. Agrega una duración en Gestión de tareas.",
+      "noFreePeriod": "No hay un periodo libre suficientemente largo para las tareas restantes de hoy.",
+      "nothingActionable": "Esta superficie no puede cambiar nada de forma segura en este momento. Revisa la agenda."
+    },
+    "openTasks": "Abrir Gestión de tareas",
+    "openAgenda": "Abrir la agenda",
+    "reviewDismissed": "Revisar sugerencias descartadas",
+    "dismissedHeading": "Sugerencias descartadas"
+  },
+  "reasons": {
+    "conflict": {
+      "text": "Se superpone con {{titles}} de {{start}} a {{end}}.",
+      "fixedProtected": " Los compromisos fijos están protegidos y permanecen en su lugar.",
+      "remainingOverlaps": " Al moverla, {{titles}} siguen superponiéndose de {{start}} a {{end}}."
+    },
+    "dueDate": {
+      "overdue": "Vence el {{date}}.",
+      "dueToday": "Vence hoy.",
+      "future": "Vence el {{date}}."
+    },
+    "priority": {
+      "high": "Prioridad alta.",
+      "medium": "Prioridad media.",
+      "low": "Prioridad baja."
+    },
+    "fit": {
+      "text": "Cabe en el periodo libre de {{start}} a {{end}} para {{duration}}."
+    },
+    "beneficiary": {
+      "text": "Hace espacio para {{title}} sin programarla."
+    },
+    "weather": {
+      "text": "Se espera {{condition}} de {{start}} a {{end}}."
+    },
+    "protectedFixed": {
+      "text": "Las actividades fijas ({{titles}}) están protegidas."
+    }
+  },
+  "adjust": {
+    "heading": "Ajustar sugerencia",
+    "description": "Elige otra hora de inicio para esta sugerencia.",
+    "startTime": "Hora de inicio",
+    "current": "Hora actual: {{time}}",
+    "proposed": "Propuesta original: {{time}}",
+    "adjusted": "Hora ajustada: {{time}}",
+    "duration": "Duración: {{duration}}",
+    "conflictHeading": "Esta hora se superpone con otras actividades",
+    "conflictItem": "{{title}} de {{start}} a {{end}}",
+    "conflictAcknowledge": "Usar esta hora aunque se superponga",
+    "invalidTime": "Ingresa una hora válida en formato de 24 horas HH:MM.",
+    "pastTime": "Elige una hora que aún no haya pasado.",
+    "endsAfterMidnight": "El cambio debe terminar antes de la medianoche.",
+    "outsideDay": "Elige una hora dentro de hoy.",
+    "failed": "El cambio no se realizó. Revisa la hora e inténtalo de nuevo."
+  },
+  "feedback": {
+    "appliedTask": "Se movió {{title}} a las {{time}}.",
+    "scheduledTask": "Se programó {{title}} a las {{time}}.",
+    "appliedCommitment": "Se movió {{title}} a las {{time}}.",
+    "dismissed": "Se descartó la sugerencia de {{title}}.",
+    "restored": "Se restauró la sugerencia de {{title}}.",
+    "applyFailed": "El cambio no se realizó. Inténtalo de nuevo.",
+    "retry": "Intentar de nuevo",
+    "dismissalNotSaved": "Este descarte se conserva solo durante esta sesión."
+  },
+  "weather": {
+    "influencedBy": "El clima influyó en esta elección: {{condition}} con {{precipitation}} de probabilidad de precipitación de {{start}} a {{end}}.",
+    "conditions": {
+      "clear": "Despejado",
+      "partlyCloudy": "Parcialmente nublado",
+      "cloudy": "Nublado",
+      "rain": "Lluvia",
+      "snow": "Nieve",
+      "storm": "Tormenta",
+      "fog": "Niebla",
+      "unknown": "Condiciones no disponibles"
+    }
+  }
+}

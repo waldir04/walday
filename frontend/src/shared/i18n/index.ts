@@ -13,6 +13,8 @@ import enHome from './locales/en/home.json'
 import esHome from './locales/es/home.json'
 import enAgenda from './locales/en/agenda.json'
 import esAgenda from './locales/es/agenda.json'
+import enSuggestions from './locales/en/suggestions.json'
+import esSuggestions from './locales/es/suggestions.json'
 
 export const defaultNS = 'common'
 export const namespaces = [
@@ -22,6 +24,7 @@ export const namespaces = [
   'tasks',
   'home',
   'agenda',
+  'suggestions',
 ] as const
 
 export const resources = {
@@ -32,6 +35,7 @@ export const resources = {
     tasks: enTasks,
     home: enHome,
     agenda: enAgenda,
+    suggestions: enSuggestions,
   },
   es: {
     common: esCommon,
@@ -40,6 +44,7 @@ export const resources = {
     tasks: esTasks,
     home: esHome,
     agenda: esAgenda,
+    suggestions: esSuggestions,
   },
 }
 

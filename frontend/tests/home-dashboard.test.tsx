@@ -123,9 +123,17 @@ describe('Home dashboard agenda composition', () => {
     const page = heading.closest('div')?.parentElement
     expect(page).not.toBeNull()
     const weather = screen.getByText('Weather needs a location')
+    const suggestions = screen.getByRole('heading', {
+      level: 2,
+      name: 'Smart Suggestions',
+    })
     const agenda = screen.getByRole('region', { name: /Timeline for/ })
     expect(
-      weather.compareDocumentPosition(agenda) &
+      weather.compareDocumentPosition(suggestions) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+    expect(
+      suggestions.compareDocumentPosition(agenda) &
         Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy()
   })

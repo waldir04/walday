@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { WeatherUnit } from '@/entities/preferences'
-import {
-  SmartSuggestions,
-  type SmartSuggestionsState,
-} from './SmartSuggestions'
+import type {
+  SuggestionApplyOutcome,
+  SuggestionConflictLink,
+  SuggestionsSurfaceState,
+} from '@/features/suggestions'
+import { SmartSuggestions } from './SmartSuggestions'
 import { WeatherCard, type WeatherCardState } from './WeatherCard'
 
 export interface HomeDashboardProps {
@@ -12,12 +14,27 @@ export interface HomeDashboardProps {
   selectedDateLabel: string
   showTodaySurfaces: boolean
   weather: WeatherCardState
-  suggestions: SmartSuggestionsState
+  suggestions: SuggestionsSurfaceState
   formattingLocale: string
+  dateStyle: Intl.DateTimeFormatOptions['dateStyle']
   weatherUnit: WeatherUnit
   weatherAnnouncement?: string | null
   onRefreshWeather?: () => void
   onRetryWeather?: () => void
+  onAcceptSuggestion: (_suggestionId: string) => Promise<void>
+  onAdjustSuggestion: (_input: {
+    suggestionId: string
+    startTime: string
+    acknowledged: boolean
+  }) => Promise<SuggestionApplyOutcome>
+  onDismissSuggestion: (_suggestionId: string) => Promise<void>
+  onRestoreSuggestion: (_suggestionId: string) => Promise<void>
+  onRetrySuggestions: () => void
+  suggestionConflictsFor?: (
+    _activityKey: string,
+    _startTime: string,
+  ) => SuggestionConflictLink[]
+  suggestionNowMinutes?: number
 }
 
 export function HomeDashboard({
@@ -27,10 +44,18 @@ export function HomeDashboard({
   weather,
   suggestions,
   formattingLocale,
+  dateStyle,
   weatherUnit,
   weatherAnnouncement,
   onRefreshWeather,
   onRetryWeather,
+  onAcceptSuggestion,
+  onAdjustSuggestion,
+  onDismissSuggestion,
+  onRestoreSuggestion,
+  onRetrySuggestions,
+  suggestionConflictsFor,
+  suggestionNowMinutes,
 }: HomeDashboardProps) {
   const { t } = useTranslation('home')
 
@@ -56,7 +81,19 @@ export function HomeDashboard({
             onRefresh={onRefreshWeather}
             onRetry={onRetryWeather}
           />
-          <SmartSuggestions state={suggestions} />
+          <SmartSuggestions
+            state={suggestions}
+            locale={formattingLocale}
+            dateStyle={dateStyle}
+            weatherUnit={weatherUnit}
+            onAccept={onAcceptSuggestion}
+            onAdjust={onAdjustSuggestion}
+            onDismiss={onDismissSuggestion}
+            onRestore={onRestoreSuggestion}
+            onRetry={onRetrySuggestions}
+            conflictsFor={suggestionConflictsFor}
+            nowMinutes={suggestionNowMinutes}
+          />
         </>
       ) : null}
 

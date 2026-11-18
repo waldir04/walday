@@ -1,0 +1,125 @@
+{
+  "heading": "Smart Suggestions",
+  "loading": "Loading suggestions",
+  "error": "Suggestions are unavailable right now.",
+  "incomplete": "Recommendations are unavailable because today's plan is incomplete.",
+  "time": {
+    "endOfDay": "end of day"
+  },
+  "categories": {
+    "conflict": "Conflict",
+    "slot": "Find time",
+    "flexible": "Adjust flexible time"
+  },
+  "actions": {
+    "accept": "Accept",
+    "acceptLabel": "Accept: move {{title}} to {{time}}",
+    "acceptScheduleLabel": "Accept: schedule {{title}} at {{time}}",
+    "adjust": "Adjust",
+    "adjustLabel": "Adjust the time for {{title}}",
+    "dismiss": "Dismiss",
+    "dismissLabel": "Dismiss the suggestion for {{title}}",
+    "restore": "Restore",
+    "restoreLabel": "Restore the suggestion for {{title}}",
+    "retry": "Try again",
+    "reviewDismissed": "Review dismissed suggestions",
+    "hideDismissed": "Hide dismissed suggestions",
+    "pending": "Applying…",
+    "cancel": "Cancel",
+    "confirm": "Apply change",
+    "close": "Close"
+  },
+  "card": {
+    "moveHeading": "Move {{title}}",
+    "scheduleHeading": "Schedule {{title}}",
+    "adjustCommitmentHeading": "Adjust {{title}}",
+    "current": "Current: {{time}}",
+    "proposed": "Proposed: {{time}}",
+    "duration": "Duration: {{duration}}",
+    "unscheduled": "Not scheduled yet",
+    "reasonLabel": "Why this suggestion"
+  },
+  "states": {
+    "noSuggestions": {
+      "heading": "No recommendations right now",
+      "allDismissed": "You dismissed every suggestion for today. Review them to bring one back.",
+      "dayAlreadyPlanned": "Today is already planned. Add a task or commitment if something changes.",
+      "missingDurations": "Some tasks have no duration, so no time can be suggested. Add a duration in Task Management.",
+      "noFreePeriod": "There is no free period long enough for the remaining tasks today.",
+      "nothingActionable": "There is nothing this surface can safely change right now. Review the agenda."
+    },
+    "openTasks": "Open Task Management",
+    "openAgenda": "Open the agenda",
+    "reviewDismissed": "Review dismissed suggestions",
+    "dismissedHeading": "Dismissed suggestions"
+  },
+  "reasons": {
+    "conflict": {
+      "text": "Overlaps {{titles}} from {{start}} to {{end}}.",
+      "fixedProtected": " Fixed commitments are protected and stay where they are.",
+      "remainingOverlaps": " Moving it still leaves {{titles}} overlapping from {{start}} to {{end}}."
+    },
+    "dueDate": {
+      "overdue": "Due {{date}}.",
+      "dueToday": "Due today.",
+      "future": "Due {{date}}."
+    },
+    "priority": {
+      "high": "High priority.",
+      "medium": "Medium priority.",
+      "low": "Low priority."
+    },
+    "fit": {
+      "text": "Fits the free period from {{start}} to {{end}} for {{duration}}."
+    },
+    "beneficiary": {
+      "text": "Makes room for {{title}} without scheduling it."
+    },
+    "weather": {
+      "text": "{{condition}} is expected from {{start}} to {{end}}."
+    },
+    "protectedFixed": {
+      "text": "Fixed activities ({{titles}}) are protected."
+    }
+  },
+  "adjust": {
+    "heading": "Adjust suggestion",
+    "description": "Choose a different start time for this suggestion.",
+    "startTime": "Start time",
+    "current": "Current time: {{time}}",
+    "proposed": "Originally proposed: {{time}}",
+    "adjusted": "Adjusted time: {{time}}",
+    "duration": "Duration: {{duration}}",
+    "conflictHeading": "This time overlaps other activities",
+    "conflictItem": "{{title}} from {{start}} to {{end}}",
+    "conflictAcknowledge": "Use this time even though it overlaps",
+    "invalidTime": "Enter a valid time in 24-hour HH:MM format.",
+    "pastTime": "Choose a time that has not passed yet.",
+    "endsAfterMidnight": "The change must end by midnight.",
+    "outsideDay": "Choose a time within today.",
+    "failed": "The change did not happen. Check the time and try again."
+  },
+  "feedback": {
+    "appliedTask": "Moved {{title}} to {{time}}.",
+    "scheduledTask": "Scheduled {{title}} at {{time}}.",
+    "appliedCommitment": "Moved {{title}} to {{time}}.",
+    "dismissed": "Dismissed the suggestion for {{title}}.",
+    "restored": "Restored the suggestion for {{title}}.",
+    "applyFailed": "The change did not happen. Try again.",
+    "retry": "Try again",
+    "dismissalNotSaved": "This dismissal is kept for this session only."
+  },
+  "weather": {
+    "influencedBy": "Weather influenced this choice: {{condition}} with {{precipitation}} chance of precipitation from {{start}} to {{end}}.",
+    "conditions": {
+      "clear": "Clear",
+      "partlyCloudy": "Partly cloudy",
+      "cloudy": "Cloudy",
+      "rain": "Rain",
+      "snow": "Snow",
+      "storm": "Storm",
+      "fog": "Fog",
+      "unknown": "Conditions unavailable"
+    }
+  }
+}
