@@ -15,6 +15,8 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     globals: true,
     env: {
+      // Tests must not depend on the untracked local `.env` file.
+      VITE_API_BASE_URL: 'http://localhost:8787',
       TZ: 'UTC',
       LANG: 'en_US.UTF-8',
       LC_ALL: 'en_US.UTF-8',
